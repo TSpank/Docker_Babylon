@@ -3,6 +3,7 @@ FROM tiangolo/uwsgi-nginx-flask:python3.8
 COPY ./app /app
 COPY ./babylon /app/babylon
 RUN mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf_orig
+RUN apt-get update && apt-get install -y curl
 # COPY fullchain.pem /cert/
 # COPY privkey.pem /cert
 COPY nginx.conf /app

@@ -16,7 +16,7 @@ from flask_cors import CORS
 mqtt_server = "207.154.244.181"
 mqtt_port = 1883
 # mqtt_topic = "mojo/pose"
-mqtt_uuid = "86C48451-22D2-423A-BEFF-347C5AAC35F8"
+mqtt_uuid = "#" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
 mqtt_topic = f"mojo/iOS/{mqtt_uuid}"
 mqtt_client = "mojo_py_demo"
 mqtt_user = "scope_mosquitto"
@@ -78,8 +78,9 @@ def uuid():
     global mqtt_topic
     _s = {}
     _uuid = request.args.get('uuid',"")
-    _s['UUID'] = _uuid
+    _s['UUID old'] = mqtt_uuid
     if len(_uuid) > 0:
+        _s['UUID New'] = _uuid
         mqtt.unsubscribe(mqtt_topic)
         _s['Unsubscribe'] = mqtt_topic
         mqtt_uuid = _uuid
@@ -87,7 +88,7 @@ def uuid():
         mqtt.subscribe(mqtt_topic)
         _s['Subscribe'] = mqtt_topic
     else:
-        _s['Error'] = 'Bad UUID: {_uuid}'
+        _s['Error'] = 'Zero Length UUID'
     return json.dumps(_s)
 
 
