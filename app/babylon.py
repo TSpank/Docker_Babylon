@@ -78,9 +78,9 @@ def uuid():
     global mqtt_topic
     _s = {}
     _uuid = request.args.get('uuid',"")
-    _s['UUID old'] = mqtt_uuid
+    _s['UUID_OLD'] = mqtt_uuid
     if len(_uuid) > 0:
-        _s['UUID New'] = _uuid
+        _s['UUID'] = _uuid
         mqtt.unsubscribe(mqtt_topic)
         _s['Unsubscribe'] = mqtt_topic
         mqtt_uuid = _uuid
@@ -88,13 +88,13 @@ def uuid():
         mqtt.subscribe(mqtt_topic)
         _s['Subscribe'] = mqtt_topic
     else:
-        _s['Error'] = 'Zero Length UUID'
+        _s['Error'] = 'UUID not changed'
     return json.dumps(_s)
 
 
 if __name__ == '__main__':
     log = logging.getLogger('werkzeug')
     log.disabled = True
-    app.run(host='0.0.0.0', port=5000)
-    #app.run(host='0.0.0.0', port=5000,ssl_context=('/cert/fullchain.pem', '/cert/privkey.pem'),debug=False)
+    #//app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
 
