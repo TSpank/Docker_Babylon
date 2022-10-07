@@ -2,7 +2,6 @@
 from flask import Flask,jsonify
 from flask import current_app, flash, jsonify, make_response, redirect, request, url_for, render_template
 from flask_mqtt import Mqtt
-from flask_caching import Cache
 from flask import request
 import hmac
 import os
@@ -12,12 +11,6 @@ import paho.mqtt.client as paho
 import json
 import threading
 from flask_cors import CORS
-
-config = {
-    "DEBUG": True,                # some Flask specific configs
-    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300
-}
 
 # %%
 mqtt_server = "207.154.244.181"
@@ -29,8 +22,6 @@ mqtt_client = "mojo_py_demo"
 mqtt_user = "scope_mosquitto"
 mqtt_pass = "dektzOWb3pmI"
 app = Flask(__name__)
-app.config.from_mapping(config)
-cache = Cache(app)
 app.config['MQTT_BROKER_URL'] = mqtt_server  # use the free broker from HIVEMQ
 app.config['MQTT_BROKER_PORT'] = 1883  # default port for non-tls connection
 app.config['MQTT_USERNAME'] = mqtt_user # set the username here if you need authentication for the broker
