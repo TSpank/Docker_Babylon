@@ -39,6 +39,10 @@
         <script src="https://preview.babylonjs.com/nodeEditor/babylon.nodeEditor.js"></script>
         <script src="https://preview.babylonjs.com/guiEditor/babylon.guiEditor.js"></script>
         <script src="quaternion.js"></script>
+        <script src="limits.js"></script>
+        <script src="controls.js"></script>
+        <script src="parse_data.js"></script>
+        <script src="cameras.js"></script>
         <style>
             html, body {
                 overflow: hidden;
@@ -92,203 +96,9 @@
         var sceneToRender = null;
 	    var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: true}); };
 		var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"}";
-		
-
-        function vectorChange( vec, vec2)
-		{
-			return Math.abs(Math.sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z)-Math.sqrt(vec2.x*vec2.x + vec2.y*vec2.y + vec2.z*vec2.z));
-		}
-		function limitangleRight(a)
-		{
-			if (a>Math.PI/2.0)
-			{
-				return -(Math.PI-a);
-			}
-			else if (a<-Math.PI/2.0) 
-			{
-				return (-Math.PI-a);
-			}   
-			else
-			{
-				return a;
-			}
-		}
-
-		function limitangleLeft(a)
-		{
-			if (a>Math.PI/2.0)
-			{
-				return -(Math.PI-a);
-			}
-			else if (a<-Math.PI/2.0) 
-			{
-				return (-Math.PI-a);
-			}   
-			else
-			{
-				return a;
-			}
-		}
-
-        function limitangleLeft(a)
-		{
-			if (a>Math.PI/2.0)
-			{
-				return -(Math.PI-a);
-			}
-			else if (a<-Math.PI/2.0) 
-			{
-				return (-Math.PI-a);
-			}   
-			else
-			{
-				return a;
-			}
-		}
-
-        function limitangle(a,limit)
-		{
-			if (a>limit)
-			{
-				return limit;
-			}
-			else if (a<-limit) 
-			{
-				return -limit
-			}   
-			else
-			{
-				return a;
-			}
-		}
-
-        function fix_theta_3(val)
-        {
-            if (val > Math.PI/2.0){
-                return val - Math.PI;
-            } 
-            else if (val < -Math.PI/2.0)
-            {
-                return val + Math.PI;
-            } else
-            {
-                return val;
-            }
-        }
-
-        function sanitise(a)
-        {
-            rtn = a;
-            if (a < -Math.PI/2.0)
-            {
-                rtn = a+2*Math.pi;
-            }
-            return -rtn+Math.pi;
-            //return -a;
-        }
-
-        function limit(a)
-        {
-            if ( a < -Math.PI )
-            {
-                return a + 2*Math.PI;
-            }
-            if ( a > Math.PI )
-            {
-                return a - 2*Math.PI;
-            }
-            return a;
-        }
-
-        function MapAxis( value, in_max, out_max)
-        {
-            var ratio = 7.0 / in_max; 
-            var out = 2.0/ ( 1. + Math.pow(Math.E, - (ratio*value))) - 1.0;
-            return out*out_max
-        }
-
-        var pitch_limit = 1.256;
-        var roll_limit = 0.8;
-        var yaw_limit = 1.134;
-		
-		// Neck Movement
-        var pitch_neck_limit = [-0.576, 0.837];
-        var roll_neck_limit = [-0.576, 0.576];
-        var yaw_neck_limit = [-0.471,0.471];
-
-        // Head/Atlas Movement
-        var pitch_head_limit = [-0.279, 0.419];
-        var roll_head_limit = [-0.105, 0.105];
-        var yaw_head_limit = [-0.663,0.663];
-
-        // function AngleLimit(value,limit_neck,limit_head)
-        // {
-        //     output = {};
-        //     output['head'] = value;
-        //     output['neck'] = 0.0;
-
-        //     if( value > 0)
-        //     {
-        //         if ( value > limit_head[1] )
-        //         {
-        //             output['head'] = limit_head[1];
-        //             output['neck'] = value - limit_head[1];
-        //             if ( output['neck'] > limit_neck[1] )
-        //             {
-        //                 output['neck'] = limit_neck[1];
-        //             }
-        //         } else {
-        //             output['head'] = value;
-        //             output[1] = 0.0;
-        //         }
-        //     } else {
-        //         if ( value < limit_head[0] )
-        //         {
-        //             output['head'] = limit_head[0];
-        //             output['neck']  = value - limit_head[0];
-        //             if ( output['neck']  < limit_neck[0])
-        //             {
-        //                 output['neck']  = limit_neck[0];
-        //             }
-        //         } else {
-        //             output['head'] = value;
-        //             output['neck']  = 0.0;
-        //         }
-        //     }
-        //     return output;
-        // }
-
-        function AngleLimit(value,limit_neck,limit_head)
-        {
-            output = {};
-            output['head'] = 0.0;
-            output['neck'] = 0.0;
-            _head_perc = 0.5
-            _neck_perc = 0.5
-            if( value > 0 )
-            {
-                _limit = limit_neck[1]+limit_head[1]
-                _head_perc = limit_head[1]/_limit
-                _neck_perc = limit_neck[1]/_limit
-                if (value > _limit)
-                {
-                    value = _limit
-                }
-            }
-            if( value < 0 )
-            {
-                _limit = limit_neck[0]+limit_head[0]
-                _head_perc = limit_head[0]/_limit
-                _neck_perc = limit_neck[0]/_limit
-                if (value < _limit)
-                {
-                    value = _limit
-                }                
-            }
-            output['neck'] = _neck_perc * value
-            output['head'] = _head_perc * value
-            return output;
-        }
+		var slerp;
+        
+        var steps_perc = 0;
         
         var delayCreateScene = function () {
             
@@ -304,6 +114,7 @@
             var skeleton;
 			var forward = true;
 			var rot = new BABYLON.Vector3(0.02,0.02,0.02);
+            var camera_dynamic;
 			var camera_head;
 			var camera_arms;
 			var count = 0;
@@ -312,98 +123,13 @@
 			var values; 
 			var increase=0.01;
 
-            camera_head = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.5, -1.0), scene, true);
-            camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-            //camera_head.attachControl(canvas,true);
-            camera_head.minZ = -1
-
-            camera_arms = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.5, -2.), scene, true);
-            camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
-            camera_arms.minZ = -1
+            [camera_head,camera_arms,camera_dynamic] = Init_cameras(scene)
+            
 
             if (true)
             {
-                // var text1 = new BABYLON.GUI.TextBlock();
-                //     text1.width = "90px";
-                //     text1.height = "40px";
-                //     text1.color = "black";
-                //     text1.text = "0";
-                //     text1.color = "black";
-                //     text1.background = "transparent";
-                //     text1.left = "-35%";
-                //     text1.top = "-35%";
-                //     text1.cornerRadius = 5;
-                //     text1.fontSize = 14;
-                //     advancedTexture.addControl(text1);   
-                // Front 0.0, 1.5, -1.0
-                // Left 1, 1.5, 0
-                // Right -1, 1.5, 0.0
-                var width = "60px"; //"90px"
-                var height = "20px"; //"40px"
-
-                var Left = BABYLON.GUI.Button.CreateSimpleButton("Left", "Left");
-                    Left.width = width;
-                    Left.height = height;
-                    Left.color = "black";
-                    Left.background = "transparent";
-                    Left.left = "-40%";
-                    Left.top = "-25%";
-                    Left.cornerRadius = 5;
-                    Left.onPointerDownObservable.add(()=> {
-                        camera_head.position = new BABYLON.Vector3(1, 1.5, 0.0);
-                        camera_arms.position = new BABYLON.Vector3(2, 1.5, 0.0);
-                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
-                    })
-                    advancedTexture.addControl(Left);
-
-                var Right = BABYLON.GUI.Button.CreateSimpleButton("Right", "Right");
-                    Right.width = width;
-                    Right.height = height;
-                    Right.color = "black";
-                    Right.background = "transparent";
-                    Right.left = "-30%";
-                    Right.top = "-25%";
-                    Right.cornerRadius = 5;
-                    Right.onPointerDownObservable.add(()=> {
-                        camera_head.position = new BABYLON.Vector3(-1, 1.5, 0.0);
-                        camera_arms.position = new BABYLON.Vector3(-2, 1.5, 0.0);
-                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
-                    })
-                    advancedTexture.addControl(Right);
-
-                var Front = BABYLON.GUI.Button.CreateSimpleButton("Front", "Front");
-                    Front.width = width;
-                    Front.height = height;
-                    Front.color = "black";
-                    Front.background = "transparent";
-                    Front.left = "-35%";
-                    Front.top = "-30%";
-                    Front.cornerRadius = 5;
-                    Front.onPointerDownObservable.add(()=> {
-                        camera_head.position = new BABYLON.Vector3(0, 1.5, -1.0);
-                        camera_arms.position = new BABYLON.Vector3(0, 1.5, -2.0);
-                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
-                    })
-                    advancedTexture.addControl(Front);
-
-                var Back = BABYLON.GUI.Button.CreateSimpleButton("Back", "Back");
-                    Back.width = width;
-                    Back.height = height;
-                    Back.color = "black";
-                    Back.background = "transparent";
-                    Back.left = "-35%";
-                    Back.top = "-20%";
-                    Back.cornerRadius = 5;
-                    Back.onPointerDownObservable.add(()=> {
-                        camera_head.position = new BABYLON.Vector3(0, 1.5, 1.0);
-                        camera_arms.position = new BABYLON.Vector3(0, 1.5, 2.0);
-                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
-                    })
-                    advancedTexture.addControl(Back);
+                setup_buttons(advancedTexture,camera_head,camera_arms);
+                
             }
 
 			BABYLON.SceneLoader.ShowLoadingScreen = false
@@ -431,7 +157,7 @@
 					skelViewer.color = BABYLON.Color3.Red();
 				});
                 //animate_lower_back = false;
-                animate_lower_back = true;
+                
 
 				scene.registerBeforeRender(function() {
 					let mesh = scene.getMeshByName('__root__');
@@ -439,103 +165,32 @@
 						mesh.rotationQuaternion = null;
 						try{
                             try{
-							    getRotations();
+							    // getRotations();
                                 values = JSON.parse(ul.textContent);
                             } catch (err)
                             {
                                 values = JSON.parse(rotationValues);
                             }
-
-                            // RIGHT Shoulder                
-                            skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							
-							// LEFT Shoulder
-                            skeleton.bones[10].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							skeleton.bones[11].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							skeleton.bones[12].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+                            // console.log(skeleton)
+                            // Pan Camera view
                             
-                            //Neck
-                            skeleton.bones[4].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-                            //Head
-                            skeleton.bones[5].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
-                            // Upper Back
-                            skeleton.bones[1].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-							skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-                            // Lower Back
-                            skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-                            
-							skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-                              
-                            if (typeof(values) != "undefined")
-                            {
-                                //Chest
-                                pitch = -values['theta_torso_pitch_r'];
-                                bend = -values['theta_torso_bend_r'];
-                                yaw =  values['theta_torso_yaw_r'];
-                                roll = -values['theta_torso_roll_r']; 
-                                tilt = values['theta_torso_tilt_r']; 
-                                
-                                // Head / neck
-                                head_pitch = AngleLimit(values['theta_head_pitch_h'],pitch_neck_limit,pitch_head_limit);
-                                head_yaw = AngleLimit(values['theta_head_yaw_h'],yaw_neck_limit,yaw_head_limit);
-                                head_roll = AngleLimit(values['theta_head_roll_h'],roll_neck_limit,roll_head_limit); 	
-                                
-                                //Right Arm
-                                alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];
-                                beta_upper_r =    values['theta_armright_upper_beta'];
-                                gamma_upper_r =   values['theta_armright_upper_gamma'];
-                                alpha_lower_r =  values['theta_armright_lower_alpha'];
-                                beta_lower_r =  -values['theta_armright_lower_beta'];
-                                gamma_lower_r = values['theta_armright_lower_gamma'];
-                                
-                                //Left Arm
-                                alpha_upper_l =  Math.PI/2.2 - values['theta_armleft_upper_alpha'];
-                                beta_upper_l =  -values['theta_armleft_upper_beta'];
-                                gamma_upper_l = values['theta_armleft_upper_gamma'];
-                                alpha_lower_l =  -values['theta_armleft_lower_alpha'];
-                                beta_lower_l =  -values['theta_armleft_lower_beta'];
-                                gamma_lower_l = values['theta_armleft_lower_gamma'];
-
-                                // Chest
-                                // Lower Back
-                                if (animate_lower_back == true)
+							if ( steps_perc >= 1.0 )
+							{
+                                if (scene.activeCamera == camera_arms )
                                 {
-                                    //yaw = 0.785;
-                                    skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y,-yaw );
-                                    // skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
-                                    skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, -pitch );
-                                    skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, -bend );
+                                    scene.activeCamera = camera_head;
+                                } else
+                                {
+                                    scene.activeCamera = camera_arms
                                 }
-                                // Upper Back
-                                skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Z, tilt );
-                                // Neck
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch['neck']); //Neck Pitch
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['neck']); // Neck Yaw
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['neck']); // Neck roll
+								steps_perc = 0;
+							} else
+							{
+								steps_perc +=0.01;								
+							}
 
-                                // Head
-                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.X, head_pitch['head']); //Head Pitch
-                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['head']); // Head Yaw
-                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['head']); // Head roll
-
-
-                                // RIGHT Shoulder
-                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_r); 
-                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_r);
-                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_r); 
-
-                                // LEFT Shoulder
-                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_l);
-                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_l);
-                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_l);
-                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_l);
-                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Y, gamma_lower_l);
-                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Z, beta_lower_l);
-                            }
-                            				
+                            skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
+                                                        				
 						} catch(err) {
 							console.log(err.message);
 						}
