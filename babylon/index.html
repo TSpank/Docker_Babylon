@@ -38,7 +38,7 @@
         <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
         <script src="https://preview.babylonjs.com/nodeEditor/babylon.nodeEditor.js"></script>
         <script src="https://preview.babylonjs.com/guiEditor/babylon.guiEditor.js"></script>
-
+        <script src="quaternion.js"></script>
         <style>
             html, body {
                 overflow: hidden;
@@ -146,10 +146,6 @@
 			}
 		}
 
-        var pitch_limit = 1.256;
-        var roll_limit = 0.8;
-        var yaw_limit = 1.134;
-
         function limitangle(a,limit)
 		{
 			if (a>limit)
@@ -168,7 +164,6 @@
 
         function fix_theta_3(val)
         {
-            //return limitangleLeft(val);
             if (val > Math.PI/2.0){
                 return val - Math.PI;
             } 
@@ -204,39 +199,101 @@
             }
             return a;
         }
+
+        function MapAxis( value, in_max, out_max)
+        {
+            var ratio = 7.0 / in_max; 
+            var out = 2.0/ ( 1. + Math.pow(Math.E, - (ratio*value))) - 1.0;
+            return out*out_max
+        }
+
+        var pitch_limit = 1.256;
+        var roll_limit = 0.8;
+        var yaw_limit = 1.134;
+		
+		// Neck Movement
+        var pitch_neck_limit = [-0.576, 0.837];
+        var roll_neck_limit = [-0.576, 0.576];
+        var yaw_neck_limit = [-0.471,0.471];
+
+        // Head/Atlas Movement
+        var pitch_head_limit = [-0.279, 0.419];
+        var roll_head_limit = [-0.105, 0.105];
+        var yaw_head_limit = [-0.663,0.663];
+
+        // function AngleLimit(value,limit_neck,limit_head)
+        // {
+        //     output = {};
+        //     output['head'] = value;
+        //     output['neck'] = 0.0;
+
+        //     if( value > 0)
+        //     {
+        //         if ( value > limit_head[1] )
+        //         {
+        //             output['head'] = limit_head[1];
+        //             output['neck'] = value - limit_head[1];
+        //             if ( output['neck'] > limit_neck[1] )
+        //             {
+        //                 output['neck'] = limit_neck[1];
+        //             }
+        //         } else {
+        //             output['head'] = value;
+        //             output[1] = 0.0;
+        //         }
+        //     } else {
+        //         if ( value < limit_head[0] )
+        //         {
+        //             output['head'] = limit_head[0];
+        //             output['neck']  = value - limit_head[0];
+        //             if ( output['neck']  < limit_neck[0])
+        //             {
+        //                 output['neck']  = limit_neck[0];
+        //             }
+        //         } else {
+        //             output['head'] = value;
+        //             output['neck']  = 0.0;
+        //         }
+        //     }
+        //     return output;
+        // }
+
+        function AngleLimit(value,limit_neck,limit_head)
+        {
+            output = {};
+            output['head'] = 0.0;
+            output['neck'] = 0.0;
+            _head_perc = 0.5
+            _neck_perc = 0.5
+            if( value > 0 )
+            {
+                _limit = limit_neck[1]+limit_head[1]
+                _head_perc = limit_head[1]/_limit
+                _neck_perc = limit_neck[1]/_limit
+                if (value > _limit)
+                {
+                    value = _limit
+                }
+            }
+            if( value < 0 )
+            {
+                _limit = limit_neck[0]+limit_head[0]
+                _head_perc = limit_head[0]/_limit
+                _neck_perc = limit_neck[0]/_limit
+                if (value < _limit)
+                {
+                    value = _limit
+                }                
+            }
+            output['neck'] = _neck_perc * value
+            output['head'] = _head_perc * value
+            return output;
+        }
         
         var delayCreateScene = function () {
             
             var scene = new BABYLON.Scene(engine);  
 			var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-            // Skybox
-            var skybox = BABYLON.MeshBuilder.CreateBox("SkyBox", {size:100.0}, scene);
-            var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-            skyboxMaterial.backFaceCulling = false;
-            skyboxMaterial.reflectionTexture = new BABYLON.HDRCubeTexture("gym_01_1k_blur.hdr", scene, 512);
-            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-            skybox.material = skyboxMaterial;
-            
-			//scene.debugLayer.show();
-			var UiPanel = new BABYLON.GUI.StackPanel();
-            UiPanel.top = "30%";
-            UiPanel.width = "220px";
-            UiPanel.height = "220px";
-            UiPanel.fontSize = "14px";
-            UiPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            UiPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-            advancedTexture.addControl(UiPanel);
-
-            var label1 = new BABYLON.GUI.Rectangle("label for ");
-            label1.background = "black";
-            label1.height = "60px";
-            label1.alpha = 0.5;
-            label1.width = "200px";
-            label1.cornerRadius = 20;
-            label1.thickness = 1;
-            label1.linkOffsetY = 30;
-            label1.top = "-40%";
-            label1.left = "-20%";
             
             var options = new BABYLON.SceneOptimizerOptions(1, 100);
             options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 1));
@@ -244,202 +301,123 @@
             // Optimizer
             var optimizer = new BABYLON.SceneOptimizer(scene, options);
             
-            //UiPanel.addControl(label1); 
-            
-            // var button = BABYLON.GUI.Button.CreateSimpleButton("but", "Click Me");
-            // button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            // button.top = "0px";
-            // UiPanel.addControl(button); 
-
-			// var button = BABYLON.GUI.Button.CreateSimpleButton("but", "Play");
-			//     button.paddingTop = "10px";
-            //     button.width = "100px";
-            //     button.height = "50px";
-            //     button.color = "white";
-            //     button.background = "green";
-            //     button.onPointerDownObservable.add(()=> {
-            //         //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-			// 		//showToast('Hello Android!');
-            //         const URL = 'http://127.0.0.1:5000/control?run=1';
-			//         fetch(URL);
-            //     })
-            // UiPanel.addControl(button);
-            if (false)
-            {
-                var text1 = new BABYLON.GUI.TextBlock();
-                    text1.width = "90px";
-                    text1.height = "40px";
-                    text1.color = "black";
-                    text1.text = "0";
-                    text1.color = "black";
-                    text1.background = "transparent";
-                    text1.left = "-35%";
-                    text1.top = "-35%";
-                    text1.cornerRadius = 5;
-                    text1.fontSize = 14;
-                    advancedTexture.addControl(text1);   
-
-                var skipleft = BABYLON.GUI.Button.CreateSimpleButton("Skipleft Button", "Skip <<");
-                    skipleft.width = "90px";
-                    skipleft.height = "40px";
-                    skipleft.color = "black";
-                    skipleft.background = "transparent";
-                    skipleft.left = "-40%";
-                    skipleft.top = "-30%";
-                    skipleft.cornerRadius = 5;
-                    skipleft.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?step=-10';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(skipleft);
-
-                var skipleft1 = BABYLON.GUI.Button.CreateSimpleButton("Skipleft1 Button", "Skip <");
-                    skipleft1.width = "90px";
-                    skipleft1.height = "40px";
-                    skipleft1.color = "black";
-                    skipleft1.background = "transparent";
-                    skipleft1.left = "-30%";
-                    skipleft1.top = "-30%";
-                    skipleft1.cornerRadius = 5;
-                    skipleft1.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?step=-1';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(skipleft1);
-
-                var play = BABYLON.GUI.Button.CreateSimpleButton("Play Button", "Play");
-                    play.width = "90px";
-                    play.height = "40px";
-                    play.color = "black";
-                    play.background = "transparent";
-                    play.left = "-35%";
-                    play.top = "-25%";
-                    play.cornerRadius = 5;
-                    play.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?run=1';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(play);
-
-                var pause = BABYLON.GUI.Button.CreateSimpleButton("Pause Button", "Pause");
-                    pause.width = "90px";
-                    pause.height = "40px";
-                    pause.color = "black";
-                    pause.background = "transparent";
-                    pause.left = "-35%";
-                    pause.top = "-20%";
-                    pause.cornerRadius = 5;
-                    pause.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?pause=1';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(pause);
-
-                var skipright = BABYLON.GUI.Button.CreateSimpleButton("Skipright Button", "Skip >>");
-                    skipright.width = "90px";
-                    skipright.height = "40px";
-                    skipright.color = "black";
-                    skipright.background = "transparent";
-                    skipright.left = "-30%";
-                    skipright.top = "-15%";
-                    skipright.cornerRadius = 5;
-                    skipright.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?step=10';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(skipright);
-
-                var skipright1 = BABYLON.GUI.Button.CreateSimpleButton("Skipright1 Button", "Skip >");
-                    skipright1.width = "90px";
-                    skipright1.height = "40px";
-                    skipright1.color = "black";
-                    skipright1.background = "transparent";
-                    skipright1.left = "-40%";
-                    skipright1.top = "-15%";
-                    skipright1.cornerRadius = 5;
-                    skipright1.onPointerDownObservable.add(()=> {
-                        //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-                        //showToast('Hello Android!');
-                        const URL = 'http://127.0.0.1:5000/control?step=1';
-                        fetch(URL);
-                    })
-                    advancedTexture.addControl(skipright1);
-            }
-            // var button_reset = BABYLON.GUI.Button.CreateSimpleButton("but", "Reset");
-			//     button_reset.paddingTop = "10px";
-            //     button_reset.width = "100px";
-            //     button_reset.height = "50px";
-            //     button_reset.color = "white";
-            //     button_resetbackground = "green";
-            //     button_reset.onPointerDownObservable.add(()=> {
-            //         //if (idleRange) scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-			// 		//showToast('Hello Android!');
-            //         const URL = 'http://127.0.0.1:5000/control?reset=1';
-			//         fetch(URL);
-            //     })
-            // UiPanel.addControl(button_reset);
-
-			var skeleton;
+            var skeleton;
 			var forward = true;
 			var rot = new BABYLON.Vector3(0.02,0.02,0.02);
-			var helperCamera;
-			var camera;
+			var camera_head;
+			var camera_arms;
 			var count = 0;
 			var lastCamera = 0
 			var previous_rot = new BABYLON.Vector3(0.02,0.02,0.02);
 			var values; 
 			var increase=0.01;
+
+            camera_head = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.5, -1.0), scene, true);
+            camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
+            //camera_head.attachControl(canvas,true);
+            camera_head.minZ = -1
+
+            camera_arms = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.5, -2.), scene, true);
+            camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+            camera_arms.minZ = -1
+
+            if (true)
+            {
+                // var text1 = new BABYLON.GUI.TextBlock();
+                //     text1.width = "90px";
+                //     text1.height = "40px";
+                //     text1.color = "black";
+                //     text1.text = "0";
+                //     text1.color = "black";
+                //     text1.background = "transparent";
+                //     text1.left = "-35%";
+                //     text1.top = "-35%";
+                //     text1.cornerRadius = 5;
+                //     text1.fontSize = 14;
+                //     advancedTexture.addControl(text1);   
+                // Front 0.0, 1.5, -1.0
+                // Left 1, 1.5, 0
+                // Right -1, 1.5, 0.0
+                var width = "60px"; //"90px"
+                var height = "20px"; //"40px"
+
+                var Left = BABYLON.GUI.Button.CreateSimpleButton("Left", "Left");
+                    Left.width = width;
+                    Left.height = height;
+                    Left.color = "black";
+                    Left.background = "transparent";
+                    Left.left = "-40%";
+                    Left.top = "-25%";
+                    Left.cornerRadius = 5;
+                    Left.onPointerDownObservable.add(()=> {
+                        camera_head.position = new BABYLON.Vector3(1, 1.5, 0.0);
+                        camera_arms.position = new BABYLON.Vector3(2, 1.5, 0.0);
+                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
+                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+                    })
+                    advancedTexture.addControl(Left);
+
+                var Right = BABYLON.GUI.Button.CreateSimpleButton("Right", "Right");
+                    Right.width = width;
+                    Right.height = height;
+                    Right.color = "black";
+                    Right.background = "transparent";
+                    Right.left = "-30%";
+                    Right.top = "-25%";
+                    Right.cornerRadius = 5;
+                    Right.onPointerDownObservable.add(()=> {
+                        camera_head.position = new BABYLON.Vector3(-1, 1.5, 0.0);
+                        camera_arms.position = new BABYLON.Vector3(-2, 1.5, 0.0);
+                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
+                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+                    })
+                    advancedTexture.addControl(Right);
+
+                var Front = BABYLON.GUI.Button.CreateSimpleButton("Front", "Front");
+                    Front.width = width;
+                    Front.height = height;
+                    Front.color = "black";
+                    Front.background = "transparent";
+                    Front.left = "-35%";
+                    Front.top = "-30%";
+                    Front.cornerRadius = 5;
+                    Front.onPointerDownObservable.add(()=> {
+                        camera_head.position = new BABYLON.Vector3(0, 1.5, -1.0);
+                        camera_arms.position = new BABYLON.Vector3(0, 1.5, -2.0);
+                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
+                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+                    })
+                    advancedTexture.addControl(Front);
+
+                var Back = BABYLON.GUI.Button.CreateSimpleButton("Back", "Back");
+                    Back.width = width;
+                    Back.height = height;
+                    Back.color = "black";
+                    Back.background = "transparent";
+                    Back.left = "-35%";
+                    Back.top = "-20%";
+                    Back.cornerRadius = 5;
+                    Back.onPointerDownObservable.add(()=> {
+                        camera_head.position = new BABYLON.Vector3(0, 1.5, 1.0);
+                        camera_arms.position = new BABYLON.Vector3(0, 1.5, 2.0);
+                        camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
+                        camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+                    })
+                    advancedTexture.addControl(Back);
+            }
+
 			BABYLON.SceneLoader.ShowLoadingScreen = false
 			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
-
-			//BABYLON.SceneLoader.Append("https://appassets.androidplatform.net/assets/", "eric.glb", scene, function (meshes, particleSystems, skeletons) {
-					//skeleton = skeletons;
-					skeleton = scene.getSkeletonByName("Armature")
+      				skeleton = scene.getSkeletonByName("Armature")
 					scene.beginAnimation(skeleton, 0, 100, true, 1.0);
-                    // scene.createDefaultCameraOrLight(true);
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
-                    scene.createDefaultEnvironment();
-                    // Skybox
-                    // var skybox = BABYLON.MeshBuilder.CreateBox("SkyBox", {size:1000.0}, scene);
-                    // var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-                    // skyboxMaterial.backFaceCulling = false;
-                    // //skyboxMaterial.reflectionTexture = new BABYLON.HDRCubeTexture("gym.hdr", scene, 512);
-                    // //skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-                    // skyboxMaterial.diffuseTexture = new BABYLON.HDRCubeTexture("gym.hdr", scene, 512);
-                    // skyboxMaterial.diffuseTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-                    // skybox.material = skyboxMaterial;
-                    // // skyboxMaterial.
-                    // Import the .env file as a CubeTexture
-                   //const texture = new BABYLON.CubeTexture('environment.env', scene);
-                    // Create a skybox mesh using this texture
-                    //const skybox = scene.createDefaultSkybox(texture, true, 1000, 0.1);
-                    //scene.environmentTexture = new BABYLON.CubeTexture("environment.env", scene);
-                    //var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.env", scene);
-                    //scene.environmentTexture = hdrTexture;
-                    //var reflectionTexture = new BABYLON.HDRCubeTexture("gym.hdr", scene, 128, false, true, false, true);
-
-					helperCamera = scene.activeCamera;
-					helperCamera.position = new BABYLON.Vector3(0,1.2,-3)
-					helperCamera.setTarget(new BABYLON.Vector3(0,0.8,0));
-					//helperCamera.detachControl(canvas,false);
-					helperCamera.minZ = 0.1;
-					helperCamera.attachControl(canvas,false);
-					camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.5, -1.0), scene,true);
-					camera.setTarget(new BABYLON.Vector3(0,1.6,0));
-					camera.minZ = 0.1;
-
-                    scene.activeCamera = camera;
+                    env =  scene.createDefaultEnvironment();
+                    env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
+                    //env.setMainColor(new BABYLON.Color3(0.018,0.012,0.06));// pblue 0.018,0.012,0.06 ink 1.0,0.533,0.533
+                    var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+                    
+					scene.activeCamera = camera_head;
                      
 
 					let skelViewer = new BABYLON.Debug.SkeletonViewer(
@@ -459,10 +437,6 @@
 					let mesh = scene.getMeshByName('__root__');
 					if (mesh) {
 						mesh.rotationQuaternion = null;
-						//mesh.rotation.y += 0.005
-						
-						
-						//skeleton.returnToRest();	
 						try{
                             try{
 							    getRotations();
@@ -471,25 +445,20 @@
                             {
                                 values = JSON.parse(rotationValues);
                             }
-                            // try{
-                            //     values = JSON.parse(mqtt_payload);
-                            // } catch(err)
-                            // {
-                            //     values = JSON.parse(ul.textContent);
-                            // }
-							// RIGHT Shoulder
-                            
+
+                            // RIGHT Shoulder                
                             skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 							skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 							skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 							
 							// LEFT Shoulder
-                            //skeleton.bones[9].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
                             skeleton.bones[10].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 							skeleton.bones[11].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 							skeleton.bones[12].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
                             
-                            // Head
+                            //Neck
+                            skeleton.bones[4].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+                            //Head
                             skeleton.bones[5].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 
                             // Upper Back
@@ -500,136 +469,76 @@
                             
 							skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
                               
-                            
-
-                            // document.getElementById('frame').value = values["Unnamed: 0"];
-//                            text1.text = values["Unnamed: 0"];
                             if (typeof(values) != "undefined")
-                            //if (values['type']=='euler')
                             {
                                 //Chest
-                                pitch = -values['theta_torso_pitch_r'];//-Math.PI/2;
+                                pitch = -values['theta_torso_pitch_r'];
                                 bend = -values['theta_torso_bend_r'];
                                 yaw =  values['theta_torso_yaw_r'];
                                 roll = -values['theta_torso_roll_r']; 
                                 tilt = values['theta_torso_tilt_r']; 
-                                // Head
-                                head_pitch = limitangle(values['theta_head_pitch_h'],pitch_limit);//-0.4;//limit(values['theta_head_yaw_h']);
-                                head_yaw = limitangle(values['theta_head_yaw_h'],yaw_limit);
-                                head_roll = limitangle(values['theta_head_roll_h'],roll_limit); 	
+                                
+                                // Head / neck
+                                head_pitch = AngleLimit(values['theta_head_pitch_h'],pitch_neck_limit,pitch_head_limit);
+                                head_yaw = AngleLimit(values['theta_head_yaw_h'],yaw_neck_limit,yaw_head_limit);
+                                head_roll = AngleLimit(values['theta_head_roll_h'],roll_neck_limit,roll_head_limit); 	
                                 
                                 //Right Arm
-                                alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];//-(-values['theta_1_r']+Math.PI/2.4);
+                                alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];
                                 beta_upper_r =    values['theta_armright_upper_beta'];
                                 gamma_upper_r =   values['theta_armright_upper_gamma'];
                                 alpha_lower_r =  values['theta_armright_lower_alpha'];
                                 beta_lower_r =  -values['theta_armright_lower_beta'];
                                 gamma_lower_r = values['theta_armright_lower_gamma'];
-                                //elbow_r =  -values['theta_armright_elbow'];
                                 
                                 //Left Arm
                                 alpha_upper_l =  Math.PI/2.2 - values['theta_armleft_upper_alpha'];
-                                //alpha_upper_l =  values['theta_armleft_upper_alpha'];
                                 beta_upper_l =  -values['theta_armleft_upper_beta'];
                                 gamma_upper_l = values['theta_armleft_upper_gamma'];
                                 alpha_lower_l =  -values['theta_armleft_lower_alpha'];
                                 beta_lower_l =  -values['theta_armleft_lower_beta'];
                                 gamma_lower_l = values['theta_armleft_lower_gamma'];
-                                //elbow_l =  -values['theta_armleft_elbow'];
 
                                 // Chest
                                 // Lower Back
                                 if (animate_lower_back == true)
                                 {
-                                    skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
-                                    skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
+                                    //yaw = 0.785;
+                                    skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y,-yaw );
+                                    // skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
                                     skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, -pitch );
                                     skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, -bend );
                                 }
                                 // Upper Back
-                                //skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Y, -roll );
                                 skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Z, tilt );
-							    //skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-                                //skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+                                // Neck
+                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch['neck']); //Neck Pitch
+                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['neck']); // Neck Yaw
+                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['neck']); // Neck roll
+
                                 // Head
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch-0.4);//-Math.PI/2); //= new BABYLON.Vector3(alpha, beta, gamma);
-                                //skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch);//-Math.PI/2); //= new BABYLON.Vector3(alpha, beta, gamma);
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw);
-                                skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Z, head_roll); 
+                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.X, head_pitch['head']); //Head Pitch
+                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['head']); // Head Yaw
+                                skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['head']); // Head roll
+
 
                                 // RIGHT Shoulder
-                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_r); //= new BABYLON.Vector3(alpha, beta, gamma);
+                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_r); 
                                 skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_r);
-                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_r); //= new BABYLON.Vector3(alpha, beta, gamma);
-                                //skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Z, elbow_r);
+                                skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_r); 
 
                                 // LEFT Shoulder
-                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_l); //= new BABYLON.Vector3(alpha, beta, gamma);
+                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_l);
                                 skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_l);
-                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_l); //= new BABYLON.Vector3(alpha, beta, gamma);
-                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_l); //= new BABYLON.Vector3(alpha, beta, gamma);
+                                skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_l);
+                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_l);
                                 skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Y, gamma_lower_l);
-                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Z, beta_lower_l); //= new BABYLON.Vector3(alpha, beta, gamma);
-                                //skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Z, elbow_l);
+                                skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Z, beta_lower_l);
                             }
-                            //if (values['type']=='quaternion')
-                            //{
-                            //    //Chest
-                            //    pitch = values['theta_pitch_r'];//-Math.PI/2;
-                            //    yaw = values['theta_yaw_r'];
-                            //    roll = -limitangleRight(values['theta_roll_r']); 
-                            //    // Head
-                            //    head_pitch = limit(values['theta_head_pitch_h']);//-0.4;//limit(values['theta_head_yaw_h']);
-                            //    head_yaw = limit(values['theta_head_pitch_h']);
-                            //    head_roll = limit(values['theta_head_roll_h']); 	
-                            //    //Right Arm
-                            //    alpha_r = Math.PI/2.4 - values['theta_1_r'];//-(-values['theta_1_r']+Math.PI/2.4);
-                            //    beta_r = values['theta_2_r'];
-                            //    gamma_r = values['theta_3_r'];//fix_theta_3(values['theta_3_r']);
-                            //    elbow_r = -values['theta_4_r'];
-                            //    //Left Arm
-                            //    alpha_l = Math.PI/2.4 - values['theta_1_l'];
-                            //    beta_l =  +values['theta_2_l'];
-                            //    gamma_l = -values['theta_3_l'];
-                            //    elbow_l = values['theta_4_l'];
-//
-                            //    skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch);//-Math.PI/2); //= new BABYLON.Vector3(alpha, beta, gamma);
-                            //    skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw);
-                            //    skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Z, head_roll); 
-//
-                            //    // RIGHT Shoulder
-                            //    skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_r); //= new BABYLON.Vector3(alpha, beta, gamma);
-                            //    skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Y, gamma_r);
-                            //    skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_r); //= new BABYLON.Vector3(alpha, beta, gamma);
-                            //    skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Z, elbow_r);
-//
-                            //    // LEFT Shoulder
-                            //    skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.X, alpha_l); //= new BABYLON.Vector3(alpha, beta, gamma);
-                            //    skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Y, gamma_l);
-                            //    skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.Z, beta_l); //= new BABYLON.Vector3(alpha, beta, gamma);
-                            //    skeleton.bones[11].getTransformNode().rotate(BABYLON.Axis.Z, elbow_l);
-                            //}
-							// if (rot.x >= Math.PI/2){
-							// 	increase = - 0.01;
-							// } 
-							// if (rot.x <= 0.0)
-							// {
-							// 	increase = + 0.01;
-							// }
-							// rot.x += increase;
-							// rot.y = -1.57/2;
-							// rot.z = 0.0;
-						 	//skeleton.bones[36].getTransformNode().rotation = rot; //Forearm
-						
-
+                            				
 						} catch(err) {
-							//document.getElementById("demo").innerHTML = err.message;
 							console.log(err.message);
 						}
-				 		//skeleton.bones[5].setRotation(rot);
-						 //skeleton.bones[5].getTransformNode().rotation = rot;
-						 //skeleton.bones[33].getTransformNode().rotation = rot;
-						 //skeleton.bones[34].getTransformNode().rotation = rot; //Shoulder
 					}
 				})
             return scene;
