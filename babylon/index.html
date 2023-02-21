@@ -95,10 +95,25 @@
         var scene = null;
         var sceneToRender = null;
 	    var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: true}); };
+		// var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\", \"camera_position\" : [-1.0,1.6,0.0], \"camera_target\" : [0.0,1.6,0.0]}";
 		var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"}";
 		var slerp;
         
         var steps_perc = 0;
+
+
+		function direction(v1,v2)
+		{
+			return new BABYLON.Vector3(v2.x-v1.x,v2.y-v1.y,v2.z-v1.z);
+		}
+
+		function distance(v1,v2)
+		{
+			dx = v2.x-v1.x;
+			dy = v2.y-v1.y;
+			dz = v2.z-v1.z;	
+			return Math.sqrt(dx*dx + dy*dy+ dz*dz);
+		}
         
         var delayCreateScene = function () {
             
@@ -114,21 +129,24 @@
             var skeleton;
 			var forward = true;
 			var rot = new BABYLON.Vector3(0.02,0.02,0.02);
-            var camera_dynamic;
-			var camera_head;
-			var camera_arms;
+			var camera_dynamic;
+			var camera_dummy;
 			var count = 0;
 			var lastCamera = 0
 			var previous_rot = new BABYLON.Vector3(0.02,0.02,0.02);
+			var distance_vector = new BABYLON.Vector3(0.,0.,0.); 
 			var values; 
 			var increase=0.01;
 
-            [camera_head,camera_arms,camera_dynamic] = Init_cameras(scene)
-            
+			var cam_dist = 0;
+			var cam_start = new BABYLON.Vector3(0,0,0);
+			var cam_dir = new BABYLON.Vector3(0,0,0);
 
+            [camera_dummy,camera_dynamic] = Init_cameras(scene)
+            
             if (true)
             {
-                setup_buttons(advancedTexture,camera_head,camera_arms);
+                setup_buttons(advancedTexture,camera_dummy);
                 
             }
 
@@ -171,23 +189,55 @@
                             {
                                 values = JSON.parse(rotationValues);
                             }
-                            // console.log(skeleton)
-                            // Pan Camera view
-                            
-							if ( steps_perc >= 1.0 )
+
+							if(typeof(values['camera_position']) != "undefined")
 							{
-                                if (scene.activeCamera == camera_arms )
-                                {
-                                    scene.activeCamera = camera_head;
-                                } else
-                                {
-                                    scene.activeCamera = camera_arms
-                                }
-								steps_perc = 0;
-							} else
-							{
-								steps_perc +=0.01;								
+								camera_dummy.position = new BABYLON.Vector3();
+								camera_dummy.position.x = values['camera_position'][0];
+								camera_dummy.position.y = values['camera_position'][1];
+								camera_dummy.position.z = values['camera_position'][2];
+								steps_perc = 0.0;
 							}
+
+							if(typeof(values['camera_target']) != "undefined")
+							{
+								camera_dummy.setTarget(new BABYLON.Vector3(values['camera_target'][0],values['camera_target'][1],values['camera_target'][2]));
+								steps_perc = 0.0;
+							}
+
+							// console.log(skeleton)
+                            // Pan Camera view
+                            if (camera_dummy.position != camera_dynamic.position )
+							{
+								if( steps_perc == 0.0)
+								{
+									cam_dir = direction(camera_dynamic.position,camera_dummy.position);
+									cam_dist = distance(camera_dynamic.position,camera_dummy.position);
+									cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
+									cam_start = camera_dynamic.position;
+									console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
+								}
+								if ( steps_perc >= 1.0 )
+								{
+									// camera_dynamic.position = camera_dummy.position;
+									steps_perc = 0.0; // keep variable zero for next slerp	
+								} else
+								{
+									[x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
+									[x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
+									var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
+									// var dist = distance(camera_dummy.position,camera_dummy.target);
+									// var new_pos_dist = distance(new_pos,camera_dummy.target);
+									// var f = dist/new_pos_dist;
+									// var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z*f);
+									camera_dynamic.position = new_pos;
+									steps_perc +=0.01;		
+								}
+							} else {
+								steps_perc = 0.0; // keep variable zero for next slerp									
+							}
+							camera_dynamic.setTarget(camera_dummy.target);
+							scene.activeCamera = camera_dynamic;
 
                             skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
                                                         				

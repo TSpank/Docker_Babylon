@@ -1,4 +1,4 @@
-function setup_buttons(advancedTexture,camera_head,camera_arms){
+function setup_buttons(advancedTexture,camera_dummy){
 	var width = "60px"; //"90px"
 	var height = "20px"; //"40px"
 
@@ -11,10 +11,8 @@ function setup_buttons(advancedTexture,camera_head,camera_arms){
 		Left.top = "-25%";
 		Left.cornerRadius = 5;
 		Left.onPointerDownObservable.add(()=> {
-            camera_head.position = new BABYLON.Vector3(1, 1.5, 0.0);
-			camera_arms.position = new BABYLON.Vector3(2, 1.5, 0.0);
-			camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-			camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));            
+            camera_dummy.position = new BABYLON.Vector3(2, 1.5, 0.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));            
 		})
 		advancedTexture.addControl(Left);
 
@@ -27,10 +25,8 @@ function setup_buttons(advancedTexture,camera_head,camera_arms){
 		Right.top = "-25%";
 		Right.cornerRadius = 5;
 		Right.onPointerDownObservable.add(()=> {
-			camera_head.position = new BABYLON.Vector3(-1, 1.5, 0.0);
-			camera_arms.position = new BABYLON.Vector3(-2, 1.5, 0.0);
-			camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-			camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(-2, 1.5, 0.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 		})
 		advancedTexture.addControl(Right);
 
@@ -43,10 +39,8 @@ function setup_buttons(advancedTexture,camera_head,camera_arms){
 		Front.top = "-30%";
 		Front.cornerRadius = 5;
 		Front.onPointerDownObservable.add(()=> {
-			camera_head.position = new BABYLON.Vector3(0, 1.5, -1.0);
-			camera_arms.position = new BABYLON.Vector3(0, 1.5, -2.0);
-			camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-			camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(0, 1.5, -2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 		})
 		advancedTexture.addControl(Front);
 
@@ -59,10 +53,8 @@ function setup_buttons(advancedTexture,camera_head,camera_arms){
 		Back.top = "-20%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			camera_head.position = new BABYLON.Vector3(0, 1.5, 1.0);
-			camera_arms.position = new BABYLON.Vector3(0, 1.5, 2.0);
-			camera_head.setTarget(new BABYLON.Vector3(0,1.6,0));
-			camera_arms.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(0, 1.5, 2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 		})
 		advancedTexture.addControl(Back);
 }
