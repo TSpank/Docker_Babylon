@@ -1,4 +1,4 @@
-function setup_buttons(advancedTexture,camera_dummy){
+function setup_buttons(advancedTexture,camera_dummy,scene){
 	var width = "60px"; //"90px"
 	var height = "20px"; //"40px"
 
@@ -55,6 +55,101 @@ function setup_buttons(advancedTexture,camera_dummy){
 		Back.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(0, 1.5, 2.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+		})
+		advancedTexture.addControl(Back);
+		
+					
+					// let xsru = scene.getMeshByName('XSensRU');
+					// xsru.setEnabled(false);
+					// let xsrl = scene.getMeshByName('XSensRL');
+					// xsrl.setEnabled(false);
+					
+					
+
+	var Back = BABYLON.GUI.Button.CreateSimpleButton("PointChest", "Point Chest");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-10%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+		//	scene.animationGroups[9].start();
+			const pointChest = scene.getAnimationGroupByName("PointChest");
+			pointChest.start(false, 1.0, pointChest.from, pointChest.to, false);
+			let xsc = scene.getMeshByName('XSensChest');
+			xsc.setEnabled(true);
+		})
+		advancedTexture.addControl(Back);
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("PointHead", "Point Head");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-8%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			let xsh = scene.getMeshByName('XSensHead');
+			xsh.setEnabled(true);
+			const pointHead = scene.getAnimationGroupByName("PointHead");
+			pointHead.start(false, 1.0, pointHead.from, pointHead.to, false);
+		})
+		advancedTexture.addControl(Back);
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("PointArm", "Point Arm");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-6%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			let xslu = scene.getMeshByName('XSensLU');
+			xslu.setEnabled(true);
+			const pointUpperArm = scene.getAnimationGroupByName("PointUpperArm");
+			pointUpperArm.start(false, 1.0, pointUpperArm.from, pointUpperArm.to, false);
+		})
+		advancedTexture.addControl(Back);
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("PointWrist", "Point Wrist");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-4%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			let xsll = scene.getMeshByName('XSensLL');
+			xsll.setEnabled(true);
+			const pointWristLeft = scene.getAnimationGroupByName("PointWristLeft");
+			pointWristLeft.start(false, 1.0, pointWristLeft.from, pointWristLeft.to, false);
+		})
+		advancedTexture.addControl(Back);
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("Clear", "Clear");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-2%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			let xsh = scene.getMeshByName('XSensHead');
+			xsh.setEnabled(false);
+			let xsc = scene.getMeshByName('XSensChest');
+			xsc.setEnabled(false);
+			let xsru = scene.getMeshByName('XSensRU');
+			xsru.setEnabled(false);
+			let xsrl = scene.getMeshByName('XSensRL');
+			xsrl.setEnabled(false);
+			let xslu = scene.getMeshByName('XSensLU');
+			xslu.setEnabled(false);
+			let xsll = scene.getMeshByName('XSensLL');
+			xsll.setEnabled(false);
+			const pointClear = scene.getAnimationGroupByName("Armature");
+			pointClear.start(false, 1.0, pointClear.from, pointClear.to, false);
 		})
 		advancedTexture.addControl(Back);
 }

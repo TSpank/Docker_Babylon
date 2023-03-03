@@ -93,6 +93,7 @@
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
+		var pointChest = null;
         var sceneToRender = null;
 	    var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: true}); };
 		// var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\", \"camera_position\" : [-1.0,1.6,0.0], \"camera_target\" : [0.0,1.6,0.0]}";
@@ -141,27 +142,50 @@
 			var cam_dist = 0;
 			var cam_start = new BABYLON.Vector3(0,0,0);
 			var cam_dir = new BABYLON.Vector3(0,0,0);
-
+			
             [camera_dummy,camera_dynamic] = Init_cameras(scene)
             
             if (true)
             {
-                setup_buttons(advancedTexture,camera_dummy);
+                setup_buttons(advancedTexture,camera_dummy,scene);
                 
             }
 
 			BABYLON.SceneLoader.ShowLoadingScreen = false
-			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
+			// BABYLON.SceneLoader.ImportMesh("","./","xsens.glb", scene, function (meshes, particleSystems, skeletons) {
+			// 	let mesh = scene.getMeshByName('__root__');
+			// });
+			BABYLON.SceneLoader.Append("", "sensor_animation5.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
 					scene.beginAnimation(skeleton, 0, 100, true, 1.0);
+					scene.animationGroups[0].stop();
+					// scene.animationGroups[9].start();
+					// scene.animationGroups[10].start();
+					// scene.animationGroups[11].start();
+					// scene.animationGroups[12].start();
+					let xsh = scene.getMeshByName('XSensHead');
+					xsh.setEnabled(false);
+					let xsc = scene.getMeshByName('XSensChest');
+					xsc.setEnabled(false);
+					let xsru = scene.getMeshByName('XSensRU');
+					xsru.setEnabled(false);
+					let xsrl = scene.getMeshByName('XSensRL');
+					xsrl.setEnabled(false);
+					let xslu = scene.getMeshByName('XSensLU');
+					xslu.setEnabled(false);
+					let xsll = scene.getMeshByName('XSensLL');
+					xsll.setEnabled(false);
+
+					
+					// scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
                     //env.setMainColor(new BABYLON.Color3(0.018,0.012,0.06));// pblue 0.018,0.012,0.06 ink 1.0,0.533,0.533
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-                    
-					scene.activeCamera = camera_head;
+                     
+					// scene.activeCamera = camera_head;
                      
 
 					let skelViewer = new BABYLON.Debug.SkeletonViewer(
@@ -172,7 +196,10 @@
 					// it in a newer release.
 					// https://forum.babylonjs.com/t/skeleton-viewer-enabled-by-default/19257/3
 					skelViewer.isEnabled = false;
-					skelViewer.color = BABYLON.Color3.Red();
+					// skelViewer.color = BABYLON.Color3.Red();					
+					// const pointChest = scene.getAnimationGroupByName("PointChest");
+					// pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
+					// pointChest = scene.animationGroups[9];//scene.getAnimationGroupByName("PointChest");
 				});
                 //animate_lower_back = false;
                 
@@ -181,6 +208,11 @@
 					let mesh = scene.getMeshByName('__root__');
 					if (mesh) {
 						mesh.rotationQuaternion = null;
+						// if (pointChest != null )
+						// {
+						// 	pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
+						// }
+						// scene.animationGroups[10].start();
 						try{
                             try{
 							    // getRotations();
@@ -205,8 +237,8 @@
 								steps_perc = 0.0;
 							}
 
-							// console.log(skeleton)
-                            // Pan Camera view
+							//console.log(skeleton)
+                            //Pan Camera view
                             if (camera_dummy.position != camera_dynamic.position )
 							{
 								if( steps_perc == 0.0)
@@ -226,11 +258,14 @@
 									[x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
 									[x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
 									var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
-									// var dist = distance(camera_dummy.position,camera_dummy.target);
-									// var new_pos_dist = distance(new_pos,camera_dummy.target);
-									// var f = dist/new_pos_dist;
-									// var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z*f);
-									camera_dynamic.position = new_pos;
+									var dist = distance(camera_dummy.position,camera_dummy.target);
+									var new_pos_dist = distance(new_pos,camera_dummy.target);
+									var f = dist/new_pos_dist;
+									if (f > 2.){
+										f = dist;
+									}
+									var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
+									camera_dynamic.position = new_pos2;
 									steps_perc +=0.01;		
 								}
 							} else {
@@ -238,8 +273,9 @@
 							}
 							camera_dynamic.setTarget(camera_dummy.target);
 							scene.activeCamera = camera_dynamic;
+							// scene.activeCamera.attachControl();
 
-                            skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
+                            // skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
                                                         				
 						} catch(err) {
 							console.log(err.message);
