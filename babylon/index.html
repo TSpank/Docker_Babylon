@@ -43,6 +43,8 @@
         <script src="controls.js"></script>
         <script src="parse_data.js"></script>
         <script src="cameras.js"></script>
+		<script src="animation_data.js"></script>
+		<script src="animations.js"></script>
         <style>
             html, body {
                 overflow: hidden;
@@ -126,8 +128,12 @@
             
             // Optimizer
             var optimizer = new BABYLON.SceneOptimizer(scene, options);
-            
+            // Animations.Text.print();
+			var an = Animations.Text();
+			// var q = Quaternion();
+			var animationGroup;
             var skeleton;
+			var skeleton2;
 			var forward = true;
 			var rot = new BABYLON.Vector3(0.02,0.02,0.02);
 			var camera_dynamic;
@@ -154,131 +160,265 @@
 			BABYLON.SceneLoader.ShowLoadingScreen = false
 			// BABYLON.SceneLoader.ImportMesh("","./","xsens.glb", scene, function (meshes, particleSystems, skeletons) {
 			// 	let mesh = scene.getMeshByName('__root__');
-			// });
-			BABYLON.SceneLoader.Append("", "sensor_animation5.glb", scene, function (meshes, particleSystems, skeletons) {
+			// });sensor_animation6.glb
+			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
-					scene.beginAnimation(skeleton, 0, 100, true, 1.0);
-					scene.animationGroups[0].stop();
+					//scene.beginAnimation(skeleton, 0, 100, true, 1.0);
+					// scene.animationGroups[0].stop();
 					// scene.animationGroups[9].start();
 					// scene.animationGroups[10].start();
 					// scene.animationGroups[11].start();
 					// scene.animationGroups[12].start();
-					let xsh = scene.getMeshByName('XSensHead');
-					xsh.setEnabled(false);
-					let xsc = scene.getMeshByName('XSensChest');
-					xsc.setEnabled(false);
-					let xsru = scene.getMeshByName('XSensRU');
-					xsru.setEnabled(false);
-					let xsrl = scene.getMeshByName('XSensRL');
-					xsrl.setEnabled(false);
-					let xslu = scene.getMeshByName('XSensLU');
-					xslu.setEnabled(false);
-					let xsll = scene.getMeshByName('XSensLL');
-					xsll.setEnabled(false);
+					// let xsh = scene.getMeshByName('XSensHead');
+					// xsh.setEnabled(false);
+					// let xsc = scene.getMeshByName('XSensChest');
+					// xsc.setEnabled(false);
+					// let xsru = scene.getMeshByName('XSensRU');
+					// xsru.setEnabled(false);
+					// let xsrl = scene.getMeshByName('XSensRL');
+					// xsrl.setEnabled(false);
+					// let xslu = scene.getMeshByName('XSensLU');
+					// xslu.setEnabled(false);
+					// let xsll = scene.getMeshByName('XSensLL');
+					// xsll.setEnabled(false);
+					// scene.getMeshById('Basketball').setEnabled(False);
+					// scene.getMeshByName('Basketball_primitive0').setEnable(False);
+					// scene.getMeshByName('Basketball_primitive1').setEnable(False);
+					// scene.getMeshByName('Tennisball_primitive0').setEnable(False);
+					// scene.getMeshByName('Tennisball_primitive1').setEnable(False);
+
+					// bb.setEnabled(True);
+					// let tb = scene.getMeshByName('Tennisball');
+					// tb.setEnabled(false);
+					// let c = scene.getMeshByName('Chair');
+					// c.setEnabled(false);
+
 
 					
-					// scene.debugLayer.show();
+					scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
                     //env.setMainColor(new BABYLON.Color3(0.018,0.012,0.06));// pblue 0.018,0.012,0.06 ink 1.0,0.533,0.533
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-                     
+					Animations.loadAnimations(animations);
+					Animations.animate(scene);
 					// scene.activeCamera = camera_head;
                      
 
-					let skelViewer = new BABYLON.Debug.SkeletonViewer(
-						skeleton, scene.getMeshByName('__root__'), scene
-					);
+					// let skelViewer = new BABYLON.Debug.SkeletonViewer(
+					// 	skeleton, scene.getMeshByName('__root__'), scene
+					// );
 					// We set skelViewer to true and then to false because of an existing bug
 					// in Babylon. The creators have been made aware of this bug and will fix
 					// it in a newer release.
 					// https://forum.babylonjs.com/t/skeleton-viewer-enabled-by-default/19257/3
-					skelViewer.isEnabled = false;
+					// skelViewer.isEnabled = True;
 					// skelViewer.color = BABYLON.Color3.Red();					
 					// const pointChest = scene.getAnimationGroupByName("PointChest");
 					// pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
 					// pointChest = scene.animationGroups[9];//scene.getAnimationGroupByName("PointChest");
+					// Define the keyframes for the first bone
+					// create animation
+					// skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// if (true){
+					// 	
+					// 	var b0 = skeleton.bones[34].getRotationQuaternion();
+					// 	var b1 = skeleton.bones[35].getRotationQuaternion();
+					// 	// var s = skeleton.bones[0].getRotationQuaternion();
+					// 	// // var s = skeleton.getTransformMatrix();
+					// 	// var bone = skeleton.bones[34].getRotationQuaternion(BABYLON.Space.WORLD, scene.getMeshByName('__root__'));//scene.getSkeletonByName("Armature").getBoneByName("RightArm");
+					// 	var keyFrames = [];
+
+					// 	var q0 = b0.multiply(new BABYLON.Quaternion(  0.1747, -0.3961, -0.1084,0.8949));
+					// 	var q1 = b0.multiply(new BABYLON.Quaternion( -0.1147, -0.0625, -0.7023,0.6998));
+					// 	var q2 = b0.multiply(new BABYLON.Quaternion( -0.3369,  0.3077, -0.8848,0.0948));
+
+					// 	keyFrames.push({
+					// 		frame: 0,
+					// 		value: q0//.FromEulerAngles(0, 0, 0)
+					// 	});
+					// 	keyFrames.push({
+					// 		frame: 30,
+					// 		value: q1 //new BABYLON.Quaternion(,) //(0.6998, ) //.FromEulerAngles(0, Math.PI / 4, 0)
+					// 	});
+					// 	keyFrames.push({
+					// 		frame: 60,
+					// 		value: q2//(, ) //.FromEulerAngles(0, Math.PI / 2, 0)
+					// 	});
+
+					// 	keyFrames.push({
+					// 		frame: 120,
+					// 		value: q0//new BABYLON.Quaternion(-0.6355435252189636, 0.6685826182365417, -0.30997520685195923, 0.23021149635314941) //(0.0948, -0.3369, 0.3077, -0.8848) //.FromEulerAngles(0, Math.PI / 2, 0)
+					// 	});
+						
+					// 	var animation1 = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+					// 	var animation2 = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+						
+					// 	animation1.setKeys(keyFrames);
+						
+					// 	keyFrames = [];
+					// 	q0 = b1.multiply(new BABYLON.Quaternion(  -0.0385, 0.3942, 0.2227, 0.8908));
+					// 	q1 = b1.multiply(new BABYLON.Quaternion( -0.0385, 0.3942, 0.2227, 0.8908));
+					// 	q2 = b1.multiply(new BABYLON.Quaternion( -0.0385, 0.3942, 0.2227, 0.8908));
+
+					// 	keyFrames.push({
+					// 		frame: 0,
+					// 		value: q0//.FromEulerAngles(0, 0, 0)
+					// 	});
+					// 	keyFrames.push({
+					// 		frame: 30,
+					// 		value: q1 //new BABYLON.Quaternion(,) //(0.6998, ) //.FromEulerAngles(0, Math.PI / 4, 0)
+					// 	});
+					// 	keyFrames.push({
+					// 		frame: 60,
+					// 		value: q2//(, ) //.FromEulerAngles(0, Math.PI / 2, 0)
+					// 	});
+
+					// 	keyFrames.push({
+					// 		frame: 120,
+					// 		value: q0//new BABYLON.Quaternion(-0.6355435252189636, 0.6685826182365417, -0.30997520685195923, 0.23021149635314941) //(0.0948, -0.3369, 0.3077, -0.8848) //.FromEulerAngles(0, Math.PI / 2, 0)
+					// 	});
+					// 	animation2.setKeys(keyFrames);
+					// 	animationGroup = new BABYLON.AnimationGroup("AA");
+					// 	animationGroup.addTargetedAnimation(animation1,skeleton.bones[34].getTransformNode());
+					// 	animationGroup.addTargetedAnimation(animation2,skeleton.bones[35].getTransformNode());
+					// 	// scene.beginAnimation(skeleton.bones[34], 0, 100, true);
+						
+					// 	//animationGroup.start(true, 0.1, 100, 999999);
+					// 	//skeleton.bones[34].animation.push(animation);					// skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// 	// skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// 	// skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+					// 	//var animationGroup = new BABYLON.AnimationGroup("AA");
+					// 	// animationGroup.addTargetedAnimation(animation,skeleton.bones[34]);
+					// 	// // add the animation to the skeleton
+					// 	// skeleton.beginAnimation(skeleton, 0, 60, true);
+					// }
+					// // scene.animationsEnabled = false;
+					// // if (true){
+					// // 	// create a skeleton
+					// // 	skeleton2 = new BABYLON.Skeleton("skeleton2", "bone0", scene);
+
+					// // 	// create bones
+					// // 	var bone0 = new BABYLON.Bone("bone0", skeleton, null, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
+					// // 	var bone1 = new BABYLON.Bone("bone1", skeleton, bone0, new BABYLON.Vector3(1, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
+					// // 	var bone2 = new BABYLON.Bone("bone2", skeleton, bone1, new BABYLON.Vector3(1, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
+
+					// // 	// create animation
+					// // 	var animation = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+					// // 	// create keyframes
+					// // 	var keyFrames = [];
+					// // 	keyFrames.push({
+					// // 		frame: 0,
+					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, 0, 0)
+					// // 	});
+					// // 	keyFrames.push({
+					// // 		frame: 30,
+					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, Math.PI / 4, 0)
+					// // 	});
+					// // 	keyFrames.push({
+					// // 		frame: 60,
+					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, Math.PI / 2, 0)
+					// // 	});
+
+					// // 	// set keyframes
+					// // 	animation.setKeys(keyFrames);
+
+					// // 	// apply animation to bone
+					// // 	bone1.animations.push(animation);
+					// // 	skeleton2.beginAnimation("bone1", true, 0, 60);
+
+					// // }
 				});
                 //animate_lower_back = false;
                 
 
 				scene.registerBeforeRender(function() {
 					let mesh = scene.getMeshByName('__root__');
+					
 					if (mesh) {
+						
 						mesh.rotationQuaternion = null;
-						// if (pointChest != null )
-						// {
-						// 	pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
-						// }
-						// scene.animationGroups[10].start();
-						try{
-                            try{
-							    // getRotations();
-                                values = JSON.parse(ul.textContent);
-                            } catch (err)
-                            {
-                                values = JSON.parse(rotationValues);
-                            }
-
-							if(typeof(values['camera_position']) != "undefined")
-							{
-								camera_dummy.position = new BABYLON.Vector3();
-								camera_dummy.position.x = values['camera_position'][0];
-								camera_dummy.position.y = values['camera_position'][1];
-								camera_dummy.position.z = values['camera_position'][2];
-								steps_perc = 0.0;
-							}
-
-							if(typeof(values['camera_target']) != "undefined")
-							{
-								camera_dummy.setTarget(new BABYLON.Vector3(values['camera_target'][0],values['camera_target'][1],values['camera_target'][2]));
-								steps_perc = 0.0;
-							}
-
-							//console.log(skeleton)
-                            //Pan Camera view
-                            if (camera_dummy.position != camera_dynamic.position )
-							{
-								if( steps_perc == 0.0)
+						if (false){
+							// if (scene.getMeshByName("Basketball")) {
+							// 	scene.getMeshByName('Basketball').setEnable(False);
+							// }
+							// if (pointChest != null )
+							// {
+							// 	pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
+							// }
+							// scene.animationGroups[10].start();
+							try{
+								try{
+									// getRotations();
+									values = JSON.parse(ul.textContent);
+								} catch (err)
 								{
-									cam_dir = direction(camera_dynamic.position,camera_dummy.position);
-									cam_dist = distance(camera_dynamic.position,camera_dummy.position);
-									cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
-									cam_start = camera_dynamic.position;
-									console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
+									values = JSON.parse(rotationValues);
 								}
-								if ( steps_perc >= 1.0 )
+
+								if(typeof(values['camera_position']) != "undefined")
 								{
-									// camera_dynamic.position = camera_dummy.position;
-									steps_perc = 0.0; // keep variable zero for next slerp	
-								} else
+									camera_dummy.position = new BABYLON.Vector3();
+									camera_dummy.position.x = values['camera_position'][0];
+									camera_dummy.position.y = values['camera_position'][1];
+									camera_dummy.position.z = values['camera_position'][2];
+									steps_perc = 0.0;
+								}
+
+								if(typeof(values['camera_target']) != "undefined")
 								{
-									[x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
-									[x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
-									var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
-									var dist = distance(camera_dummy.position,camera_dummy.target);
-									var new_pos_dist = distance(new_pos,camera_dummy.target);
-									var f = dist/new_pos_dist;
-									if (f > 2.){
-										f = dist;
+									camera_dummy.setTarget(new BABYLON.Vector3(values['camera_target'][0],values['camera_target'][1],values['camera_target'][2]));
+									steps_perc = 0.0;
+								}
+
+								//console.log(skeleton)
+								//Pan Camera view
+								if (camera_dummy.position != camera_dynamic.position )
+								{
+									if( steps_perc == 0.0)
+									{
+										cam_dir = direction(camera_dynamic.position,camera_dummy.position);
+										cam_dist = distance(camera_dynamic.position,camera_dummy.position);
+										cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
+										cam_start = camera_dynamic.position;
+										console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
 									}
-									var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
-									camera_dynamic.position = new_pos2;
-									steps_perc +=0.01;		
+									if ( steps_perc >= 1.0 )
+									{
+										// camera_dynamic.position = camera_dummy.position;
+										steps_perc = 0.0; // keep variable zero for next slerp	
+									} else
+									{
+										[x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
+										[x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
+										var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
+										var dist = distance(camera_dummy.position,camera_dummy.target);
+										var new_pos_dist = distance(new_pos,camera_dummy.target);
+										var f = dist/new_pos_dist;
+										if (f > 2.){
+											f = dist;
+										}
+										var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
+										camera_dynamic.position = new_pos2;
+										steps_perc +=0.01;		
+									}
+								} else {
+									steps_perc = 0.0; // keep variable zero for next slerp									
 								}
-							} else {
-								steps_perc = 0.0; // keep variable zero for next slerp									
-							}
-							camera_dynamic.setTarget(camera_dummy.target);
-							scene.activeCamera = camera_dynamic;
-							// scene.activeCamera.attachControl();
+								camera_dynamic.setTarget(camera_dummy.target);
+								scene.activeCamera = camera_dynamic;
+								// scene.activeCamera.attachControl();
 
-                            // skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
-                                                        				
-						} catch(err) {
-							console.log(err.message);
+								// skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
+																			
+							} catch(err) {
+								console.log(err.message);
+							}
 						}
 					}
 				})
