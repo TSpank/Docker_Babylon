@@ -67,11 +67,19 @@ var Animations = (function() {
       },
       animate: function (scene){
         var skeleton = scene.getSkeletonByName("Armature");
+        // scene.skeletons[0].returnToRest(true);
+        
         //var root =  scene.getMeshByName('__root__');
         //console.log(skeleton);
         for (let key in _animations)
         {
+            var oldAnimation = scene.getAnimationGroupByName(key);
+            if (oldAnimation != null)
+            {
+              oldAnimation.dispose();
+            }
             var animationGroup = new BABYLON.AnimationGroup(key);
+            // animationGroup.
             for (let bone in _animations[key])
             {                
                 try{
@@ -94,7 +102,12 @@ var Animations = (function() {
                         })
                     }
                     var animation = new BABYLON.Animation("animation"+index, "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+                    // var animation = new BABYLON.Animation("animation"+index, "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , ANIMATIONLOOPMODE_CONSTANT );
                     animation.setKeys(keyFrames);
+                    // animation.onAnimationGroupEndObservable.addOnce( () => {
+                    //   console.log("All animations in the group have ended.");
+                    //   animation.dispose();
+                    // });
                     animationGroup.addTargetedAnimation(animation,skeleton.bones[index].getTransformNode());
                     } catch (err)
                 {

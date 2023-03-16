@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+		<meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Mojo</title>
         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script> -->
         <!-- Babylon.js -->
@@ -92,14 +92,53 @@
 
 	</script>
 	<script>
+		var websocket = new WebSocket("ws://localhost:8000/");
+		var ws_open = false;
+		//const ul = document.getElementById('value');
+		websocket.onopen = function() {
+		  //document.getElementById("status").innerHTML = "Connected";
+		  console.log("Connected");
+		  ws_open = true;
+		}
+		
+		websocket.onmessage = function(event) {
+		//   var messageList = document.getElementById("messages");
+		//   var listItem = document.createElement("li");
+		//   listItem.innerHTML = event.data;
+		//   messageList.appendChild(listItem);
+			ul.innerHTML = event.data;
+			console.log();
+		}
+		
+		// document.querySelector("form").addEventListener("submit", function(event) {
+		//   event.preventDefault();
+		//   var input = document.getElementById("messageInput");
+		//   var message = input.value;
+		//   input.value = "";
+		//   websocket.send(message);
+		// });
+
+		function requestRotations(request)
+		{
+			if( ws_open == true )
+			{
+				// websocket.send("{\"data\":true}");
+				websocket.send(request);
+			} 
+		}
+	</script>
+	<script>
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
 		var pointChest = null;
+		var req_animation = false;
         var sceneToRender = null;
+		var animation_active = true;
 	    var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: true}); };
-		// var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\", \"camera_position\" : [-1.0,1.6,0.0], \"camera_target\" : [0.0,1.6,0.0]}";
-		var rotationValues = "{  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"}";
+		//var json_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"},\"camera\":{\"camera_position\" : [-1.0,1.6,0.0], \"camera_target\" : [0.0,1.6,0.0]}}");
+		var json_data = JSON.parse("{ }");
+		//var rotationValues = "{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }";
 		var slerp;
         
         var steps_perc = 0;
@@ -133,6 +172,7 @@
 			// var q = Quaternion();
 			var animationGroup;
             var skeleton;
+			var skeleton_default;
 			var skeleton2;
 			var forward = true;
 			var rot = new BABYLON.Vector3(0.02,0.02,0.02);
@@ -163,204 +203,70 @@
 			// });sensor_animation6.glb
 			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
-					//scene.beginAnimation(skeleton, 0, 100, true, 1.0);
-					// scene.animationGroups[0].stop();
-					// scene.animationGroups[9].start();
-					// scene.animationGroups[10].start();
-					// scene.animationGroups[11].start();
-					// scene.animationGroups[12].start();
-					// let xsh = scene.getMeshByName('XSensHead');
-					// xsh.setEnabled(false);
-					// let xsc = scene.getMeshByName('XSensChest');
-					// xsc.setEnabled(false);
-					// let xsru = scene.getMeshByName('XSensRU');
-					// xsru.setEnabled(false);
-					// let xsrl = scene.getMeshByName('XSensRL');
-					// xsrl.setEnabled(false);
-					// let xslu = scene.getMeshByName('XSensLU');
-					// xslu.setEnabled(false);
-					// let xsll = scene.getMeshByName('XSensLL');
-					// xsll.setEnabled(false);
-					// scene.getMeshById('Basketball').setEnabled(False);
-					// scene.getMeshByName('Basketball_primitive0').setEnable(False);
-					// scene.getMeshByName('Basketball_primitive1').setEnable(False);
-					// scene.getMeshByName('Tennisball_primitive0').setEnable(False);
-					// scene.getMeshByName('Tennisball_primitive1').setEnable(False);
-
-					// bb.setEnabled(True);
-					// let tb = scene.getMeshByName('Tennisball');
-					// tb.setEnabled(false);
-					// let c = scene.getMeshByName('Chair');
-					// c.setEnabled(false);
-
-
+					scene.requestRotations = requestRotations;
 					
-					scene.debugLayer.show();
+					//scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
                     //env.setMainColor(new BABYLON.Color3(0.018,0.012,0.06));// pblue 0.018,0.012,0.06 ink 1.0,0.533,0.533
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-					Animations.loadAnimations(animations);
-					Animations.animate(scene);
-					// scene.activeCamera = camera_head;
-                     
-
-					// let skelViewer = new BABYLON.Debug.SkeletonViewer(
-					// 	skeleton, scene.getMeshByName('__root__'), scene
-					// );
-					// We set skelViewer to true and then to false because of an existing bug
-					// in Babylon. The creators have been made aware of this bug and will fix
-					// it in a newer release.
-					// https://forum.babylonjs.com/t/skeleton-viewer-enabled-by-default/19257/3
-					// skelViewer.isEnabled = True;
-					// skelViewer.color = BABYLON.Color3.Red();					
-					// const pointChest = scene.getAnimationGroupByName("PointChest");
-					// pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
-					// pointChest = scene.animationGroups[9];//scene.getAnimationGroupByName("PointChest");
-					// Define the keyframes for the first bone
-					// create animation
-					// skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// if (true){
-					// 	
-					// 	var b0 = skeleton.bones[34].getRotationQuaternion();
-					// 	var b1 = skeleton.bones[35].getRotationQuaternion();
-					// 	// var s = skeleton.bones[0].getRotationQuaternion();
-					// 	// // var s = skeleton.getTransformMatrix();
-					// 	// var bone = skeleton.bones[34].getRotationQuaternion(BABYLON.Space.WORLD, scene.getMeshByName('__root__'));//scene.getSkeletonByName("Armature").getBoneByName("RightArm");
-					// 	var keyFrames = [];
-
-					// 	var q0 = b0.multiply(new BABYLON.Quaternion(  0.1747, -0.3961, -0.1084,0.8949));
-					// 	var q1 = b0.multiply(new BABYLON.Quaternion( -0.1147, -0.0625, -0.7023,0.6998));
-					// 	var q2 = b0.multiply(new BABYLON.Quaternion( -0.3369,  0.3077, -0.8848,0.0948));
-
-					// 	keyFrames.push({
-					// 		frame: 0,
-					// 		value: q0//.FromEulerAngles(0, 0, 0)
-					// 	});
-					// 	keyFrames.push({
-					// 		frame: 30,
-					// 		value: q1 //new BABYLON.Quaternion(,) //(0.6998, ) //.FromEulerAngles(0, Math.PI / 4, 0)
-					// 	});
-					// 	keyFrames.push({
-					// 		frame: 60,
-					// 		value: q2//(, ) //.FromEulerAngles(0, Math.PI / 2, 0)
-					// 	});
-
-					// 	keyFrames.push({
-					// 		frame: 120,
-					// 		value: q0//new BABYLON.Quaternion(-0.6355435252189636, 0.6685826182365417, -0.30997520685195923, 0.23021149635314941) //(0.0948, -0.3369, 0.3077, -0.8848) //.FromEulerAngles(0, Math.PI / 2, 0)
-					// 	});
-						
-					// 	var animation1 = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-					// 	var animation2 = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION , BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-						
-					// 	animation1.setKeys(keyFrames);
-						
-					// 	keyFrames = [];
-					// 	q0 = b1.multiply(new BABYLON.Quaternion(  -0.0385, 0.3942, 0.2227, 0.8908));
-					// 	q1 = b1.multiply(new BABYLON.Quaternion( -0.0385, 0.3942, 0.2227, 0.8908));
-					// 	q2 = b1.multiply(new BABYLON.Quaternion( -0.0385, 0.3942, 0.2227, 0.8908));
-
-					// 	keyFrames.push({
-					// 		frame: 0,
-					// 		value: q0//.FromEulerAngles(0, 0, 0)
-					// 	});
-					// 	keyFrames.push({
-					// 		frame: 30,
-					// 		value: q1 //new BABYLON.Quaternion(,) //(0.6998, ) //.FromEulerAngles(0, Math.PI / 4, 0)
-					// 	});
-					// 	keyFrames.push({
-					// 		frame: 60,
-					// 		value: q2//(, ) //.FromEulerAngles(0, Math.PI / 2, 0)
-					// 	});
-
-					// 	keyFrames.push({
-					// 		frame: 120,
-					// 		value: q0//new BABYLON.Quaternion(-0.6355435252189636, 0.6685826182365417, -0.30997520685195923, 0.23021149635314941) //(0.0948, -0.3369, 0.3077, -0.8848) //.FromEulerAngles(0, Math.PI / 2, 0)
-					// 	});
-					// 	animation2.setKeys(keyFrames);
-					// 	animationGroup = new BABYLON.AnimationGroup("AA");
-					// 	animationGroup.addTargetedAnimation(animation1,skeleton.bones[34].getTransformNode());
-					// 	animationGroup.addTargetedAnimation(animation2,skeleton.bones[35].getTransformNode());
-					// 	// scene.beginAnimation(skeleton.bones[34], 0, 100, true);
-						
-					// 	//animationGroup.start(true, 0.1, 100, 999999);
-					// 	//skeleton.bones[34].animation.push(animation);					// skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// 	// skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// 	// skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-					// 	//var animationGroup = new BABYLON.AnimationGroup("AA");
-					// 	// animationGroup.addTargetedAnimation(animation,skeleton.bones[34]);
-					// 	// // add the animation to the skeleton
-					// 	// skeleton.beginAnimation(skeleton, 0, 60, true);
-					// }
-					// // scene.animationsEnabled = false;
-					// // if (true){
-					// // 	// create a skeleton
-					// // 	skeleton2 = new BABYLON.Skeleton("skeleton2", "bone0", scene);
-
-					// // 	// create bones
-					// // 	var bone0 = new BABYLON.Bone("bone0", skeleton, null, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
-					// // 	var bone1 = new BABYLON.Bone("bone1", skeleton, bone0, new BABYLON.Vector3(1, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
-					// // 	var bone2 = new BABYLON.Bone("bone2", skeleton, bone1, new BABYLON.Vector3(1, 0, 0), new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1, 1, 1));
-
-					// // 	// create animation
-					// // 	var animation = new BABYLON.Animation("animation", "rotationQuaternion", 30, BABYLON.Animation.ANIMATIONTYPE_QUATERNION, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-
-					// // 	// create keyframes
-					// // 	var keyFrames = [];
-					// // 	keyFrames.push({
-					// // 		frame: 0,
-					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, 0, 0)
-					// // 	});
-					// // 	keyFrames.push({
-					// // 		frame: 30,
-					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, Math.PI / 4, 0)
-					// // 	});
-					// // 	keyFrames.push({
-					// // 		frame: 60,
-					// // 		value: BABYLON.Quaternion.FromEulerAngles(0, Math.PI / 2, 0)
-					// // 	});
-
-					// // 	// set keyframes
-					// // 	animation.setKeys(keyFrames);
-
-					// // 	// apply animation to bone
-					// // 	bone1.animations.push(animation);
-					// // 	skeleton2.beginAnimation("bone1", true, 0, 60);
-
-					// // }
 				});
-                //animate_lower_back = false;
-                
 
 				scene.registerBeforeRender(function() {
 					let mesh = scene.getMeshByName('__root__');
-					
-					if (mesh) {
-						
+					if (mesh) {						
 						mesh.rotationQuaternion = null;
-						if (false){
-							// if (scene.getMeshByName("Basketball")) {
-							// 	scene.getMeshByName('Basketball').setEnable(False);
-							// }
-							// if (pointChest != null )
-							// {
-							// 	pointChest.start(true, 1.0, pointChest.from, pointChest.to, false);
-							// }
-							// scene.animationGroups[10].start();
-							try{
+						if ( req_animation == false )
+						{
+							req_animation = true;
+							// requestRotations('animation');
+						} else
+						{
+							//requestRotations('pose');
+						}
+						if (true){
+						try{
+								values = {};
 								try{
-									// getRotations();
-									values = JSON.parse(ul.textContent);
+									json_data = JSON.parse(ul.textContent);
+									ul.textContent = "{}";
+									if (typeof(json_data['pose']) != "undefined")
+									{
+										values = json_data['pose'];
+										console.log('Animation Received');
+										console.log(values);
+										// skeleton = 
+										parse_data(scene.getSkeletonByName("Armature"),values);
+									}	
+									if (typeof(json_data['animation']) != "undefined")
+									{	
+										
+										// console.log('Animation Received');
+										console.log(json_data['animation']);
+										animations = json_data['animation'];
+										Animations.loadAnimations(animations);
+										Animations.animate(scene);
+										scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+									}
+									if (typeof(json_data['camera']) != "undefined")
+									{
+										cam_pos = json_data['camera']['position'];
+										cam_target = json_data['camera']['target'];
+										console.log(cam_pos,cam_target);
+										camera_dummy.position = new BABYLON.Vector3(cam_pos[0],cam_pos[1],cam_pos[2]);
+										camera_dummy.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
+										camera_dynamic = camera_dummy;// 
+										steps_perc = 1.0;
+										// camera_dynamic.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
+									}
 								} catch (err)
 								{
-									values = JSON.parse(rotationValues);
+									console.log(err);
 								}
 
+								
 								if(typeof(values['camera_position']) != "undefined")
 								{
 									camera_dummy.position = new BABYLON.Vector3();
@@ -386,7 +292,7 @@
 										cam_dist = distance(camera_dynamic.position,camera_dummy.position);
 										cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
 										cam_start = camera_dynamic.position;
-										console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
+										//console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
 									}
 									if ( steps_perc >= 1.0 )
 									{
@@ -414,7 +320,7 @@
 								scene.activeCamera = camera_dynamic;
 								// scene.activeCamera.attachControl();
 
-								// skeleton = parse_data(scene.getSkeletonByName("Armature"),values);
+								//
 																			
 							} catch(err) {
 								console.log(err.message);

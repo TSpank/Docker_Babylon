@@ -1,31 +1,30 @@
 function parse_data(skeleton,values)
 {
-	animate_lower_back = true;
-	// RIGHT Shoulder                
-	skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
-	// LEFT Shoulder
-	skeleton.bones[10].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	skeleton.bones[11].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	skeleton.bones[12].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
-	//Neck
-	skeleton.bones[4].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	//Head
-	skeleton.bones[5].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
-	// Upper Back
-	skeleton.bones[1].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	// Lower Back
-	skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
-	skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-	  
 	if (typeof(values) != "undefined")
 	{
+		animate_lower_back = true;
+		// RIGHT Shoulder                
+		skeleton.bones[34].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		skeleton.bones[35].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		skeleton.bones[36].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+		// LEFT Shoulder
+		skeleton.bones[10].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		skeleton.bones[11].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		skeleton.bones[12].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+		//Neck
+		skeleton.bones[4].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		//Head
+		skeleton.bones[5].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+		// Upper Back
+		skeleton.bones[1].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+		// Lower Back
+		skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+		skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 		//Chest
 		pitch = -values['theta_torso_pitch_r'];
 		bend = -values['theta_torso_bend_r'];
