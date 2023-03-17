@@ -6,14 +6,27 @@ import ssl
 import json
 import random
 # %%
+
+def default_msg():
+    msg = {}
+    mojo_message['pose']['theta_armright_upper_alpha'] = str(float(mojo_message['pose']['theta_armright_upper_alpha']) + 0.1)
+    msg['pose'] = mojo_message['pose']            
+    camera = camera_pos[0]
+    target = [0,1.5*random.random(),0]
+    msg['camera'] = {}
+    msg['camera']['position'] = camera
+    msg['camera']['target'] = target
+    msg['animation'] = animations
+    msg['control'] = {'control':'pause'}
+    return msg
+
 async def handle_websocket(websocket, path):
     global message
     global camera_index
     # This function will be called whenever a new WebSocket connection is established
     print("New WebSocket connection established")
-    msg = {}
-    # Send a message to the client
-    await websocket.send(json.dumps(msg))
+    
+    await websocket.send(json.dumps(default_msg()))
     
     # Receive messages from the client
     async for message in websocket:

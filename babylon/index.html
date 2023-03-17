@@ -232,14 +232,7 @@
 								try{
 									json_data = JSON.parse(ul.textContent);
 									ul.textContent = "{}";
-									if (typeof(json_data['pose']) != "undefined")
-									{
-										values = json_data['pose'];
-										console.log('Animation Received');
-										console.log(values);
-										// skeleton = 
-										parse_data(scene.getSkeletonByName("Armature"),values);
-									}	
+										
 									if (typeof(json_data['animation']) != "undefined")
 									{	
 										
@@ -260,6 +253,14 @@
 										camera_dynamic = camera_dummy;// 
 										steps_perc = 1.0;
 										// camera_dynamic.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
+									}
+									if (typeof(json_data['pose']) != "undefined")
+									{
+										values = json_data['pose'];
+										console.log('Animation Received');
+										console.log(values);
+										// skeleton = 
+										parse_data(scene.getSkeletonByName("Armature"),values);
 									}
 								} catch (err)
 								{
