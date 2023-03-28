@@ -1,10 +1,16 @@
 
 var Animations = (function() {
     var _animations;
+    var animation_idx;
     var privateVariable = 'This variable is private and cannot be accessed from outside the module.';
   
     function privateFunction() {
       console.log(privateVariable);
+    }
+
+    function getAnimationName(item)
+    {
+      return item.name;
     }
   
     return {
@@ -50,6 +56,12 @@ var Animations = (function() {
       getAnimations: function()
       {
         return _animations;
+      },
+      getAnimationNames: function()
+      {
+        animation_idx = 0;
+        const names = scene.animationGroups.map(getAnimationName);
+        return names;
       },
       print: function (){
         for (let k in _animations)

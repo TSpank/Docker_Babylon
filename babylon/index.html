@@ -94,35 +94,20 @@
 	<script>
 		var websocket = new WebSocket("ws://localhost:8000/");
 		var ws_open = false;
-		//const ul = document.getElementById('value');
 		websocket.onopen = function() {
-		  //document.getElementById("status").innerHTML = "Connected";
 		  console.log("Connected");
 		  ws_open = true;
 		}
 		
 		websocket.onmessage = function(event) {
-		//   var messageList = document.getElementById("messages");
-		//   var listItem = document.createElement("li");
-		//   listItem.innerHTML = event.data;
-		//   messageList.appendChild(listItem);
 			ul.innerHTML = event.data;
 			console.log();
 		}
 		
-		// document.querySelector("form").addEventListener("submit", function(event) {
-		//   event.preventDefault();
-		//   var input = document.getElementById("messageInput");
-		//   var message = input.value;
-		//   input.value = "";
-		//   websocket.send(message);
-		// });
-
 		function requestRotations(request)
 		{
 			if( ws_open == true )
 			{
-				// websocket.send("{\"data\":true}");
 				websocket.send(request);
 			} 
 		}
@@ -205,7 +190,7 @@
       				skeleton = scene.getSkeletonByName("Armature")
 					scene.requestRotations = requestRotations;
 					
-					//scene.debugLayer.show();
+					scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
@@ -218,14 +203,7 @@
 					let mesh = scene.getMeshByName('__root__');
 					if (mesh) {						
 						mesh.rotationQuaternion = null;
-						if ( req_animation == false )
-						{
-							req_animation = true;
-							// requestRotations('animation');
-						} else
-						{
-							//requestRotations('pose');
-						}
+						getRotations();
 						if (true){
 						try{
 								values = {};
@@ -236,12 +214,20 @@
 									if (typeof(json_data['animation']) != "undefined")
 									{	
 										
-										// console.log('Animation Received');
-										console.log(json_data['animation']);
-										animations = json_data['animation'];
-										Animations.loadAnimations(animations);
-										Animations.animate(scene);
-										scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+										if (typeof(json_data['animation']['config']) != "undefined")
+										{
+											console.log(json_data['animation']['config']);
+											animations = json_data['animation']['config'];
+											Animations.loadAnimations(animations);
+											Animations.animate(scene);
+											scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+										}
+										if (typeof(json_data['animation']['list']) != "undefined")
+										{
+											const animation_list = scene.animationGroups.map(function(item){ return item.name;}); 
+
+											scene.requestRotations(JSON.stringify({'animation':{'list':animation_list}}));
+										}
 									}
 									if (typeof(json_data['camera']) != "undefined")
 									{
@@ -250,8 +236,15 @@
 										console.log(cam_pos,cam_target);
 										camera_dummy.position = new BABYLON.Vector3(cam_pos[0],cam_pos[1],cam_pos[2]);
 										camera_dummy.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
-										camera_dynamic = camera_dummy;// 
-										steps_perc = 1.0;
+										camera_dynamic = camera_dummy;
+										camera_animation = json_data['camera']['animation']
+										if (camera_animation == false)
+										{
+											steps_perc = 1.0;
+										} else
+										{
+											steps_perc = 0.0;
+										}
 										// camera_dynamic.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
 									}
 									if (typeof(json_data['pose']) != "undefined")
@@ -259,8 +252,35 @@
 										values = json_data['pose'];
 										console.log('Animation Received');
 										console.log(values);
-										// skeleton = 
 										parse_data(scene.getSkeletonByName("Armature"),values);
+									}
+									if (typeof(json_data['control']) != "undefined")
+									{
+										var cntrl = json_data['control'];
+										var animation_name;
+										if (typeof(cntrl['animation']) != "undefined")
+										{
+											animation_name = cntrl['animation'];
+										} else
+										{
+											animation_name = "All Reset both";
+										}
+										
+										var animation_command = cntrl['command'];
+										console.log('control Received: '+ cntrl['command'] + " " + cntrl['animation']);
+										// scene.animationGroups.forEach(function(item){ item.stop();});
+										if (animation_command == "play")
+										{
+											scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
+										} else if (animation_command == "stop")
+										{
+											scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+										} else if (animation_command == "active")
+										{
+											var active_animation = false;
+											scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+											console.log('Active Animation: ' + active_animation);
+										}
 									}
 								} catch (err)
 								{
@@ -318,11 +338,7 @@
 									steps_perc = 0.0; // keep variable zero for next slerp									
 								}
 								camera_dynamic.setTarget(camera_dummy.target);
-								scene.activeCamera = camera_dynamic;
-								// scene.activeCamera.attachControl();
-
-								//
-																			
+								scene.activeCamera = camera_dynamic;		
 							} catch(err) {
 								console.log(err.message);
 							}

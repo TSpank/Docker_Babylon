@@ -122,7 +122,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 			// pointChest.start(false, 1.0, pointChest.from, pointChest.to, false);
 			// let xsc = scene.getMeshByName('XSensChest');
 			// xsc.setEnabled(true);
-			scene.requestRotations('pose');
+			scene.requestRotations(JSON.stringify({'request':'pose'}));
 		})
 		advancedTexture.addControl(Back);
 		var Back = BABYLON.GUI.Button.CreateSimpleButton("Animation", "Animation");
@@ -139,7 +139,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 			// const pointHead = scene.getAnimationGroupByName("Sensor PointHead Right");
 			// pointHead.start(false, 1.0, pointHead.from, pointHead.to, false);
 			scene.skeletons[0].returnToRest();
-			scene.requestRotations('animation');
+			scene.requestRotations(JSON.stringify({'request':'animation'}));
 		})
 		advancedTexture.addControl(Back);
 		var Back = BABYLON.GUI.Button.CreateSimpleButton("Camera", "Camera");
@@ -155,7 +155,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 			// xslu.setEnabled(true);
 			// const pointUpperArm = scene.getAnimationGroupByName("Sensor PointUpperArm Right");
 			// pointUpperArm.start(false, 1.0, pointUpperArm.from, pointUpperArm.to, false);
-			scene.requestRotations('camera');
+			scene.requestRotations(JSON.stringify({'request':'camera'}));
 		})
 		advancedTexture.addControl(Back);
 		var Back = BABYLON.GUI.Button.CreateSimpleButton("Animate", "Animate");
@@ -167,18 +167,36 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 		Back.top = "-4%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			max_length = scene.animationGroups.length;
-			idx = Math.round(Math.random()*max_length);
-			scene.animationGroups[idx].start(false, 1.0,0,1, false );
+			// max_length = scene.animationGroups.length;
+			// idx = Math.round(Math.random()*max_length);
+			// scene.animationGroups[idx].start(false, 1.0,0,1, false );
+			scene.requestRotations(JSON.stringify({'request':'control'}));
 		})
 		advancedTexture.addControl(Back);
-		var Back = BABYLON.GUI.Button.CreateSimpleButton("Clear", "Clear");
+
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("Stop", "Stop");
 		Back.width = "120px";
 		Back.height = height;
 		Back.color = "black";
 		Back.background = "transparent";
 		Back.left = "-40%";
 		Back.top = "-2%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			var active_animation = false;
+			scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+			console.log('Active Animation: ' + active_animation);
+			scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+		})
+		advancedTexture.addControl(Back);
+
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("Clear", "Clear");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "-0%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
 			scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
