@@ -190,12 +190,11 @@
       				skeleton = scene.getSkeletonByName("Armature")
 					scene.requestRotations = requestRotations;
 					
-					scene.debugLayer.show();
+					// scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
-                    //env.setMainColor(new BABYLON.Color3(0.018,0.012,0.06));// pblue 0.018,0.012,0.06 ink 1.0,0.533,0.533
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 				});
 
@@ -233,7 +232,7 @@
 									{
 										cam_pos = json_data['camera']['position'];
 										cam_target = json_data['camera']['target'];
-										console.log(cam_pos,cam_target);
+										// console.log(cam_pos,cam_target);
 										camera_dummy.position = new BABYLON.Vector3(cam_pos[0],cam_pos[1],cam_pos[2]);
 										camera_dummy.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
 										camera_dynamic = camera_dummy;
@@ -250,8 +249,8 @@
 									if (typeof(json_data['pose']) != "undefined")
 									{
 										values = json_data['pose'];
-										console.log('Animation Received');
-										console.log(values);
+										// console.log('Animation Received');
+										// console.log(values);
 										parse_data(scene.getSkeletonByName("Armature"),values);
 									}
 									if (typeof(json_data['control']) != "undefined")
@@ -267,7 +266,7 @@
 										}
 										
 										var animation_command = cntrl['command'];
-										console.log('control Received: '+ cntrl['command'] + " " + cntrl['animation']);
+										// console.log('control Received: '+ cntrl['command'] + " " + cntrl['animation']);
 										// scene.animationGroups.forEach(function(item){ item.stop();});
 										if (animation_command == "play")
 										{
@@ -279,7 +278,7 @@
 										{
 											var active_animation = false;
 											scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
-											console.log('Active Animation: ' + active_animation);
+											// console.log('Active Animation: ' + active_animation);
 										}
 									}
 								} catch (err)

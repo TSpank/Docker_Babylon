@@ -74,7 +74,8 @@ def home():
     global message_template
     global payload
     global ip_uuid
-    msg = message_template.copy()
+    msg = {}
+    msg['pose'] = message_template.copy()
     _ip = request.remote_addr
     if _ip in ip_uuid.keys():
         _uuid = ip_uuid[_ip]    
@@ -83,11 +84,11 @@ def home():
     try:
         _payload = json.loads(payload)
         if 'deflection_x' in _payload.keys():
-            msg['theta_head_pitch_h'] = _payload["deflection_y"]
-            msg['theta_head_yaw_h'] = _payload["deflection_z"]
-            msg['theta_head_roll_h'] = _payload["deflection_x"]
+            msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
+            msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
+            msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
         if 'theta_head_roll_h' in _payload.keys():
-            msg = _payload.copy()
+            msg['pose'] = _payload.copy()
     except Exception as e:
         # msg['type'] = _
         msg['error'] = str(e)
@@ -112,18 +113,19 @@ def user_uuid_inspect():
 def user_uuid_msg(user_uuid):
     global messages
     global ip_uuid
-    msg = message_template.copy()
+    msg = {}
+    msg['pose'] = message_template.copy()
     ip_uuid[request.remote_addr] = user_uuid
     
     try:
         if str(user_uuid) in messages:
             _payload = json.loads(messages[str(user_uuid)])
             if 'deflection_x' in _payload.keys():
-                msg['theta_head_pitch_h'] = _payload["deflection_y"]
-                msg['theta_head_yaw_h'] = _payload["deflection_z"]
-                msg['theta_head_roll_h'] = _payload["deflection_x"]
+                msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
+                msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
+                msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
             if 'theta_head_roll_h' in _payload.keys():
-                msg = _payload.copy()
+                msg['pose'] = _payload.copy()
     except Exception as e:
         # msg['type'] = _
         msg['error'] = str(e)
