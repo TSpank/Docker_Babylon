@@ -18,7 +18,7 @@ mqtt_port = 1883
 # mqtt_topic = "mojo/pose"
 mqtt_uuid = "#" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
 mqtt_topic = f"mojo/iOS/{mqtt_uuid}"
-mqtt_client = "mojo_py_demo"
+mqtt_client = "mojo_py_demo_2"
 mqtt_user = "scope_mosquitto"
 mqtt_pass = "dektzOWb3pmI"
 app = Flask(__name__)
@@ -58,6 +58,7 @@ def handle_mqtt_message(client, userdata, message):
     )
     _uuid = message.topic.split('/')[-1]
     messages[_uuid] = message.payload
+    print(messages)
  
 @app.route("/cookie")
 def cookie():
@@ -87,7 +88,7 @@ def home():
             msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
             msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
             msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
-        if 'theta_head_roll_h' in _payload.keys():
+        if 'pose' in _payload.keys():
             msg['pose'] = _payload.copy()
     except Exception as e:
         # msg['type'] = _
@@ -169,5 +170,44 @@ if __name__ == '__main__':
     log = logging.getLogger('werkzeug')
     log.disabled = True
     #//app.run(host='0.0.0.0', port=5000)
-    app.run(host='0.0.0.0', port=5000,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
+    app.run(host='0.0.0.0', port=5000,debug=True) #,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
 
+
+# %%
+
+'''
+# Camera API
+
+## Overview
+
+This API allows you to control the position and target of a camera in a 3D environment.
+
+## JSON Data Format
+
+The data for the Camera API is represented as a JSON object with the following structure:
+
+json
+{
+    "camera": {
+        "position": [x, y, z],
+        "target": [x, y, z],
+        "animation": boolean
+    }
+}
+
+### `camera`
+
+The `camera` object contains information about the camera's position and target.
+
+#### `position`
+
+The `position` property is an array of three numbers representing the x, y, and z coordinates of the camera's position in 3D space. For example, `[0.0, 1.5, -5.0]` represents a camera positioned at x=0.0, y=1.5, and z=-5.0.
+
+#### `target`
+
+The `target` property is an array of three numbers representing the x, y, and z coordinates of the point that the camera is looking at. For example, `[0, 1.076873443174144, 0]` represents a target point at x=0, y=1.076873443174144, and z=0.
+
+#### `animation`
+
+The `animation` property is a boolean value that determines whether or not the camera's movement should be animated. If `animation` is set to `true`, the camera will smoothly transition from its current position to its new position when its position or target is changed. If `animation` is set to `false`, the camera will immediately move to its new position without any animation.
+'''

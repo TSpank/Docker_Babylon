@@ -176,7 +176,7 @@
 			
             [camera_dummy,camera_dynamic] = Init_cameras(scene)
             
-            if (true)
+            if (false)
             {
                 setup_buttons(advancedTexture,camera_dummy,scene);
                 
@@ -189,13 +189,15 @@
 			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
 					scene.requestRotations = requestRotations;
-					
-					// scene.debugLayer.show();
+					// Debug information on screen
+					scene.debugLayer.show();
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+					Animations.loadAnimations(pose_animations);
+					Animations.animate(scene);
 				});
 
 				scene.registerBeforeRender(function() {
@@ -283,7 +285,7 @@
 									}
 								} catch (err)
 								{
-									console.log(err);
+									//console.log(err);
 								}
 
 								

@@ -83,6 +83,7 @@ async def start_server():
 
 # Run the server
 # asyncio.run(start_server())
+# %%
 await start_server()
 # %%
 camera_index = 0
