@@ -16,6 +16,43 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 		})
 		advancedTexture.addControl(Left);
 
+	var Out = BABYLON.GUI.Button.CreateSimpleButton("Zoom Out", "Out");
+	Out.width = width;
+	Out.height = height;
+	Out.color = "black";
+	Out.background = "transparent";
+	Out.left = "-35%";
+	Out.top = "-25%";
+	Out.cornerRadius = 5;
+	Out.onPointerDownObservable.add(()=> {
+		pos = camera_dummy.position;
+		if (pos.x != 0)
+		{
+			if (pos.x > 0)
+			{
+				pos.x = pos.x + 0.1;
+			}
+			if (pos.x < 0)
+			{
+				pos.x = pos.x - 0.1;
+			}
+		}
+		if (pos.z != 0)
+		{
+			if (pos.z > 0)
+			{
+				pos.z = pos.z + 0.1;
+			}
+			if (pos.z < 0)
+			{
+				pos.z = pos.z - 0.1;
+			}
+		}
+		camera_dummy.position = pos;
+		camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+	})
+	advancedTexture.addControl(Out);
+
 	var Right = BABYLON.GUI.Button.CreateSimpleButton("Right", "Right");
 		Right.width = width;
 		Right.height = height;
@@ -71,6 +108,43 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 		})
 		advancedTexture.addControl(FR);
+
+	var In = BABYLON.GUI.Button.CreateSimpleButton("Zoom In", "In");
+		In.width = width;
+		In.height = height;
+		In.color = "black";
+		In.background = "transparent";
+		In.left = "-35%";
+		In.top = "-27%";
+		In.cornerRadius = 5;
+		In.onPointerDownObservable.add(()=> {
+			pos = camera_dummy.position;
+			if (pos.x != 0)
+			{
+				if (pos.x > 0.2)
+				{
+					pos.x = pos.x - 0.1;
+				}
+				if (pos.x < -0.2)
+				{
+					pos.x = pos.x + 0.1;
+				}
+			}
+			if (pos.z != 0)
+			{
+				if (pos.z > 0.2)
+				{
+					pos.z = pos.z - 0.1;
+				}
+				if (pos.z < -0.2)
+				{
+					pos.z = pos.z + 0.1;
+				}
+			}
+			camera_dummy.position = pos;
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+		})
+		advancedTexture.addControl(In);
 
 	var FL = BABYLON.GUI.Button.CreateSimpleButton("FL", "FL");
 		FL.width = width;
