@@ -37,8 +37,7 @@ mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
   'theta_armleft_lower_beta': '0.0',
   'theta_armleft_lower_gamma': '0.0',
   'theta_armleft_elbow': '0.0'},
-  'camera': {'camera_position': [-1.0, 1.6, 0.0],
-  'camera_target': [0.0, 1.6, 0.0]}}
+  'camera': {'position': [-1.0, 1.6, 0.0], 'camera_target': [0.0, 1.6, 0.0],'animation':False}}
 
 
 
@@ -81,6 +80,7 @@ async def handle_websocket(websocket, path):
             if "pose" in request['request']:
                 mojo_message['pose']['theta_armright_upper_alpha'] = str(float(mojo_message['pose']['theta_armright_upper_alpha']) + 0.1)
                 msg['pose'] = mojo_message['pose']            
+                # msg = default_msg()
             if "camera" in request['request']:
                 camera = camera_pos[camera_index % len(camera_pos)]
                 camera_index +=1
@@ -100,6 +100,9 @@ async def handle_websocket(websocket, path):
                 msg['control']['command'] = 'play'
                 l = len(animation_data.animation_titles)-1
                 msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
+            if "stop" in request['request']:
+                msg['control'] = {}
+                msg['control']['command'] = 'stop'
             if "echo" in request['request']:
                 msg = request['request']['echo']
             print(json.dumps(msg))

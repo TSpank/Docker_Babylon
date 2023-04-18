@@ -183,10 +183,11 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 		Back.top = "-2%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			var active_animation = false;
-			scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
-			console.log('Active Animation: ' + active_animation);
-			scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+			// var active_animation = false;
+			// scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+			// console.log('Active Animation: ' + active_animation);
+			// scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+			scene.requestRotations(JSON.stringify({'request':'stop'}));
 		})
 		advancedTexture.addControl(Back);
 
