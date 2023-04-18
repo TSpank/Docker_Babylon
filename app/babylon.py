@@ -78,21 +78,29 @@ def home():
     msg = {}
     msg['pose'] = message_template.copy()
     _ip = request.remote_addr
+    _payload = None
     if _ip in ip_uuid.keys():
         _uuid = ip_uuid[_ip]    
         if str(_uuid) in messages:
-            payload = messages[str(_uuid)]
+            payload = messages.pop(str(_uuid),msg)
+            # payload = messages[str(_uuid)]
     try:
         _payload = json.loads(payload)
         if 'deflection_x' in _payload.keys():
             msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
             msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
             msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
-        if 'pose' in _payload.keys():
-            msg['pose'] = _payload.copy()
+        else: #if 'pose' in _payload.keys():
+            msg = _payload.copy()
+        payload = {}
+        
     except Exception as e:
         # msg['type'] = _
+        msg = {}
         msg['error'] = str(e)
+        if _payload is not None:
+            msg['payload'] = _payload
+    
     return json.dumps(msg)
 
 @app.route("/ip")
@@ -125,8 +133,8 @@ def user_uuid_msg(user_uuid):
                 msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
                 msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
                 msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
-            if 'theta_head_roll_h' in _payload.keys():
-                msg['pose'] = _payload.copy()
+            else: #if 'theta_head_roll_h' in _payload.keys():
+                msg = _payload.copy()
     except Exception as e:
         # msg['type'] = _
         msg['error'] = str(e)
