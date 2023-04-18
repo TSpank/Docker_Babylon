@@ -15,7 +15,9 @@ camera_pos = [
     [-2, 1.5, -2.0],
     [2, 1.5, -2.0],
     [0, 1.5, 2.0]]
-mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
+
+def Mojo_message():
+    mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
   'theta_torso_bend_r': '0.0',
   'theta_torso_yaw_r': '0.0',
   'theta_torso_roll_r': '0.0',
@@ -38,6 +40,7 @@ mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
   'theta_armleft_lower_gamma': '0.0',
   'theta_armleft_elbow': '0.0'},
   'camera': {'position': [-1.0, 1.6, 0.0], 'camera_target': [0.0, 1.6, 0.0],'animation':False}}
+    return mojo_message
 
 
 
@@ -45,6 +48,7 @@ mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
 
 def default_msg():
     msg = {}
+    mojo_message = Mojo_message()
     mojo_message['pose']['theta_armright_upper_alpha'] = str(float(mojo_message['pose']['theta_armright_upper_alpha']) + 0.1)
     # msg['pose'] = mojo_message['pose']            
     camera = [0., 1.5, -1.0] #camera_pos[0]
@@ -54,6 +58,9 @@ def default_msg():
     msg['camera']['target'] = target
     msg['camera']['animation'] = False
     msg['animation'] = {'config':animation_data.animations}
+    # msg['animation'] = {}
+    # msg['animation']['config'] = {}
+    # msg['animation']['config']['All Reset'] = animation_data.animations['All Reset']
     msg['control'] = {'command':'pause','animation':''}
     return msg
 
@@ -78,6 +85,7 @@ async def handle_websocket(websocket, path):
         if "request" in request:
             print(request["request"])
             if "pose" in request['request']:
+                mojo_message = Mojo_message()
                 mojo_message['pose']['theta_armright_upper_alpha'] = str(float(mojo_message['pose']['theta_armright_upper_alpha']) + 0.1)
                 msg['pose'] = mojo_message['pose']            
                 # msg = default_msg()
@@ -92,7 +100,8 @@ async def handle_websocket(websocket, path):
                 # print(f"camera: {camera} Target: {target}")   
             if "animation" in request['request']:
                 msg['animation'] = {}
-                msg['animation']['config'] = animation_data.animations
+                msg['animation']['config'] = {}
+                msg['animation']['config']['Shoulder scaption'] = animation_data.animations['Shoulder scaption']
                 msg['animation']['list'] = True
                 # print("Request: animation")
             if "control" in request['request']:
