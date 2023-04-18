@@ -43,7 +43,7 @@
         <script src="controls.js"></script>
         <script src="parse_data.js"></script>
         <script src="cameras.js"></script>
-		<script src="animation_data.js"></script>
+		<!-- <script src="animation_data.js"></script> -->
 		<script src="animations.js"></script>
         <style>
             html, body {
@@ -65,45 +65,49 @@
 	<input type="hidden" id="value">
 	<!-- <input type="label" id="frame"> -->
     <canvas id="renderCanvas"></canvas>
-	<!-- <script type="text/javascript">
+	<script type="text/javascript">
 		function showAndroidToast(toast) {
 			Android.showToast(toast);
 		}
 	</script>
 	<script type="text/javascript">
+		var rotationValues;
 	    var loopcounter = 0;
-	    const ul = document.getElementById('value');
+	    // const ul = document.getElementById('value');
+		var iOS_request = true;
 		function getRotations() {
-			const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
-			if (loopcounter >= 0)
-			{
-				loopcounter = 0;
-				fetch(URL)
-				.then(res => res.text())
-				.then(function(text) {
-					ul.innerHTML = text;
-				})
-				.catch(err => console.log(err));	
-			} else
-			{
-				loopcounter +=1;
+			if (iOS_request == false){
+				const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
+				if (loopcounter >= 0)
+				{
+					loopcounter = 0;
+					fetch(URL)
+					.then(res => res.text())
+					.then(function(text) {
+						// ul.innerHTML = text;
+						rotationValues = text;
+					})
+					.catch(err => console.log(err));	
+				} else
+				{
+					loopcounter +=1;
+				}
 			}
 		}
 
 	</script>
 	<script>
-		var websocket = new WebSocket("ws://localhost:8000/");
 		var ws_open = false;
+		var websocket = new WebSocket("ws://localhost:8000/");
 		websocket.onopen = function() {
-		  console.log("Connected");
-		  ws_open = true;
+			console.log("WebSocket Connected");
+			ws_open = true;
 		}
-		
 		websocket.onmessage = function(event) {
-			ul.innerHTML = event.data;
+			// ul.innerHTML = event.data;
+			rotationValues = event.data;
 			console.log();
 		}
-		
 		function requestRotations(request)
 		{
 			if( ws_open == true )
@@ -111,8 +115,9 @@
 				websocket.send(request);
 			} 
 		}
-	</script> -->
+	</script>
 	<script>
+		var debug = false;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
@@ -123,7 +128,7 @@
 	    var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: true}); };
 		//var json_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"},\"camera\":{\"camera_position\" : [-1.0,1.6,0.0], \"camera_target\" : [0.0,1.6,0.0]}}");
 		var json_data = JSON.parse("{ }");
-		var rotationValues = "{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.57\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }";
+		rotationValues = "{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }";
 		var slerp;
         
         var steps_perc = 0;
@@ -176,7 +181,7 @@
 			
             [camera_dummy,camera_dynamic] = Init_cameras(scene)
             
-            if (true)
+            if (debug)
             {
                 setup_buttons(advancedTexture,camera_dummy,scene);
                 
@@ -188,12 +193,19 @@
 			// });sensor_animation6.glb
 			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
-					window.webkit.messageHandlers.contentReadyMessage.postMessage({
-                            "message": meshReady
-                    })
+					try{
+						window.webkit.messageHandlers.contentReadyMessage.postMessage({
+                          	"message": meshReady
+                    	})
+						iOS_request = true;						
+					} catch {
+						console.log("Not iOS");
+						iOS_request = false;
+					}
 					scene.requestRotations = requestRotations;
-					// Debug information on screen
-					scene.debugLayer.show();
+					if (debug){
+						scene.debugLayer.show();
+					}
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
