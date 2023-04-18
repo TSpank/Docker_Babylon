@@ -52,13 +52,14 @@ def handle_mqtt_message(client, userdata, message):
     global payload
     global messages
     payload=message.payload
-    data = dict(
-        topic=message.topic,
-        payload=message.payload.decode()        
-    )
-    _uuid = message.topic.split('/')[-1]
-    messages[_uuid] = message.payload
-    print(messages)
+    if type(payload)==str:
+        data = dict(
+            topic=message.topic,
+            payload=message.payload.decode()        
+        )
+        _uuid = message.topic.split('/')[-1]
+        messages[_uuid] = message.payload
+        print(messages)
  
 @app.route("/cookie")
 def cookie():
@@ -85,14 +86,15 @@ def home():
             payload = messages.pop(str(_uuid),msg)
             # payload = messages[str(_uuid)]
     try:
-        _payload = json.loads(payload)
-        if 'deflection_x' in _payload.keys():
-            msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
-            msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
-            msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
-        else: #if 'pose' in _payload.keys():
-            msg = _payload.copy()
-        payload = {}
+        if payload is not None:
+            _payload = json.loads(payload)
+            if 'deflection_x' in _payload.keys():
+                msg['pose']['theta_head_pitch_h'] = _payload["deflection_y"]
+                msg['pose']['theta_head_yaw_h'] = _payload["deflection_z"]
+                msg['pose']['theta_head_roll_h'] = _payload["deflection_x"]
+            else: #if 'pose' in _payload.keys():
+                msg = _payload.copy()
+            payload = None
         
     except Exception as e:
         # msg['type'] = _
