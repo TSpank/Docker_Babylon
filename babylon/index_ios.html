@@ -269,7 +269,7 @@
                                     //Chest
                                     pitch = -values['theta_torso_pitch_r'];
                                     bend = -values['theta_torso_bend_r'];
-                                    yaw =  values['theta_torso_yaw_r'];
+                                    yaw =  -values['theta_torso_yaw_r'];
                                     roll = -values['theta_torso_roll_r']; 
                                     tilt = values['theta_torso_tilt_r']; 
                                     
@@ -321,7 +321,7 @@
                                     skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_r); 
                                     skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_r);
                                     skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_r); 
-				    skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_r);
+				                    skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_r);
                                     skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Y, gamma_lower_r);
                                     skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Z, beta_lower_r);
 

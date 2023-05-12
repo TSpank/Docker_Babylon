@@ -26,10 +26,10 @@ function parse_data(skeleton,values)
 
 		skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 		//Chest
-		pitch = -values['theta_torso_pitch_r'];
-		bend = -values['theta_torso_bend_r'];
+		pitch = values['theta_torso_pitch_r'];
+		bend = values['theta_torso_bend_r'];
 		yaw =  values['theta_torso_yaw_r'];
-		roll = -values['theta_torso_roll_r']; 
+		roll = values['theta_torso_roll_r']; 
 		tilt = values['theta_torso_tilt_r']; 
 		
 		// Head / neck
@@ -58,10 +58,10 @@ function parse_data(skeleton,values)
 		if (animate_lower_back == true)
 		{
 			//yaw = 0.785;
-			skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y,-yaw );
+			skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y, yaw );
 			// skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
-			skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, -pitch );
-			skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, -bend );
+			skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, pitch );
+			skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, bend );
 		}
 		// Upper Back
 		skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Z, tilt );
@@ -80,6 +80,9 @@ function parse_data(skeleton,values)
 		skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_r); 
 		skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Y, gamma_upper_r);
 		skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.Z, beta_upper_r); 
+		skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.X, alpha_lower_r); 
+		skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Y, gamma_lower_r);
+		skeleton.bones[35].getTransformNode().rotate(BABYLON.Axis.Z, beta_lower_r); 
 
 		// LEFT Shoulder
 		skeleton.bones[10].getTransformNode().rotate(BABYLON.Axis.X, alpha_upper_l);
