@@ -97,7 +97,7 @@ function fix_theta_3(val)
 
 function sanitise(a)
 {
-	rtn = a;
+	let rtn = a;
 	if (a < -Math.PI/2.0)
 	{
 		rtn = a+2*Math.pi;
@@ -121,14 +121,14 @@ function limit(a)
 
 function MapAxis( value, in_max, out_max)
 {
-	var ratio = 7.0 / in_max; 
-	var out = 2.0/ ( 1. + Math.pow(Math.E, - (ratio*value))) - 1.0;
+	let ratio = 7.0 / in_max; 
+	let out = 2.0/ ( 1. + Math.pow(Math.E, - (ratio*value))) - 1.0;
 	return out*out_max
 }
 
 function AngleLimit(value,limit_neck,limit_head)
 {
-	output = {};
+	let output = {};
 	output['head'] = 0.0;
 	output['neck'] = 0.0;
 	_head_perc = 0.5
