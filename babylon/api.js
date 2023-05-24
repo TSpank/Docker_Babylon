@@ -1,6 +1,7 @@
 function Process_json(rotationValues)
+{
     try{
-        let values = {};
+        values = {};
         try{
             json_data = JSON.parse(rotationValues);
             rotationValues = "{}";
@@ -9,8 +10,10 @@ function Process_json(rotationValues)
             {	
                 if (typeof(json_data['animation']['config']) != "undefined")
                 {
-                    let pose_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }");
+                    pose_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }");
                     values = pose_data['pose'];
+                    // console.log('Animation Received');
+                    // console.log(values);
                     parse_data(scene.getSkeletonByName("Armature"),values);
                     //console.log(json_data['animation']['config']);
                     animations = json_data['animation']['config'];
@@ -21,12 +24,14 @@ function Process_json(rotationValues)
                 if (typeof(json_data['animation']['list']) != "undefined")
                 {
                     const animation_list = scene.animationGroups.map(function(item){ return item.name;}); 
+
+                    scene.requestRotations(JSON.stringify({'animation':{'list':animation_list}}));
                 }
             }
             if (typeof(json_data['camera']) != "undefined")
             {
-                let cam_pos = json_data['camera']['position'];
-                let cam_target = json_data['camera']['target'];
+                cam_pos = json_data['camera']['position'];
+                cam_target = json_data['camera']['target'];
                 // console.log(cam_pos,cam_target);
                 camera_dummy.position = new BABYLON.Vector3(cam_pos[0],cam_pos[1],cam_pos[2]);
                 camera_dummy.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
@@ -39,10 +44,13 @@ function Process_json(rotationValues)
                 {
                     steps_perc = 0.0;
                 }
+                // camera_dynamic.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
             }
             if (typeof(json_data['pose']) != "undefined")
             {
                 values = json_data['pose'];
+                // console.log('Animation Received');
+                // console.log(values);
                 parse_data(scene.getSkeletonByName("Armature"),values);
             }
             if (typeof(json_data['control']) != "undefined")
@@ -58,9 +66,11 @@ function Process_json(rotationValues)
                 }
                 
                 var animation_command = cntrl['command'];
+                // console.log('control Received: '+ cntrl['command'] + " " + cntrl['animation']);
+                // scene.animationGroups.forEach(function(item){ item.stop();});
                 if (animation_command == "play")
                 {
-                    scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false );
+                    scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
                 } else if (animation_command == "stop")
                 {
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
@@ -68,12 +78,14 @@ function Process_json(rotationValues)
                 {
                     var active_animation = false;
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+                    // console.log('Active Animation: ' + active_animation);
                 }
             }
         } catch (err)
         {
-            
+            //console.log(err);
         }
+
         
         if(typeof(values['camera_position']) != "undefined")
         {
@@ -90,20 +102,21 @@ function Process_json(rotationValues)
             steps_perc = 0.0;
         }
 
+        //console.log(skeleton)
         //Pan Camera view
-        if ( false ) //(camera_dummy.position != camera_dynamic.position )) //|| (camera_dummy.target != camera_dynamic.target ))
+        if (camera_dummy.position != camera_dynamic.position )
         {
             if( steps_perc == 0.0)
             {
                 cam_dir = direction(camera_dynamic.position,camera_dummy.position);
                 cam_dist = distance(camera_dynamic.position,camera_dummy.position);
-                cam_dir_target = direction(camera_dynamic.target,camera_dummy.target);
+                cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
                 cam_start = camera_dynamic.position;
+                //console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
             }
             if ( steps_perc >= 1.0 )
             {
                 // camera_dynamic.position = camera_dummy.position;
-                // camera_dynamic.target = camera_dummy.target;
                 steps_perc = 0.0; // keep variable zero for next slerp	
             } else
             {
@@ -123,8 +136,10 @@ function Process_json(rotationValues)
         } else {
             steps_perc = 0.0; // keep variable zero for next slerp									
         }
-
+        camera_dynamic.setTarget(camera_dummy.target);
         scene.activeCamera = camera_dynamic;		
     } catch(err) {
         console.log(err.message);
     }
+}
+    

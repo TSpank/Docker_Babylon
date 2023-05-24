@@ -3,7 +3,8 @@ function parse_data(skeleton,values)
 	if (typeof(values) != "undefined")
 	{
 		let animate_lower_back = true;
-		// RIGHT Shoulder                
+		// RIGHT Shoulder      
+				
 		skeleton.bones[34].getTransformNode().rotation = BABYLON.Vector3.Zero();
 		skeleton.bones[35].getTransformNode().rotation = BABYLON.Vector3.Zero();
 		skeleton.bones[36].getTransformNode().rotation = BABYLON.Vector3.Zero();
@@ -38,15 +39,15 @@ function parse_data(skeleton,values)
 		let head_roll = AngleLimit(values['theta_head_roll_h'],roll_neck_limit,roll_head_limit); 	
 		
 		//Right Arm
-		let alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];
-		let beta_upper_r =    values['theta_armright_upper_beta'];
-		let gamma_upper_r =   values['theta_armright_upper_gamma'];
+		let alpha_upper_r = arm_offset - values['theta_armright_upper_alpha'];
+		let beta_upper_r =  values['theta_armright_upper_beta'];
+		let gamma_upper_r =  values['theta_armright_upper_gamma'];
 		let alpha_lower_r =  values['theta_armright_lower_alpha'];
 		let beta_lower_r =  -values['theta_armright_lower_beta'];
 		let gamma_lower_r = values['theta_armright_lower_gamma'];
 		
 		//Left Arm
-		let alpha_upper_l =  Math.PI/2.2 - values['theta_armleft_upper_alpha'];
+		let alpha_upper_l = arm_offset - values['theta_armleft_upper_alpha'];
 		let beta_upper_l =  -values['theta_armleft_upper_beta'];
 		let gamma_upper_l = values['theta_armleft_upper_gamma'];
 		let alpha_lower_l =  -values['theta_armleft_lower_alpha'];

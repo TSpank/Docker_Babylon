@@ -157,3 +157,34 @@ function AngleLimit(value,limit_neck,limit_head)
 	output['head'] = _head_perc * value
 	return output;
 }
+
+function BodyCollision(mesh_name)
+{
+	let _i = scene.skeletons[0].getBoneIndexByName(mesh_name);
+	let v3 = scene.skeletons[0].bones[_i].getAbsolutePosition();
+	let b_min = scene.getMeshByName('Wolf3D_Outfit_Top').getBoundingInfo().boundingBox.minimum;
+	let b_max = scene.getMeshByName('Wolf3D_Outfit_Top').getBoundingInfo().boundingBox.maximum;
+		
+	let _x = false;
+	let _y = false;
+	let _z = false;
+	if ((v3.x > b_min.x) && (v3.x < b_max.x))
+	{
+		_x = true;
+	}
+	// if ((v3.y > b_min.y) && (v3.y < b_max.y))
+	// {
+	// 	_y = true;
+	// }
+	// if ((v3.z > b_min.z) && (v3.z < b_max.z ))
+	// {
+	// 	_z = true;
+	// }
+	if( _x )// && _y && _z)
+	{
+		return true;
+	} else
+	{
+		return false;
+	}
+}

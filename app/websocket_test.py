@@ -51,7 +51,7 @@ def default_msg():
     mojo_message = Mojo_message()
     mojo_message['pose']['theta_armright_upper_alpha'] = str(float(mojo_message['pose']['theta_armright_upper_alpha']) + 0.1)
     # msg['pose'] = mojo_message['pose']            
-    camera = [0., 1.5, -1.0] #camera_pos[0]
+    camera = [0., 1.5, -2.0] #camera_pos[0]
     target = [0,1.6,0]
     msg['camera'] = {}
     msg['camera']['position'] = camera
