@@ -121,7 +121,8 @@
 		var _y = 1.7;
 		var arm_offset = 0;//Math.PI/2.;
 		var arm_front = 0.0;
-		var debug = false;
+		var debug = true;
+		var gauges = true;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
@@ -206,8 +207,8 @@
 			// BABYLON.SceneLoader.ImportMesh("","./","xsens.glb", scene, function (meshes, particleSystems, skeletons) {
 			// 	let mesh = scene.getMeshByName('__root__');
 			// });sensor_animation6.glb
-			BABYLON.SceneLoader.Append("", "Mojo Female 4.glb", scene, function (meshes, particleSystems, skeletons) {
-			//	BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
+			// BABYLON.SceneLoader.Append("", "Mojo Female 4.glb", scene, function (meshes, particleSystems, skeletons) {
+			BABYLON.SceneLoader.Append("", "avatar.glb", scene, function (meshes, particleSystems, skeletons) {
       				skeleton = scene.getSkeletonByName("Armature")
 					// scene.meshes.forEach((m)=>console.log(m.name + ' : ' + m.getBoundingInfo().boundingBox.center.y));
 					_y = scene.getMeshByName('Wolf3D_Outfit_Top').getBoundingInfo().boundingBox.center.y;
@@ -217,7 +218,7 @@
 					
 					scene.requestRotations = requestRotations;
 					if (debug){
-						scene.debugLayer.show();
+						//scene.debugLayer.show();
 					}
 					let skelViewer = new BABYLON.Debug.SkeletonViewer(
 						skeleton, scene.getMeshByName('__root__'), scene
@@ -227,29 +228,7 @@
                     env =  scene.createDefaultEnvironment();
                     env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-					Animations.loadAnimations(arm_quaternions);
-					// Iterate through each bone in the skeleton
-					console.log(skeleton.bones.length);
-					// for (var i = 0; i < skeleton.bones.length; i++) {
-					// 	var bone = skeleton.bones[i];
-					// 	console.log(bone.name);
-
-					// 	// Create a transform node for the bone's position and rotation
-					// 	var transformNode = new BABYLON.TransformNode("bone" + i, scene);
-					// 	transformNode.position.copyFrom(bone.position);
-					// 	transformNode.rotationQuaternion = bone.rotationQuaternion.clone();
-
-					// 	// Attach the transform node to the bone's parent
-					// 	if (bone.getParent()) {
-					// 		bone.getParent().addChild(transformNode);
-					// 	} else {
-					// 		scene.addTransformNode(transformNode);
-					// 	}
-
-					// 	// Show axes for the transform node
-					// 	axesViewer.displayAxes(true, transformNode);
-					// }
-					// Animations.animate(scene);						
+					Animations.loadAnimations(arm_quaternions);									
 				});
 
 				scene.registerBeforeRender(function() {
@@ -265,11 +244,18 @@
 							// 	// arm_front += 0.05;
 							// 	// arm_offset = Math.PI/2.0;
 							// }
-					// while(BodyCollision('LeftHand'))
-					// {
-					// 	skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X,0.01); 
-					// }
+							// while(BodyCollision('LeftHand'))
+							// {
+							// 	skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X,0.01); 
+							// }
 							//Process_json(rotationValues);	
+							if (gauges)
+							{
+								iOS_request = true;
+								rotationValues = {};
+							} else {
+								// angles = null;
+							}
 							Process_json(rotationValues,angles);	
 							
 					    }
