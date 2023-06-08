@@ -1,7 +1,8 @@
-function Process_json(rotationValues)
+function Process_json(rotationValues,angles)
 {
     try{
         values = {};
+        parse_data(scene.getSkeletonByName("Armature"), "undefined",angles);
         try{
             json_data = JSON.parse(rotationValues);
             rotationValues = "{}";

@@ -1,7 +1,7 @@
-function setup_buttons(advancedTexture,camera_dummy,scene){
+function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 	var width = "60px"; //"90px"
 	var height = "20px"; //"40px"
-
+	let use_radians = true;
 	var Left = BABYLON.GUI.Button.CreateSimpleButton("Left", "Left");
 		Left.width = width;
 		Left.height = height;
@@ -277,4 +277,161 @@ function setup_buttons(advancedTexture,camera_dummy,scene){
 			scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
 		})
 		advancedTexture.addControl(Back);
+
+		// alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];
+		// beta_upper_r =    values['theta_armright_upper_beta'];
+		// gamma_upper_r =   values['theta_armright_upper_gamma'];
+		// alpha_lower_r =  values['theta_armright_lower_alpha'];
+		// beta_lower_r =  -values['theta_armright_lower_beta'];
+		// gamma_lower_r = values['theta_armright_lower_gamma'];
+		
+		// // Create a slider control.
+		// var slider = new BABYLON.GUI.Slider("slider", 0, 180, 0);
+		// slider.height = "30px";
+		// slider.width = "120px";
+		// slider.left = "-40%";
+		// slider.top = "10%";
+		// slider.text = "Theta";
+		// slider.onValueChangedObservable.add(function(value) {
+		// 	angles.theta_armright_upper_alpha = value;			
+		// });
+		var panel = new BABYLON.GUI.StackPanel();
+		panel.width = "220px";
+		panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFTT;
+		panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+		advancedTexture.addControl(panel);
+
+		var headerAU = new BABYLON.GUI.TextBlock();
+		headerAU.text = "Alpha Upper: 0 deg";
+		headerAU.height = "30px";
+		headerAU.color = "white";
+		panel.addControl(headerAU); 
+
+		var sliderAU = new BABYLON.GUI.Slider();
+		sliderAU.minimum = -Math.PI;
+		sliderAU.maximum = Math.PI;
+		sliderAU.value = 0.0;
+		sliderAU.height = "20px";
+		sliderAU.width = "200px";
+		sliderAU.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerAU.text = "Alpha Upper: " + (value).toFixed(2) + " rad";
+			} else {
+				headerAU.text = "Alpha Upper: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_upper_alpha = value;	
+		});
+		panel.addControl(sliderAU);    
+
+		var headerBU = new BABYLON.GUI.TextBlock();
+		headerBU.text = "Beta Upper: 0 deg";
+		headerBU.height = "30px";
+		headerBU.color = "white";
+		panel.addControl(headerBU); 
+
+		var sliderBU = new BABYLON.GUI.Slider();
+		sliderBU.minimum = -Math.PI;
+		sliderBU.maximum = Math.PI;
+		sliderBU.value = 0.0;
+		sliderBU.height = "20px";
+		sliderBU.width = "200px";
+		sliderBU.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerBU.text = "Beta Upper: " + (value).toFixed(2) + " rad";
+			} else {
+				headerBU.text = "Beta Upper: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_upper_beta = value;	
+		});
+		panel.addControl(sliderBU);   
+
+		var headerGU = new BABYLON.GUI.TextBlock();
+		headerGU.text = "Gamma Upper: 0 deg";
+		headerGU.height = "30px";
+		headerGU.color = "white";
+		panel.addControl(headerGU); 
+
+		var sliderGU = new BABYLON.GUI.Slider();
+		sliderGU.minimum = -Math.PI;
+		sliderGU.maximum = Math.PI;
+		sliderGU.value = 0.0;
+		sliderGU.height = "20px";
+		sliderGU.width = "200px";
+		sliderGU.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerGU.text = "Gamma Upper: " + (value).toFixed(2) + " rad";
+			} else {
+				headerGU.text = "Gamma Upper: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_upper_gamma = value;	
+		});
+		panel.addControl(sliderGU);
+
+		var headerAL = new BABYLON.GUI.TextBlock();
+		headerAL.text = "Alpha Lower: 0 deg";
+		headerAL.height = "30px";
+		headerAL.color = "white";
+		panel.addControl(headerAL); 
+
+		var sliderAL = new BABYLON.GUI.Slider();
+		sliderAL.minimum = -Math.PI;
+		sliderAL.maximum = Math.PI;
+		sliderAL.value = 0.0;
+		sliderAL.height = "20px";
+		sliderAL.width = "200px";
+		sliderAL.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerAL.text = "Alpha Lower: " + (value).toFixed(2) + " rad";	
+			} else {
+				headerAL.text = "Alpha Lower: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_lower_alpha = value;	
+		});
+		panel.addControl(sliderAL);    
+
+		var headerBL = new BABYLON.GUI.TextBlock();
+		headerBL.text = "Beta Lower: 0 deg";
+		headerBL.height = "30px";
+		headerBL.color = "white";
+		panel.addControl(headerBL); 
+
+		var sliderBL = new BABYLON.GUI.Slider();
+		sliderBL.minimum = -Math.PI;
+		sliderBL.maximum = Math.PI;
+		sliderBL.value = 0.0;
+		sliderBL.height = "20px";
+		sliderBL.width = "200px";
+		sliderBL.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerBL.text = "Beta Lower: " + (value).toFixed(2) + " rad";
+			} else {
+				headerBL.text = "Beta Lower: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_lower_beta = value;	
+		});
+		panel.addControl(sliderBL);   
+
+		var headerGL = new BABYLON.GUI.TextBlock();
+		headerGL.text = "Gamma Lower: 0 deg";
+		headerGL.height = "30px";
+		headerGL.color = "white";
+		panel.addControl(headerGL); 
+
+		var sliderGL = new BABYLON.GUI.Slider();
+		sliderGL.minimum = -Math.PI;
+		sliderGL.maximum = Math.PI;
+		sliderGL.value = 0.0;
+		sliderGL.height = "20px";
+		sliderGL.width = "200px";
+		sliderGL.onValueChangedObservable.add(function(value) {
+			if (use_radians){
+				headerGL.text = "Gamma Lower: " + (value).toFixed(2) + " rad";
+			} else
+			{
+				headerGL.text = "Gamma Lower: " + (BABYLON.Tools.ToDegrees(value) | 0) + " deg";
+			}
+			angles.theta_armright_lower_gamma = value;	
+		});
+		panel.addControl(sliderGL);
+		// advancedTexture.addControl(slider);
 }
