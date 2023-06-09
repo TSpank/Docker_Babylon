@@ -36,45 +36,38 @@ function parse_data(skeleton,values,angles)
 		beta_lower_r = angles.theta_armright_lower_beta;
 		gamma_lower_r = angles.theta_armright_lower_gamma;
 
-		var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
-		var q34_c = new BABYLON.Quaternion(-0.707,0,0,0.707);
-		// var rq = rotation_upper_right.multiply(new BABYLON.Quaternion(-0.707,0.0,0.0,0.707));
-		// var quat_33 = skeleton.bones[33].getTransformNode().rotationQuaternion;
-		// var q33_r = BABYLON.Quaternion.Inverse(quat_33).multiply(rotation_upper_right);
-		// var q3 = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5);
-		// var q33_707 = q33_r.multiply(q3);
-		skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_c.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34_c)));
+		alpha_upper_l = angles.theta_armright_upper_alpha;
+		beta_upper_l = angles.theta_armright_upper_beta;
+		gamma_upper_l = angles.theta_armright_upper_gamma;
+		alpha_lower_l = angles.theta_armright_lower_alpha;
+		beta_lower_l = angles.theta_armright_lower_beta;
+		gamma_lower_l = angles.theta_armright_lower_gamma;
 
-		// skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_upper_right);
+		var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,beta_upper_l,gamma_upper_l);
+		var q33c_l = skeleton.bones[9].getTransformNode().rotationQuaternion;
+		var q34r_l = new BABYLON.Quaternion(0.707,0.707,0.0,0.0).multiply(BABYLON.Quaternion.Inverse(q33c_l).multiply(rotation_upper_left));
+		
+		// Rotation
+		var q34_l = q34r_l.multiply(rotation_upper_left).multiply(BABYLON.Quaternion.Inverse(q34r_l));
+		skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(q34_l);
+
+		var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_l,-beta_lower_l,-gamma_lower_l);
+		var q34c_l = skeleton.bones[10].getTransformNode().rotationQuaternion;
+		var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+		skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
+
+
+		var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
+		var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+		var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
+		// Rotation by q34r_r
+		var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
+		skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
 
 		var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
-		//var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(gamma_lower_r,-beta_lower_r,-alpha_lower_r);
-		var quat_34 = skeleton.bones[34].getTransformNode().rotationQuaternion;
-		var q34_r = BABYLON.Quaternion.Inverse(quat_34).multiply(rotation_lower_right);
-		var q_707 = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
-		var q34_707 = q34_r.multiply(q_707);
-		skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q34_707);
-		var quat_35 = skeleton.bones[35].getTransformNode().rotationQuaternion;
-		//skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(quat_34.multiply(BABYLON.Quaternion.Inverse(rotation_lower_right)));
-		//skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(quat_35.multiply(rotation_lower_right));
-
-		if ( false ){
-			
-			var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(0.0,0.0,gamma_lower_r);
-			skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_lower_right);
-			
-			var rotation_wrist_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,0.0);
-			skeleton.bones[36].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_wrist_right);
-
-			var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,-beta_upper_r,-gamma_upper_r);
-			skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_upper_left);
-			
-			var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(0.0,0.0,gamma_lower_r);
-			skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(BABYLON.Quaternion.Inverse(rotation_lower_left));
-			
-			var rotation_wrist_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,-beta_lower_r,0.0);
-			skeleton.bones[12].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_wrist_left);
-		}
+		var q34c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+		var q35r_r = BABYLON.Quaternion.Inverse(q34c_r).multiply(rotation_lower_right).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+		skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_r);
 
 		
 	} else {
@@ -86,12 +79,12 @@ function parse_data(skeleton,values,angles)
 			skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
 			skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
 			skeleton.bones[11].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
-			skeleton.bones[12].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+			//skeleton.bones[12].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
 			// RIGHT Shoulder
 			skeleton.bones[33].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5); 
 			skeleton.bones[34].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
 			skeleton.bones[35].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
-			skeleton.bones[36].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+			//skeleton.bones[36].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
 
 			//Neck
 			skeleton.bones[4].getTransformNode().rotation = BABYLON.Vector3.Zero();
@@ -124,15 +117,15 @@ function parse_data(skeleton,values,angles)
 			let alpha_lower_r = values['theta_armright_lower_alpha'];
 			let beta_lower_r =  values['theta_armright_lower_beta'];
 			let gamma_lower_r = values['theta_armright_lower_gamma'];
-			let qu_r = values['theta_armright_upper_quaternion'];
-			let ql_r = values['theta_armright_lower_quaternion'];
+			// let qu_r = values['theta_armright_upper_quaternion'];
+			// let ql_r = values['theta_armright_lower_quaternion'];
 
 			//Left Arm
-			let alpha_upper_l = arm_offset - values['theta_armleft_upper_alpha'];
+			let alpha_upper_l = values['theta_armleft_upper_alpha'];
 			let beta_upper_l =  values['theta_armleft_upper_beta'];
 			let gamma_upper_l = values['theta_armleft_upper_gamma'];
-			let alpha_lower_l =  values['theta_armleft_lower_alpha'];
-			let beta_lower_l =  -values['theta_armleft_lower_beta'];
+			let alpha_lower_l = values['theta_armleft_lower_alpha'];
+			let beta_lower_l =  values['theta_armleft_lower_beta'];
 			let gamma_lower_l = values['theta_armleft_lower_gamma'];
 			// Chest
 			// Lower Back
@@ -156,53 +149,31 @@ function parse_data(skeleton,values,angles)
 			skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['head']); // Head Yaw
 			skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['head']); // Head roll
 
-			if (false) {// LEFT arm
-				var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,-beta_upper_l,-gamma_upper_l);
-				skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_upper_left);
-
-				var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(0.0,0.0,-gamma_lower_l);
-				skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_lower_left);
-
-				var rotation_wrist_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_l,-beta_lower_l,0.0);
-				skeleton.bones[12].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_wrist_left);
-				
-				// RIGHT arm
-				var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
-				skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_upper_right);
-
-				var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(0.0,0.0,gamma_lower_r);
-				skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_lower_right);
-				
-				var rotation_wrist_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,0.0);
-				skeleton.bones[36].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_wrist_right);			
-			} else {
-				if (true){
-					var rotation_upper_right = new BABYLON.Quaternion(qu_r[0],qu_r[1],qu_r[2],qu_r[3]);// = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
-					var q34_c = new BABYLON.Quaternion(-0.707,0,0,0.707);
-					skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_c.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34_c)));
-				} else {
-					var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
-					//var rotation_upper_right = new BABYLON.Quaternion(qu_r[0],qu_r[1],qu_r[2],qu_r[3]);
-					skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(rotation_upper_right);
-				}
-
-				// var rotation_lower_right = new BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r); //
-				var rotation_lower_right = new BABYLON.Quaternion(ql_r[0],ql_r[1],ql_r[2],ql_r[3]);//.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
-				if (true)
-				{
-					var quat_34 = skeleton.bones[34].getTransformNode().rotationQuaternion;
-					var q34_r = BABYLON.Quaternion.Inverse(quat_34).multiply(rotation_lower_right);
-					var q_707 = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
-					var q34_707 = q34_r.multiply(q_707);
-					skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q34_707);
-				} else {
-					var ql_r2 = new BABYLON.Quaternion();
-					skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyToRef(BABYLON.Quaternion.Inverse(rotation_lower_right),ql_r2);
-					skeleton.bones[35].getTransformNode().rotationQuaternion = ql_r2;
-				}
-			}
+			var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,beta_upper_l,gamma_upper_l);
+			var q33c_l = skeleton.bones[9].getTransformNode().rotationQuaternion;
+			var q34r_l = new BABYLON.Quaternion(0.707,0.707,0.0,0.0).multiply(BABYLON.Quaternion.Inverse(q33c_l).multiply(rotation_upper_left));
 			
-			
+			// Rotation
+			var q34_l = q34r_l.multiply(rotation_upper_left).multiply(BABYLON.Quaternion.Inverse(q34r_l));
+			skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(q34_l);
+
+			var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_l,-beta_lower_l,-gamma_lower_l);
+			var q34c_l = skeleton.bones[10].getTransformNode().rotationQuaternion;
+			var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+			skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
+
+
+			var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
+			var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+			var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
+			// Rotation by q34r_r
+			var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
+			skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
+
+			var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
+			var q34c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+			var q35r_r = BABYLON.Quaternion.Inverse(q34c_r).multiply(rotation_lower_right).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+			skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_r);			
 		}
 	}
 	return skeleton

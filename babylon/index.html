@@ -126,7 +126,7 @@
 		var _y = 1.7;
 		var arm_offset = 0;//Math.PI/2.;
 		var arm_front = 0.0;
-		var debug = true;
+		var debug = false;
 		var gauges = false;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
@@ -224,10 +224,11 @@
 					scene.requestRotations = requestRotations;
 					if (debug){
 						//scene.debugLayer.show();
+						let skelViewer = new BABYLON.Debug.SkeletonViewer(
+							skeleton, scene.getMeshByName('__root__'), scene
+						);
 					}
-					let skelViewer = new BABYLON.Debug.SkeletonViewer(
-						skeleton, scene.getMeshByName('__root__'), scene
-					);
+					
                     scene.createDefaultCamera(true, true, true);
                     var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
                     env =  scene.createDefaultEnvironment();
