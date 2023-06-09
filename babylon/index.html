@@ -78,20 +78,25 @@
 		var iOS_request = false;
 		function getRotations() {
 			if (iOS_request == false){
-				const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
-				if (loopcounter >= 0)
-				{
-					loopcounter = 0;
-					fetch(URL)
-					.then(res => res.text())
-					.then(function(text) {
-						// ul.innerHTML = text;
-						rotationValues = text;
-					})
-					.catch(err => console.log(err));	
-				} else
-				{
-					loopcounter +=1;
+				try{
+					const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
+					if (loopcounter >= 0)
+					{
+						loopcounter = 0;
+						fetch(URL)
+						.then(res => res.text())
+						.then(function(text) {
+							// ul.innerHTML = text;
+							rotationValues = text;
+						})
+						.catch();
+						// .catch(err => console.log(err));	
+					} else
+					{
+						loopcounter +=1;
+					}
+				} catch {
+
 				}
 			}
 		}
@@ -122,7 +127,7 @@
 		var arm_offset = 0;//Math.PI/2.;
 		var arm_front = 0.0;
 		var debug = true;
-		var gauges = true;
+		var gauges = false;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
