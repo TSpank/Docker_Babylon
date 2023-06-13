@@ -1,6 +1,6 @@
 function parse_data(skeleton,values,angles)
 {
-	
+	// return skeleton;
 	if ( angles != null )
 	{
 		// console.log(angles);
