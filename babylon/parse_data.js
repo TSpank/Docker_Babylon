@@ -1,6 +1,12 @@
 function parse_data(skeleton,values,angles)
 {
 	// return skeleton;
+	/*
+
+	USED FOR TESTING
+	AVATAR ANIMATION FROM SLIDER DATA
+
+	*/
 	if ( angles != null )
 	{
 		// console.log(angles);
@@ -71,6 +77,12 @@ function parse_data(skeleton,values,angles)
 
 		
 	} else {
+
+		/*
+
+			AVATAR ANIMATION FROM SENSORS DATA
+
+		*/
 		if (typeof(values) != "undefined")
 		{
 			let animate_lower_back = true;
@@ -79,12 +91,11 @@ function parse_data(skeleton,values,angles)
 			skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
 			skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
 			skeleton.bones[11].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
-			//skeleton.bones[12].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+			
 			// RIGHT Shoulder
 			skeleton.bones[33].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5); 
 			skeleton.bones[34].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
 			skeleton.bones[35].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
-			//skeleton.bones[36].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
 
 			//Neck
 			skeleton.bones[4].getTransformNode().rotation = BABYLON.Vector3.Zero();
@@ -117,8 +128,6 @@ function parse_data(skeleton,values,angles)
 			let alpha_lower_r = values['theta_armright_lower_alpha'];
 			let beta_lower_r =  values['theta_armright_lower_beta'];
 			let gamma_lower_r = values['theta_armright_lower_gamma'];
-			// let qu_r = values['theta_armright_upper_quaternion'];
-			// let ql_r = values['theta_armright_lower_quaternion'];
 
 			//Left Arm
 			let alpha_upper_l = values['theta_armleft_upper_alpha'];
@@ -133,12 +142,12 @@ function parse_data(skeleton,values,angles)
 			{
 				//yaw = 0.785;
 				skeleton.bones[0].getTransformNode().rotate(BABYLON.Axis.Y,yaw );
-				// skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Y,-yaw * 0.5);
 				skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, -pitch );
 				skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, -bend );
 			}
 			// Upper Back
 			skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Z, tilt );
+			
 			// Neck
 			skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.X, head_pitch['neck']); //Neck Pitch
 			skeleton.bones[5].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['neck']); // Neck Yaw
@@ -149,11 +158,10 @@ function parse_data(skeleton,values,angles)
 			skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Y, head_yaw['head']); // Head Yaw
 			skeleton.bones[4].getTransformNode().rotate(BABYLON.Axis.Z, head_roll['head']); // Head roll
 
+			// Left Arm
 			var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,beta_upper_l,gamma_upper_l);
 			var q33c_l = skeleton.bones[9].getTransformNode().rotationQuaternion;
 			var q34r_l = new BABYLON.Quaternion(0.707,0.707,0.0,0.0).multiply(BABYLON.Quaternion.Inverse(q33c_l).multiply(rotation_upper_left));
-			
-			// Rotation
 			var q34_l = q34r_l.multiply(rotation_upper_left).multiply(BABYLON.Quaternion.Inverse(q34r_l));
 			skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(q34_l);
 
@@ -162,11 +170,10 @@ function parse_data(skeleton,values,angles)
 			var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
 			skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
 
-
+			// Right Arm
 			var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
 			var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
 			var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
-			// Rotation by q34r_r
 			var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
 			skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
 
