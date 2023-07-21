@@ -11,8 +11,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Left.top = "-25%";
 		Left.cornerRadius = 5;
 		Left.onPointerDownObservable.add(()=> {
-            camera_dummy.position = new BABYLON.Vector3(2, 1.5, 0.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));            
+            camera_dummy.position = new BABYLON.Vector3(2, 1.7, 0.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));            
 		})
 		advancedTexture.addControl(Left);
 
@@ -25,31 +25,33 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 	Out.top = "-25%";
 	Out.cornerRadius = 5;
 	Out.onPointerDownObservable.add(()=> {
-		pos = camera_dummy.position;
-		if (pos.x != 0)
-		{
-			if (pos.x > 0)
-			{
-				pos.x = pos.x + 0.1;
-			}
-			if (pos.x < 0)
-			{
-				pos.x = pos.x - 0.1;
-			}
-		}
-		if (pos.z != 0)
-		{
-			if (pos.z > 0)
-			{
-				pos.z = pos.z + 0.1;
-			}
-			if (pos.z < 0)
-			{
-				pos.z = pos.z - 0.1;
-			}
-		}
-		camera_dummy.position = pos;
-		camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+		camera_zoom = camera_zoom-0.05;
+		UpdateCameraZoom(camera_zoom);
+		// pos = camera_dummy.position;
+		// if (pos.x != 0)
+		// {
+		// 	if (pos.x > 0)
+		// 	{
+		// 		pos.x = pos.x + 0.1;
+		// 	}
+		// 	if (pos.x < 0)
+		// 	{
+		// 		pos.x = pos.x - 0.1;
+		// 	}
+		// }
+		// if (pos.z != 0)
+		// {
+		// 	if (pos.z > 0)
+		// 	{
+		// 		pos.z = pos.z + 0.1;
+		// 	}
+		// 	if (pos.z < 0)
+		// 	{
+		// 		pos.z = pos.z - 0.1;
+		// 	}
+		// }
+		// camera_dummy.position = pos;
+		// camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 	})
 	advancedTexture.addControl(Out);
 
@@ -62,8 +64,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Right.top = "-25%";
 		Right.cornerRadius = 5;
 		Right.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(-2, 1.5, 0.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(-2, 1.7, 0.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 		})
 		advancedTexture.addControl(Right);
 
@@ -76,8 +78,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Front.top = "-30%";
 		Front.cornerRadius = 5;
 		Front.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(0, 1.5, -2.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(0, 1.7, -2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 		})
 		advancedTexture.addControl(Front);
 
@@ -104,8 +106,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		FR.top = "-27%";
 		FR.cornerRadius = 5;
 		FR.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(-2, 1.5, -2.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(-2, 1.7, -2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 		})
 		advancedTexture.addControl(FR);
 
@@ -118,31 +120,33 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		In.top = "-27%";
 		In.cornerRadius = 5;
 		In.onPointerDownObservable.add(()=> {
-			pos = camera_dummy.position;
-			if (pos.x != 0)
-			{
-				if (pos.x > 0.2)
-				{
-					pos.x = pos.x - 0.1;
-				}
-				if (pos.x < -0.2)
-				{
-					pos.x = pos.x + 0.1;
-				}
-			}
-			if (pos.z != 0)
-			{
-				if (pos.z > 0.2)
-				{
-					pos.z = pos.z - 0.1;
-				}
-				if (pos.z < -0.2)
-				{
-					pos.z = pos.z + 0.1;
-				}
-			}
-			camera_dummy.position = pos;
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_zoom = camera_zoom+0.05;
+			UpdateCameraZoom(camera_zoom);
+			// pos = camera_dummy.position;
+			// if (pos.x != 0)
+			// {
+			// 	if (pos.x > 0.2)
+			// 	{
+			// 		pos.x = pos.x - 0.1;
+			// 	}
+			// 	if (pos.x < -0.2)
+			// 	{
+			// 		pos.x = pos.x + 0.1;
+			// 	}
+			// }
+			// if (pos.z != 0)
+			// {
+			// 	if (pos.z > 0.2)
+			// 	{
+			// 		pos.z = pos.z - 0.1;
+			// 	}
+			// 	if (pos.z < -0.2)
+			// 	{
+			// 		pos.z = pos.z + 0.1;
+			// 	}
+			// }
+			// camera_dummy.position = pos;
+			// camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
 		})
 		advancedTexture.addControl(In);
 
@@ -155,8 +159,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		FL.top = "-27%";
 		FL.cornerRadius = 5;
 		FL.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(2, 1.5, -2.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(2, 1.7, -2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 		})
 		advancedTexture.addControl(FL);
 	
@@ -169,8 +173,8 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Back.top = "-20%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(0, 1.5, 2.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.5,0));
+			camera_dummy.position = new BABYLON.Vector3(0, 1.7, 2.0);
+			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 		})
 		advancedTexture.addControl(Back);
 					

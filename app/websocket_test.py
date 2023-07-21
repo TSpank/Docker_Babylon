@@ -64,6 +64,79 @@ def default_msg():
     msg['control'] = {'command':'pause','animation':''}
     return msg
 
+exercise_set = ['All Reset',
+ 'Arm Reset',
+ 'Arm Cal 90',
+ 'Arm Cal 45',
+ 'Arm Cal 0',
+ 'Side Down',
+ 'Side Down Natural',
+ 'Neutral',
+ 'Side Abduction Palm Forward',
+ 'Side Abduction 45 Palm Forward',
+ 'Side Abduction 90 Palm Forward 2',
+ 'Side Abduction 90 Palm Forward',
+ 'Side Abduction 135 Palm Forward',
+ 'Side Abduction 180 Palm Forward',
+ 'Flexion 0',
+ 'Flexion 45',
+ 'Flexion 90',
+ 'Flexion 135',
+ 'Flexion 180',
+ 'Flexion -22.5',
+ 'Flexion -60',
+ 'Scaption 0',
+ 'Scaption 45',
+ 'Scaption 90',
+ 'Scaption 135',
+ 'Scaption 180',
+ 'Fore 0',
+ 'Fore 45',
+ 'Fore 90',
+ 'External Rotation',
+ 'Internal Rotation',
+ 'GHJT 0',
+ 'GHJT 90',
+ 'Elbow Flexion 0',
+ 'Elbow Flexion 45',
+ 'Elbow Flexion 90',
+ 'Elbow Flexion 135',
+ 'Shoulder Press Base',
+ 'Shoulder Press Extend',
+ 'Row -22.5',
+ 'Row 0',
+ 'Row 45',
+ 'Row abduction 0',
+ 'Row abduction 75',
+ 'Prone Pendular 0',
+ 'Prone Pendular R25',
+ 'Prone Pendular L25',
+ 'Prone Pendular B25',
+ 'Prone Pendular F25',
+ 'Prone Pendular FR25',
+ 'Prone Pendular BL25',
+ 'Prone Pendular BR25',
+ 'Prone Pendular FL25',
+ 'Pec Stretch Rest',
+ 'Pec Stretch 90',
+ 'Pec Strech Trunk',
+ 'Bend 45',
+ 'Bend Both 45',
+ 'Bend 22.5',
+ 'Bend Both 22.5',
+ 'Sitting Pose Natural',
+ 'Sitting Thoracic Rotation',
+ 'Rest',
+ 'Head Neutral',
+ 'Head Yaw',
+ 'Head Roll',
+ 'Head Flexion',
+ 'Head Flexion 25',
+ 'Head Extension',
+ 'Head Levator Scapula',
+ 'All Reset both']
+
+anim = {key: animation_data.animations[key] for key in exercise_set if key in animation_data.animations}
 async def handle_websocket(websocket, path):
     global message
     global camera_index
@@ -100,15 +173,15 @@ async def handle_websocket(websocket, path):
                 # print(f"camera: {camera} Target: {target}")   
             if "animation" in request['request']:
                 msg['animation'] = {}
-                msg['animation']['config'] = {}
-                msg['animation']['config']['Shoulder scaption'] = animation_data.animations['Shoulder scaption']
+                msg['animation']['config'] = anim #animation_data.animations #{}
+                #msg['animation']['config']['Shoulder scaption'] = animation_data.animations['Shoulder scaption']
                 msg['animation']['list'] = True
                 # print("Request: animation")
             if "control" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'play'
-                l = len(animation_data.animation_titles)-1
-                msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
+                l = len(exercise_set)-1 #len(animation_data.animation_titles)-1
+                msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
             if "stop" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'stop'

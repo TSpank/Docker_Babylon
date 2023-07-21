@@ -78,9 +78,10 @@ var Animations = (function() {
         }
       },
       animate: function (scene){
-        var skeleton = scene.getSkeletonByName("Armature");
+        var skeleton = scene.getSkeletonById("Ghost");
         // scene.skeletons[0].returnToRest(true);
-        
+        //skeleton.returnToRest(true);
+        // reset(skeleton);
         //var root =  scene.getMeshByName('__root__');
         //console.log(skeleton);
         for (let key in _animations)

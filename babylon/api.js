@@ -2,26 +2,32 @@ function Process_json(rotationValues,angles)
 {
     try{
         values = {};
-        parse_data(scene.getSkeletonByName("Armature"), "undefined",angles);
+        if( skeleton == null )
+        {
+            skeleton = scene.getSkeletonById("Primary");
+        }
+        parse_data(skeleton, "undefined",angles);
         try{
             json_data = JSON.parse(rotationValues);
+            // console.log(rotationValues);
             rotationValues = "{}";
                 
             if (typeof(json_data['animation']) != "undefined")
             {	
                 if (typeof(json_data['animation']['config']) != "undefined")
                 {
-                    pose_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }");
-                    values = pose_data['pose'];
-                    // console.log('Animation Received');
-                    // console.log(values);
-                    parse_data(scene.getSkeletonByName("Armature"),values);
+                   // pose_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }");
+                    values = json_data['animation']['config'];//pose_data['pose'];
+                    console.log('Animation Received');
+                    console.log(values);
+                    // parse_data(skeleton,values);
                     //console.log(json_data['animation']['config']);
                     animations = json_data['animation']['config'];
                     Animations.loadAnimations(animations);
                     Animations.animate(scene);
                     scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
                 }
+
                 if (typeof(json_data['animation']['list']) != "undefined")
                 {
                     const animation_list = scene.animationGroups.map(function(item){ return item.name;}); 
@@ -51,8 +57,8 @@ function Process_json(rotationValues,angles)
             {
                 values = json_data['pose'];
                 // console.log('Animation Received');
-                // console.log(values);
-                parse_data(scene.getSkeletonByName("Armature"),values);
+                console.log(values);
+                parse_data(skeleton,values);
             }
             if (typeof(json_data['control']) != "undefined")
             {
@@ -107,32 +113,53 @@ function Process_json(rotationValues,angles)
         //Pan Camera view
         if (camera_dummy.position != camera_dynamic.position )
         {
-            if( steps_perc == 0.0)
-            {
-                cam_dir = direction(camera_dynamic.position,camera_dummy.position);
-                cam_dist = distance(camera_dynamic.position,camera_dummy.position);
-                cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
-                cam_start = camera_dynamic.position;
-                //console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
-            }
-            if ( steps_perc >= 1.0 )
-            {
-                // camera_dynamic.position = camera_dummy.position;
-                steps_perc = 0.0; // keep variable zero for next slerp	
-            } else
-            {
-                [x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
-                [x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
-                var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
-                var dist = distance(camera_dummy.position,camera_dummy.target);
-                var new_pos_dist = distance(new_pos,camera_dummy.target);
-                var f = dist/new_pos_dist;
-                if (f > 2.){
-                    f = dist;
+            if( true ){
+                // steps_perc  = 1.0;
+                // cam_dir = direction(camera_dynamic.position,camera_dummy.position);
+                // cam_dist = distance(camera_dynamic.position,camera_dummy.position);
+                // cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
+                // cam_start = camera_dynamic.position;
+                // [x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
+                // [x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
+                // var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
+                // var dist = distance(camera_dummy.position,camera_dummy.target);
+                // var new_pos_dist = distance(new_pos,camera_dummy.target);
+                // var f = dist/new_pos_dist;
+                // if (f > 2.){
+                //     f = dist;
+                // }
+                // var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
+                camera_dynamic.position = camera_dummy.position;
+                camera_dynamic.setTarget( camera_dummy.target );
+                // camera_dynamic = camera_dummy;
+            } else {	
+                if( steps_perc == 0.0)
+                {
+                    cam_dir = direction(camera_dynamic.position,camera_dummy.position);
+                    cam_dist = distance(camera_dynamic.position,camera_dummy.position);
+                    cam_dir_target = direction(camera_dynamic.position,camera_dummy.target);
+                    cam_start = camera_dynamic.position;
+                    //console.log("Distance: " + cam_dist +" Direction: " + cam_dir + " Target Dir: " + cam_dir_target);
                 }
-                var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
-                camera_dynamic.position = new_pos2;
-                steps_perc +=0.01;		
+                if ( steps_perc >= 1.0 )
+                {
+                    // camera_dynamic.position = camera_dummy.position;
+                    steps_perc = 0.0; // keep variable zero for next slerp	
+                } else
+                {
+                    [x0,y0,z0] = [cam_start.x,cam_start.y,cam_start.z];
+                    [x1,y1,z1] = [cam_dir.x,cam_dir.y,cam_dir.z];
+                    var new_pos = new BABYLON.Vector3((x1*steps_perc+x0),(y1*steps_perc+y0),(z1*steps_perc+z0))
+                    var dist = distance(camera_dummy.position,camera_dummy.target);
+                    var new_pos_dist = distance(new_pos,camera_dummy.target);
+                    var f = dist/new_pos_dist;
+                    if (f > 2.){
+                        f = dist;
+                    }
+                    var new_pos2 = new BABYLON.Vector3(new_pos.x*f,new_pos.y*f,new_pos.z);
+                    camera_dynamic.position = new_pos2;
+                    steps_perc +=0.01;		
+                }
             }
         } else {
             steps_perc = 0.0; // keep variable zero for next slerp									
