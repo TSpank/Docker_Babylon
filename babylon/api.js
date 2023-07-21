@@ -24,7 +24,9 @@ function Process_json(rotationValues,angles)
                     //console.log(json_data['animation']['config']);
                     animations = json_data['animation']['config'];
                     Animations.loadAnimations(animations);
-                    Animations.animate(scene);
+                    Animations.animate(scene,scene.getSkeletonById("Primary"));
+                    scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+                    Animations.animate(scene,scene.getSkeletonById("Ghost"));
                     scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
                 }
 
@@ -73,8 +75,6 @@ function Process_json(rotationValues,angles)
                 }
                 
                 var animation_command = cntrl['command'];
-                // console.log('control Received: '+ cntrl['command'] + " " + cntrl['animation']);
-                // scene.animationGroups.forEach(function(item){ item.stop();});
                 if (animation_command == "play")
                 {
                     scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
@@ -85,7 +85,6 @@ function Process_json(rotationValues,angles)
                 {
                     var active_animation = false;
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
-                    // console.log('Active Animation: ' + active_animation);
                 }
             }
         } catch (err)

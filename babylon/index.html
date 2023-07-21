@@ -257,12 +257,8 @@
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
-				//skeleton = skeletons[0];
 				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y;
-				camera_dummy.position.y = _y;
-				camera_dummy.target.y = _y;
-				camera_dynamic = camera_dummy;					
-				
+				CameraY(_y);
 				// if (debug){
 				// 	let skelViewer = new BABYLON.Debug.SkeletonViewer(
 				// 		skeletons[0], meshes.find((m)=>{return m.name.includes("__root__")}), scene
@@ -278,7 +274,7 @@
 				skeletons[0].id = "Ghost";
 				meshes[0].rotationQuaternion = null;
 				//skeleton = skeletons[0];	
-				// meshes[0].position.z = -0.3;
+				meshes[0].position.z = -0.5;
 				
 				console.log("Success 2");
 				// if (debug){
@@ -302,15 +298,15 @@
 					m.material = greenMat;
 					m.renderOutline = true;
 					m.outlineWidth = 0.001;
-					m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.5);	
+					m.outlineColor = new BABYLON.Color4(1.,0.,0.,0.5);	
 					m.isVisible = false;			
 				});
 				// reset(skeletons[0]);
 				
 				
 				
-				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
-				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
+				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
+				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
 
 				scene.registerBeforeRender(function() {

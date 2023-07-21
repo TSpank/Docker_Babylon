@@ -77,13 +77,8 @@ var Animations = (function() {
             }
         }
       },
-      animate: function (scene){
-        var skeleton = scene.getSkeletonById("Ghost");
-        // scene.skeletons[0].returnToRest(true);
-        //skeleton.returnToRest(true);
-        // reset(skeleton);
-        //var root =  scene.getMeshByName('__root__');
-        //console.log(skeleton);
+      animate: function (scene,_skeleton){
+        var skeleton = _skeleton;
         for (let key in _animations)
         {
             var oldAnimation = scene.getAnimationGroupByName(key);
