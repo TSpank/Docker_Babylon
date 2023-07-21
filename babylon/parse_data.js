@@ -1,13 +1,41 @@
+function reset(skeleton)
+{
+	// LEFT Shoulder		   
+	skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
+	skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
+	skeleton.bones[11].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+	skeleton.bones[12].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+	// RIGHT Shoulder
+	skeleton.bones[33].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5); 
+	skeleton.bones[34].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
+	skeleton.bones[35].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+	skeleton.bones[36].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+
+	//Neck
+	skeleton.bones[4].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+	//Head
+	skeleton.bones[5].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+	// Upper Back
+	skeleton.bones[1].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+	skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+	// Lower Back
+	skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
+	skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+}
+
 function parse_data(skeleton,values,angles)
 {
-	// return skeleton;
+	
+	//return skeleton;
 	/*
 
 	USED FOR TESTING
 	AVATAR ANIMATION FROM SLIDER DATA
 
 	*/
-	if ( angles != null )
+	if (  angles != null )
 	{
 		// console.log(angles);
 		animate_lower_back = true;
@@ -49,18 +77,18 @@ function parse_data(skeleton,values,angles)
 		beta_lower_l = angles.theta_armright_lower_beta;
 		gamma_lower_l = angles.theta_armright_lower_gamma;
 
-		var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,beta_upper_l,gamma_upper_l);
-		var q33c_l = skeleton.bones[9].getTransformNode().rotationQuaternion;
-		var q34r_l = new BABYLON.Quaternion(0.707,0.707,0.0,0.0).multiply(BABYLON.Quaternion.Inverse(q33c_l).multiply(rotation_upper_left));
+		// var rotation_upper_left = BABYLON.Quaternion.FromEulerAngles(alpha_upper_l,beta_upper_l,gamma_upper_l);
+		// var q33c_l = skeleton.bones[9].getTransformNode().rotationQuaternion;
+		// var q34r_l = new BABYLON.Quaternion(0.707,0.707,0.0,0.0).multiply(BABYLON.Quaternion.Inverse(q33c_l).multiply(rotation_upper_left));
 		
-		// Rotation
-		var q34_l = q34r_l.multiply(rotation_upper_left).multiply(BABYLON.Quaternion.Inverse(q34r_l));
-		skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(q34_l);
+		// // Rotation
+		// var q34_l = q34r_l.multiply(rotation_upper_left).multiply(BABYLON.Quaternion.Inverse(q34r_l));
+		// skeleton.bones[10].getTransformNode().rotationQuaternion.multiplyInPlace(q34_l);
 
-		var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_l,-beta_lower_l,-gamma_lower_l);
-		var q34c_l = skeleton.bones[10].getTransformNode().rotationQuaternion;
-		var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
-		skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
+		// var rotation_lower_left = BABYLON.Quaternion.FromEulerAngles(alpha_lower_l,-beta_lower_l,-gamma_lower_l);
+		// var q34c_l = skeleton.bones[10].getTransformNode().rotationQuaternion;
+		// var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+		// skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
 
 
 		var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
@@ -77,7 +105,28 @@ function parse_data(skeleton,values,angles)
 
 		
 	} else {
+		// LEFT Shoulder		   
+		skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
+		skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
+		skeleton.bones[11].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
 
+		// RIGHT Shoulder
+		skeleton.bones[33].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5); 
+		skeleton.bones[34].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
+		skeleton.bones[35].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
+
+		//Neck
+		skeleton.bones[4].getTransformNode().rotation = BABYLON.Vector3.Zero();
+		//Head
+		skeleton.bones[5].getTransformNode().rotation = BABYLON.Vector3.Zero();
+
+		// Upper Back
+		skeleton.bones[1].getTransformNode().rotation = BABYLON.Vector3.Zero();
+		skeleton.bones[2].getTransformNode().rotation = BABYLON.Vector3.Zero();
+		// Lower Back
+		skeleton.bones[3].getTransformNode().rotation = BABYLON.Vector3.Zero();
+
+		skeleton.bones[0].getTransformNode().rotation = BABYLON.Vector3.Zero();
 		/*
 
 			AVATAR ANIMATION FROM SENSORS DATA
@@ -87,28 +136,7 @@ function parse_data(skeleton,values,angles)
 		{
 			let animate_lower_back = true;
 			
-			// LEFT Shoulder		   
-			skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
-			skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
-			skeleton.bones[11].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
 			
-			// RIGHT Shoulder
-			skeleton.bones[33].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,-0.5,0.5,0.5); 
-			skeleton.bones[34].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);
-			skeleton.bones[35].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.0,0.0,0.0,1.0);
-
-			//Neck
-			skeleton.bones[4].getTransformNode().rotation = BABYLON.Vector3.Zero();
-			//Head
-			skeleton.bones[5].getTransformNode().rotation = BABYLON.Vector3.Zero();
-
-			// Upper Back
-			skeleton.bones[1].getTransformNode().rotation = BABYLON.Vector3.Zero();
-			skeleton.bones[2].getTransformNode().rotation = BABYLON.Vector3.Zero();
-			// Lower Back
-			skeleton.bones[3].getTransformNode().rotation = BABYLON.Vector3.Zero();
-
-			skeleton.bones[0].getTransformNode().rotation = BABYLON.Vector3.Zero();
 			//Chest
 			let pitch = -values['theta_torso_pitch_r'];
 			let bend = -values['theta_torso_bend_r'];
