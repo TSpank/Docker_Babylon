@@ -79,6 +79,7 @@ var Animations = (function() {
       },
       animate: function (scene,_skeleton){
         var skeleton = _skeleton;
+        _skeleton.returnToRest();
         for (let key in _animations)
         {
             var oldAnimation = scene.getAnimationGroupByName(key);

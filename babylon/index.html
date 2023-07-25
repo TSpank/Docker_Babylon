@@ -234,11 +234,11 @@
 			var cam_start = new BABYLON.Vector3(0,0,0);
 			var cam_dir = new BABYLON.Vector3(0,0,0);
 			
-            [camera_dummy,camera_dynamic] = Init_cameras(scene)
+			[camera_dummy,camera_dynamic] = Init_cameras(scene);
             
 			camera_dummy.position.y = _y;
 			camera_dummy.target.y = _y;
-			camera_dynamic = camera_dummy;
+			camera_dynamic = camera_dummy.clone();
             if (debug)
             {
                 setup_buttons(advancedTexture,camera_dummy,scene,angles);
@@ -253,12 +253,14 @@
 			var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 			scene.requestRotations = requestRotations;
 			avatar = "Mojo Female 1c.glb";
-			//avatar = "avatar.glb";
+			
+			avatar = "avatar.glb";
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
+				// skeleton = skeletons[0];	
 				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y;
-				CameraY(_y);
+				// meshes[0].rotationQuaternion = null;
 				// if (debug){
 				// 	let skelViewer = new BABYLON.Debug.SkeletonViewer(
 				// 		skeletons[0], meshes.find((m)=>{return m.name.includes("__root__")}), scene
@@ -267,14 +269,16 @@
 				// Animations.loadAnimations(arm_quaternions);	
 				reset(skeletons[0]);
 				console.log("Success 1");
+				
 			},function (event){console.log("Progress1:",event)},function (scene, message, exception){console.log("Error: ",message)},null);
 	
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				// var gl = new BABYLON.GlowLayer("glow", scene);
 				skeletons[0].id = "Ghost";
 				meshes[0].rotationQuaternion = null;
-				//skeleton = skeletons[0];	
-				meshes[0].position.z = -0.5;
+				// skeleton = skeletons[0];	
+				meshes[0].position.z = 0.3;
+				// meshes[0].position.x = -0.3;
 				
 				console.log("Success 2");
 				// if (debug){
@@ -286,11 +290,11 @@
 					Outline Material
 				*/
 				var greenMat = new BABYLON.StandardMaterial("greenMat", scene);
-				greenMat.alpha = 1.0;
+				greenMat.alpha = 0.1;
 				greenMat.emissiveColor =  new BABYLON.Color3(1, 1, 1); 
 				greenMat.diffuseColor = new BABYLON.Color3(1, 1, 1); // Set a solid white color
 				greenMat.specularColor = new BABYLON.Color3(1, 1, 1); // Disable specular highlights
-				greenMat.alpha = 0.5;
+				// greenMat.alpha = 0.9;
 				greenMat.alphaMode = 4;
 				greenMat.specularPower = 0;
 
@@ -298,10 +302,10 @@
 					m.material = greenMat;
 					m.renderOutline = true;
 					m.outlineWidth = 0.001;
-					m.outlineColor = new BABYLON.Color4(1.,0.,0.,0.5);	
-					m.isVisible = false;			
+					m.outlineColor = new BABYLON.Color4(1.,0.,0.,0.5);						
+					//m.isVisible = false;							
 				});
-				// reset(skeletons[0]);
+				//reset(skeletons[0]);
 				
 				
 				
@@ -380,6 +384,7 @@
         // Resize
         window.addEventListener("resize", function () {
             engine.resize();
+			UpdateCameraZoom();
 			
         });
     </script>

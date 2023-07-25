@@ -66,6 +66,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Right.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(-2, 1.7, 0.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
+			CameraY(1.3);
 		})
 		advancedTexture.addControl(Right);
 
@@ -80,6 +81,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Front.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(0, 1.7, -2.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
+			CameraY(1.3);
 		})
 		advancedTexture.addControl(Front);
 
@@ -108,6 +110,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		FR.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(-2, 1.7, -2.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
+			CameraY(1.3);
 		})
 		advancedTexture.addControl(FR);
 
@@ -161,6 +164,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		FL.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(2, 1.7, -2.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
+			CameraY(1.3);
 		})
 		advancedTexture.addControl(FL);
 	
@@ -175,6 +179,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Back.onPointerDownObservable.add(()=> {
 			camera_dummy.position = new BABYLON.Vector3(0, 1.7, 2.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
+			CameraY(1.3);
 		})
 		advancedTexture.addControl(Back);
 					
@@ -185,7 +190,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 					
 					
 
-	var Back = BABYLON.GUI.Button.CreateSimpleButton("Pose", "pose");
+	var Back = BABYLON.GUI.Button.CreateSimpleButton("Pose", "pose")
 		Back.width = "120px";
 		Back.height = height;
 		Back.color = "black";
@@ -278,7 +283,10 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Back.top = "-0%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+			// scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+			// reset(scene.skeletons[1]);
+			scene.skeletons[1].returnToRest();
+			reset(scene.getSkeletonById("Ghost"));
 		})
 		advancedTexture.addControl(Back);
 

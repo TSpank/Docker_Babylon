@@ -24,10 +24,15 @@ function Process_json(rotationValues,angles)
                     //console.log(json_data['animation']['config']);
                     animations = json_data['animation']['config'];
                     Animations.loadAnimations(animations);
-                    Animations.animate(scene,scene.getSkeletonById("Primary"));
-                    scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+                    // Animations.animate(scene,scene.getSkeletonById("Primary"));
+                    // Animations.animate(scene,scene.skeletons[0]);
+                    // skeleton = scene.skeletons[0];
+                    // scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+                    // Animations.animate(scene,scene.skeletons[1]);
+                    // skeleton = scene.skeletons[1];
                     Animations.animate(scene,scene.getSkeletonById("Ghost"));
-                    scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+                    //scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+                    
                 }
 
                 if (typeof(json_data['animation']['list']) != "undefined")
@@ -164,6 +169,7 @@ function Process_json(rotationValues,angles)
             steps_perc = 0.0; // keep variable zero for next slerp									
         }
         camera_dynamic.setTarget(camera_dummy.target);
+        CameraY(_y);
         scene.activeCamera = camera_dynamic;		
     } catch(err) {
         console.log(err.message);

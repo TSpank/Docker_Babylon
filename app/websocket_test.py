@@ -11,10 +11,10 @@ import animation_data
 camera_index = 0
 camera_pos = [
     [-2, 1.5, 0.0],
-    [0, 1.5, -2.0],
     [-2, 1.5, -2.0],
+    [0 , 1.5, -2.0],    
     [2, 1.5, -2.0],
-    [0, 1.5, 2.0]]
+    [2, 1.5, 0.0]]
 
 def Mojo_message():
     mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
@@ -65,6 +65,47 @@ def default_msg():
     return msg
 
 exercise_set = ['All Reset',
+ 'Arm Reset',
+ 'Arm Cal 90',
+ 'Arm Cal 45',
+ 'Arm Cal 0',
+ 'Side Down',
+ 'Side Down Natural',
+ 'Neutral',
+ 'Side Abduction Palm Forward',
+ 'Side Abduction 45 Palm Forward',
+ 'Side Abduction 90 Palm Forward 2',
+ 'Side Abduction 90 Palm Forward',
+ 'Side Abduction 135 Palm Forward',
+ 'Side Abduction 180 Palm Forward',
+ 'Flexion 0',
+ 'Flexion 45',
+ 'Flexion 90',
+ 'Flexion 135',
+ 'Flexion 180',
+ 'Flexion -22.5',
+ 'Flexion -60',
+ 'Scaption 0',
+ 'Scaption 45',
+ 'Scaption 90',
+ 'Scaption 135',
+ 'Scaption 180',
+ 'Fore 0',
+ 'Fore 45',
+ 'Fore 90',
+ 'External Rotation',
+ 'Internal Rotation',
+ 'GHJT 0',
+ 'Elbow Flexion 45',
+ 'Shoulder Press Base',
+ 'Shoulder Press Extend',
+ 'Row -22.5',
+ 'Row 0',
+ 'Row 45',
+ 'Row abduction 75',
+ 'All Reset both']
+
+exercise_set_2 = ['All Reset',
  'Arm Reset',
  'Arm Cal 90',
  'Arm Cal 45',
