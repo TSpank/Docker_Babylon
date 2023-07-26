@@ -380,7 +380,7 @@ gl_FragColor = toGammaSpace(gl_FragColor);
 
 					meshes.forEach((m)=>{m.material=greenMat;m.isVisible = true; m.renderOutline = true;m.outlineWidth = 0.001;m.outlineColor = new BABYLON.Color4(0.2,0.2,0.2,0.5)});
 					// meshes[0].rotationQuaternion = null;
-					meshes[0].position.z = -0.0;
+					meshes[0].position.z = -0.01;
 					meshes[0].renderOutline = true;
 					//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
 					//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});					

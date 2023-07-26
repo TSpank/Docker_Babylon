@@ -286,7 +286,15 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 			// scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
 			// reset(scene.skeletons[1]);
 			scene.skeletons[1].returnToRest();
+			sliderAL.value = 0.0;
+			sliderAU.value = 0.0;
+			sliderBL.value = 0.0;
+			sliderBU.value = 0.0;
+			sliderGL.value = 0.0;
+			sliderGU.value = 0.0;
 			reset(scene.getSkeletonById("Ghost"));
+			reset(scene.getSkeletonById("Primary"));
+
 		})
 		advancedTexture.addControl(Back);
 
@@ -447,3 +455,4 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		panel.addControl(sliderGL);
 		// advancedTexture.addControl(slider);
 }
+

@@ -82,6 +82,7 @@ function Process_json(rotationValues,angles)
                 var animation_command = cntrl['command'];
                 if (animation_command == "play")
                 {
+                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
                     scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
                 } else if (animation_command == "stop")
                 {

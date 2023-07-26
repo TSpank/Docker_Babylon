@@ -151,6 +151,7 @@
         
 		function CameraY(y)
 		{
+			_y = y;
 			camera_dummy.position.y = y;
 			camera_dummy.target.y = y;
 			camera_dynamic.position.y = y;
@@ -200,6 +201,16 @@
 			dy = v2.y-v1.y;
 			dz = v2.z-v1.z;	
 			return Math.sqrt(dx*dx + dy*dy+ dz*dz);
+		}
+
+		function ShowAvatar(id,show)
+		{
+			scene.meshes.forEach((m) => {if(m.skeleton != null  && m.skeleton.id == id){m.isVisible = show}});
+		}
+
+		function ScaleAvatar(id,scale)
+		{
+			scene.meshes.forEach((m) => {if(m.skeleton != null  && m.skeleton.id == id){m.scaling = new BABYLON.Vector3(scale,scale,scale);}});
 		}
 
         var delayCreateScene = function () {
@@ -258,7 +269,7 @@
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
-				// skeleton = skeletons[0];	
+				skeleton = skeletons[0];	
 				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y;
 				// meshes[0].rotationQuaternion = null;
 				// if (debug){
@@ -267,7 +278,7 @@
 				// 	);
 				// }
 				// Animations.loadAnimations(arm_quaternions);	
-				reset(skeletons[0]);
+				//reset(skeletons[0]);
 				console.log("Success 1");
 				
 			},function (event){console.log("Progress1:",event)},function (scene, message, exception){console.log("Error: ",message)},null);
@@ -277,8 +288,9 @@
 				skeletons[0].id = "Ghost";
 				meshes[0].rotationQuaternion = null;
 				// skeleton = skeletons[0];	
-				meshes[0].position.z = 0.3;
-				// meshes[0].position.x = -0.3;
+				meshes[0].position.z = -0.0;
+				// meshes[0].position.x = -0.4;
+				// meshes[0].position.y = 1.5;
 				
 				console.log("Success 2");
 				// if (debug){
@@ -302,15 +314,16 @@
 					m.material = greenMat;
 					m.renderOutline = true;
 					m.outlineWidth = 0.001;
-					m.outlineColor = new BABYLON.Color4(1.,0.,0.,0.5);						
-					//m.isVisible = false;							
+					m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.5);						
+					m.isVisible = true;							
 				});
 				//reset(skeletons[0]);
+				// ScaleAvatar('Ghost',0.3)
 				
 				
 				
 				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
-				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
+				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
 
 				scene.registerBeforeRender(function() {

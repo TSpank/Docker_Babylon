@@ -64,6 +64,15 @@ def default_msg():
     msg['control'] = {'command':'pause','animation':''}
     return msg
 
+exercise_set_1 = [
+ 'Shoulder flexion',
+ 'Shoulder scaption',
+ 'Shoulder abduction',
+ 'Shoulder extension',
+ 'Row neutral',
+ 'Row abduction',
+ 'Elbow flexion',
+]
 exercise_set = ['All Reset',
  'Arm Reset',
  'Arm Cal 90',
@@ -214,15 +223,18 @@ async def handle_websocket(websocket, path):
                 # print(f"camera: {camera} Target: {target}")   
             if "animation" in request['request']:
                 msg['animation'] = {}
-                msg['animation']['config'] = anim #animation_data.animations #{}
+                # msg['animation']['config'] = anim #animation_data.animations #{}
+                msg['animation']['config'] = animation_data.animations #{}
                 #msg['animation']['config']['Shoulder scaption'] = animation_data.animations['Shoulder scaption']
                 msg['animation']['list'] = True
                 # print("Request: animation")
             if "control" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'play'
-                l = len(exercise_set)-1 #len(animation_data.animation_titles)-1
+                l = len(exercise_set)-1 #
+                # l = len(animation_data.animation_titles)-1
                 msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
+                # msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
             if "stop" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'stop'

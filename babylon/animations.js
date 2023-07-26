@@ -90,7 +90,14 @@ var Animations = (function() {
             var animationGroup = new BABYLON.AnimationGroup(key);
             // animationGroup.
             for (let bone in _animations[key])
-            {                
+            {         
+              //console.log(bone)      ;
+              if ( bone == "RightArm" 
+              || bone == "RightForeArm" 
+              // || bone == "LeftArm" 
+              // || bone == "LeftForeArm" 
+              )
+              {
                 try{
                     var index;
                     if (bone == "Bone"){
@@ -122,6 +129,7 @@ var Animations = (function() {
                 {
                     console.log(key,bone,index);
                 }
+              }
             }
         }
       }
