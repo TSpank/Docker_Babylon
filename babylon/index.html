@@ -169,7 +169,7 @@
 			orthoBottom = -engine.getRenderHeight() / orthoScale;
 			orthoLeft = -engine.getRenderWidth() / orthoScale;
 			orthoRight = engine.getRenderWidth() / orthoScale;
-
+			// Orthographic camera update
 			camera_dynamic.orthoTop = orthoTop;
 			camera_dynamic.orthoBottom = orthoBottom;
 			camera_dynamic.orthoLeft = orthoLeft;
@@ -178,6 +178,9 @@
 			camera_dummy.orthoBottom = orthoBottom;
 			camera_dummy.orthoLeft = orthoLeft;
 			camera_dummy.orthoRight = orthoRight;
+			// Perspective Camera Update
+			camera_dummy.position.z = -2.0/camera_zoom;
+			camera_dynamic.position.z = -2.0/camera_zoom;
 			console.log("Zoom Updated:",camera_zoom);
 		}
         
