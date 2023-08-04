@@ -148,6 +148,9 @@
 		var orthoLeft;
 		var orthoRight;
 		var skeleton = null;
+		var gizmo = null;
+		var arrow = null;
+		var utilLayer = null;
         
 		function CameraY(y)
 		{
@@ -216,6 +219,31 @@
 			scene.meshes.forEach((m) => {if(m.skeleton != null  && m.skeleton.id == id){m.scaling = new BABYLON.Vector3(scale,scale,scale);}});
 		}
 
+		function DisposeAvatar(id)
+		{
+			var count = 100;
+			while( count > 0 )
+			{
+				count = 0;
+				scene.meshes.forEach((m) => {if(m.skeleton != null  && m.skeleton.id == id){
+					console.log("Mesh: "+ m.name);
+					count += 1;
+					if (m.material != null )
+					{
+						materialId = m.material.uniqueId;
+						console.log("Material: " + scene.getMaterialByUniqueID(materialId).name)
+						scene.getMaterialByUniqueID(materialId).dispose();
+					}
+					m.dispose();							
+				}});
+			}
+			skeleton = scene.getSkeletonById(id);
+			if (skeleton != null )
+			{
+				skeleton.dispose();
+			}
+		}
+
         var delayCreateScene = function () {
             
             var scene = new BABYLON.Scene(engine);  
@@ -259,6 +287,11 @@
                 
             }
 
+			/*
+
+				Default Scene Init
+
+			*/
 			BABYLON.SceneLoader.ShowLoadingScreen = false;
 			scene.createDefaultCamera(true, true, true);
 			var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
@@ -266,26 +299,105 @@
 			env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
 			var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 			scene.requestRotations = requestRotations;
-			avatar = "Mojo Female 1c.glb";
 			
+			/*
+
+				Utility Layer
+
+			*/
+			utilLayer = new BABYLON.UtilityLayerRenderer(scene);
+			utilLayer.utilityLayerScene.autoClearDepthAndStencil = true;
+			utilLayer.shouldRender = true;
+			// const gizmoManager = new BABYLON.GizmoManager(scene);
+			// gizmoManager.positionGizmoEnabled = true;
+			// gizmoManager.rotationGizmoEnabled = true;
+			// gizmoManager.scaleGizmoEnabled = true;
+			// gizmoManager.boundingBoxGizmoEnabled = false;
+			
+			function createArrow(size, color) {
+				var arrow = new BABYLON.MeshBuilder.CreateLines("arrow", {
+					points: [
+					new BABYLON.Vector3(0, size / 10, 0),
+					new BABYLON.Vector3(size - size / 5,  size / 10, 0),
+					new BABYLON.Vector3(size - size / 5, size / 5, 0),
+					new BABYLON.Vector3(size, 0, 0),
+					new BABYLON.Vector3(size - size / 5, -size / 5, 0),
+					new BABYLON.Vector3(size - size / 5,  -size / 10, 0),
+					new BABYLON.Vector3(0, -size / 10, 0),
+					new BABYLON.Vector3(0, size / 10, 0),
+					// new BABYLON.Vector3(size - size / 5, size / 5, 0),
+					// new BABYLON.Vector3(size - size / 5, size / 5, 0),
+					// new BABYLON.Vector3(size - size / 5, size / 5, 0),
+					],
+					//colors: [color, color, color, color, color,color,color,color], // Color for each vertex (here, using the same color)
+					updatable: true, // Allow the mesh to be updated if needed
+				});
+				// arrow.color = BABYLON.Color3(0.62, 0, 0);
+				// var arrowMat = new BABYLON.StandardMaterial("arrowMat", scene);
+				// arrowMat.emissiveColor =  color; 
+				// arrowMat.diffuseColor = color; // Set a solid white color
+				// //arrowMat.specularColor = color; // Disable specular highlights
+				// arrow.material = arrowMat;
+				
+				return arrow;
+			}
+			var arrowSize = 0.1; // Replace with the desired arrow length
+			var arrowColor = new BABYLON.Color3(1, 1, 0); // Red arrow color (replace with your desired color)
+
+			//arrow = createArrow(arrowSize, arrowColor);
+			// arrow.position = new BABYLON.Vector3(1, 1, -1); // Replace with the desired position
+			//arrow.rotation = new BABYLON.Vector3(0, 0, Math.PI / 4);
+			// utilLayer.utilityLayerScene.addMesh(arrow);
+			//scene.attachedMesh(arrow);
+			// // Keep the gizmo fixed to world rotation
+			// gizmo.updateGizmoRotationToMatchAttachedMesh = false;
+			// gizmo.updateGizmoPositionToMatchAttachedMesh = true;
+			new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), utilLayer.utilityLayerScene);
+
+			avatar = "Mojo Female 1c.glb";
 			avatar = "avatar.glb";
+			BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", scene, function (meshes, particleSystems, skeletons) {
+				// meshes[0].attachT				
+			});
+
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
 				skeleton = skeletons[0];	
 				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y;
-				// meshes[0].rotationQuaternion = null;
+				meshes[0].rotationQuaternion = null;
 				// if (debug){
 				// 	let skelViewer = new BABYLON.Debug.SkeletonViewer(
 				// 		skeletons[0], meshes.find((m)=>{return m.name.includes("__root__")}), scene
 				// 	);
 				// }
+				//utilLayer.utilityLayerScene.debugLayer.show()
+				scene.debugLayer.show()
 				// Animations.loadAnimations(arm_quaternions);	
 				//reset(skeletons[0]);
+				//gizmo = new BABYLON.AxisDragGizmo(new BABYLON.Vector3(2,0,0), BABYLON.Color3.FromHexString("#00b894"), utilLayer);
+				//gizmo.attachedMesh = meshes.find((m)=>{return m.name.includes("Head")});
+				// var transformGizmo = new BABYLON.TransformGizmo(scene);
+				// transformGizmo.attachToMesh(gizmo.attachedMesh);
+				// gizmo.snapDistance = 0.3;
+				// gizmoManager.attachableMeshes = meshes;
+				// gizmoManager.usePointerToAttachGizmos = false;
+				// gizmoManager.attachToMesh(gizmo.attachedMesh);
+				// arrow.attachToBone(scene.skeletons[0].bones[34]);
+				// arrow.position = new BABYLON.Vector3(0,0.25,-0.05);
+				// arrow.rotation = new BABYLON.Vector3(0,Math.PI/2, 0);
+				var pointer = scene.meshes.find(m=>m.name.includes("Pointer"));
+				pointer.attachToBone(scene.skeletons[0].bones[34]);
+				pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
+				pointer.rotation = new BABYLON.Vector3(0,Math.PI/2.,0);
+				// const trail = new BABYLON.TrailMesh("new", arrow, utilLayer.utilityLayerScene, 0.5, 6, true);
 				console.log("Success 1");
 				
 			},function (event){console.log("Progress1:",event)},function (scene, message, exception){console.log("Error: ",message)},null);
 	
+			// BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", utilLayer.utilityLayerScene, function (meshes, particleSystems, skeletons) {
+			
+
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				// var gl = new BABYLON.GlowLayer("glow", scene);
 				skeletons[0].id = "Ghost";
@@ -305,7 +417,7 @@
 					Outline Material
 				*/
 				var greenMat = new BABYLON.StandardMaterial("greenMat", scene);
-				greenMat.alpha = 0.1;
+				greenMat.alpha = 0.10;
 				greenMat.emissiveColor =  new BABYLON.Color3(1, 1, 1); 
 				greenMat.diffuseColor = new BABYLON.Color3(1, 1, 1); // Set a solid white color
 				greenMat.specularColor = new BABYLON.Color3(1, 1, 1); // Disable specular highlights
@@ -315,10 +427,10 @@
 
 				meshes.forEach(m => {
 					m.material = greenMat;
-					m.renderOutline = true;
-					m.outlineWidth = 0.001;
-					m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.5);						
-					m.isVisible = true;							
+					// m.renderOutline = true;
+					m.outlineWidth = 0.005;
+					m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.1);									
+					m.isVisible = false;							
 				});
 				//reset(skeletons[0]);
 				// ScaleAvatar('Ghost',0.3)
@@ -326,7 +438,7 @@
 				
 				
 				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
-				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
+				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
 
 				scene.registerBeforeRender(function() {

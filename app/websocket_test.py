@@ -9,12 +9,20 @@ import ast
 import animation_data
 # %%
 camera_index = 0
+zoomWide = 2.0
+zoomNarrow = 0.6
 camera_pos = [
-    [-2, 1.5, 0.0],
-    [-2, 1.5, -2.0],
-    [0 , 1.5, -2.0],    
-    [2, 1.5, -2.0],
-    [2, 1.5, 0.0]]
+    [-1*zoomWide, 1.5, 0.0],
+    [-1*zoomWide, 1.5, -1*zoomWide],
+    [0 , 1.5, -1*zoomWide],    
+    [1*zoomWide, 1.5, -1*zoomWide],
+    [1*zoomWide, 1.5, 0.0],
+    [-1*zoomNarrow, 1.5, 0.0],
+    [-1*zoomNarrow, 1.5, -1*zoomNarrow],
+    [0 , 1.5, -1*zoomNarrow],    
+    [1*zoomNarrow, 1.5, -1*zoomNarrow],
+    [1*zoomNarrow, 1.5, 0.0]
+    ]
 
 def Mojo_message():
     mojo_message = {'pose': {'theta_torso_pitch_r': '0.0',
@@ -233,8 +241,8 @@ async def handle_websocket(websocket, path):
                 msg['control']['command'] = 'play'
                 l = len(exercise_set)-1 #
                 # l = len(animation_data.animation_titles)-1
-                msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
-                # msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
+                # msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
+                msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
             if "stop" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'stop'
