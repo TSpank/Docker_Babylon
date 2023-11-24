@@ -92,8 +92,9 @@ var Animations = (function() {
             for (let bone in _animations[key])
             {         
               //console.log(bone)      ;
-              if ( bone == "RightArm" 
-              || bone == "RightForeArm" 
+              if ( true
+                //bone == "RightArm" 
+              //|| bone == "RightForeArm" 
               // || bone == "LeftArm" 
               // || bone == "LeftForeArm" 
               )

@@ -7,7 +7,7 @@ import json
 import random
 import ast
 import animation_data
-# %%
+
 camera_index = 0
 zoomWide = 2.0
 zoomNarrow = 0.6
@@ -194,6 +194,11 @@ exercise_set_2 = ['All Reset',
  'Head Levator Scapula',
  'All Reset both']
 
+exercise_set = list(animation_data.animations.keys()) #animation_data.animation_titles
+
+# exercise_set = ['All Reset','FistLeft', 'FistRight']
+
+
 anim = {key: animation_data.animations[key] for key in exercise_set if key in animation_data.animations}
 async def handle_websocket(websocket, path):
     global message
@@ -241,8 +246,8 @@ async def handle_websocket(websocket, path):
                 msg['control']['command'] = 'play'
                 l = len(exercise_set)-1 #
                 # l = len(animation_data.animation_titles)-1
-                # msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
-                msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
+                msg['control']['animation'] = exercise_set[random.randint(0,l)]#animation_data.animation_titles[random.randint(0,l)]
+                # msg['control']['animation'] = animation_data.animation_titles[random.randint(0,l)]
             if "stop" in request['request']:
                 msg['control'] = {}
                 msg['control']['command'] = 'stop'

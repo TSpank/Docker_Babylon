@@ -298,6 +298,36 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		})
 		advancedTexture.addControl(Back);
 
+		var Back = BABYLON.GUI.Button.CreateSimpleButton("Weight", "Weight");
+		Back.width = "120px";
+		Back.height = height;
+		Back.color = "black";
+		Back.background = "transparent";
+		Back.left = "-40%";
+		Back.top = "2%";
+		Back.cornerRadius = 5;
+		Back.onPointerDownObservable.add(()=> {
+			// scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
+			// reset(scene.skeletons[1]);
+			// scene.skeletons[1].returnToRest();
+			// sliderAL.value = 0.0;
+			// sliderAU.value = 0.0;
+			// sliderBL.value = 0.0;
+			// sliderBU.value = 0.0;
+			// sliderGL.value = 0.0;
+			// sliderGU.value = 0.0;
+			// reset(scene.getSkeletonById("Ghost"));
+			// reset(scene.getSkeletonById("Primary"));
+			scene.getAnimationGroupByName('Fist Right').start(false, 1.0,0,1, false );
+			var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
+			pointer.parent = scene.getNodeByName("RightHand");
+			//pointer.attachToBone(scene.skeletons[0].bones[35]);
+			pointer.rotation = new BABYLON.Vector3(0,-Math.PI/2,0);
+			pointer.position = new BABYLON.Vector3(0,0.08,0.03);
+
+		})
+		advancedTexture.addControl(Back);
+
 		// alpha_upper_r = Math.PI/2.2 - values['theta_armright_upper_alpha'];
 		// beta_upper_r =    values['theta_armright_upper_beta'];
 		// gamma_upper_r =   values['theta_armright_upper_gamma'];

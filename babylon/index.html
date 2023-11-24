@@ -124,10 +124,12 @@
 	</script>
 	<script>
 		var _y = 1.7;
+		// var pointer = null;
 		var arm_offset = 0;
 		var arm_front = 0.0;
 		var debug = true;
 		var gauges = true;
+		// var pointer = null;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
         var scene = null;
@@ -356,10 +358,13 @@
 
 			avatar = "Mojo Female 1c.glb";
 			avatar = "avatar.glb";
-			BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", scene, function (meshes, particleSystems, skeletons) {
-				// meshes[0].attachT				
-			});
-
+			// BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", scene, function (meshes, particleSystems, skeletons) {
+			// 	// meshes[0].attachT				
+			// });
+			
+			BABYLON.SceneLoader.ImportMesh("","", "weight.glb", scene, function (meshes, particleSystems, skeletons) {
+				// console.log(meshes[0].name)
+			})
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
@@ -371,7 +376,7 @@
 				// 		skeletons[0], meshes.find((m)=>{return m.name.includes("__root__")}), scene
 				// 	);
 				// }
-				//utilLayer.utilityLayerScene.debugLayer.show()
+				// utilLayer.utilityLayerScene.debugLayer.show()
 				scene.debugLayer.show()
 				// Animations.loadAnimations(arm_quaternions);	
 				//reset(skeletons[0]);
@@ -386,18 +391,26 @@
 				// arrow.attachToBone(scene.skeletons[0].bones[34]);
 				// arrow.position = new BABYLON.Vector3(0,0.25,-0.05);
 				// arrow.rotation = new BABYLON.Vector3(0,Math.PI/2, 0);
-				var pointer = scene.meshes.find(m=>m.name.includes("Pointer"));
-				pointer.attachToBone(scene.skeletons[0].bones[34]);
-				pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
-				pointer.rotation = new BABYLON.Vector3(0,Math.PI/2.,0);
+				// var pointer = scene.meshes.find(m=>m.name.includes("Pointer"));
+				// var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
+				// pointer.attachToBone(scene.skeletons[0].bones[35]);
+				// pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
+				// pointer.rotation = new BABYLON.Vector3(-Math.PI/2,0.,-Math.PI/2);
+				// pointer.rotation.x += Math.PI; // Adjust X-axis rotation if needed
+				//pointer.rotation.y += Math.PI; // Adjust Y-axis rotation if needed
 				// const trail = new BABYLON.TrailMesh("new", arrow, utilLayer.utilityLayerScene, 0.5, 6, true);
+				var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
+				// pointer.parent = scene.getNodeByName("RightForeArm");
+				// pointer.attachToBone(scene.skeletons[0].bones[35]);
+				// pointer.rotation = new BABYLON.Vector3(-Math.PI/2,0.,0.);
+				// pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
 				console.log("Success 1");
 				
 			},function (event){console.log("Progress1:",event)},function (scene, message, exception){console.log("Error: ",message)},null);
 	
+			
 			// BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", utilLayer.utilityLayerScene, function (meshes, particleSystems, skeletons) {
 			
-
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				// var gl = new BABYLON.GlowLayer("glow", scene);
 				skeletons[0].id = "Ghost";
@@ -441,8 +454,19 @@
 				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
 
+			// var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
+			// pointer.attachToBone(scene.skeletons[0].bones[35]);
+			// pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
+			// scene.afterRender(function() {
+				// scene.registerAfterRender(function(){
+				// 	var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
+				// 	pointer.attachToBone(scene.skeletons[0].bones[35]);
+				// 	pointer.position = new BABYLON.Vector3(0,0.25,-0.05);	
+				// })
+			// })
 				scene.registerBeforeRender(function() {
 					let mesh = scene.getMeshByName('__root__');
+					
 					if (mesh) {						
 						mesh.rotationQuaternion = null;
 						getRotations();
