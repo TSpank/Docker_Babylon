@@ -43,7 +43,7 @@
         <script src="controls.js"></script>
         <script src="parse_data.js"></script>
         <script src="cameras.js"></script>
-		<script src="animation_data.js"></script>
+		<!-- <script src="animation_data.js"></script> -->
 		<script src="animations.js"></script>
 		<script src="api.js"></script>
         <style>
@@ -378,7 +378,7 @@
 				// }
 				// utilLayer.utilityLayerScene.debugLayer.show()
 				scene.debugLayer.show()
-				// Animations.loadAnimations(arm_quaternions);	
+				Animations.loadAnimations(arm_quaternions);	
 				//reset(skeletons[0]);
 				//gizmo = new BABYLON.AxisDragGizmo(new BABYLON.Vector3(2,0,0), BABYLON.Color3.FromHexString("#00b894"), utilLayer);
 				//gizmo.attachedMesh = meshes.find((m)=>{return m.name.includes("Head")});

@@ -8,9 +8,16 @@ function Process_json(rotationValues,angles)
         }
         parse_data(skeleton, "undefined",angles);
         try{
-            json_data = JSON.parse(rotationValues);
+            if ( rotationValues.toString() =='[object Object]' )
+            {
+                json_data = "undefined";
+            } else 
+            {
+                json_data = JSON.parse(rotationValues);
+            }
             // console.log(rotationValues);
-            rotationValues = "{}";
+            // rotationValues = "{}";
+            //rotationValues = '{"prose": {"theta_torso_pitch_r": "0.0", "theta_torso_bend_r": "0.0", "theta_torso_yaw_r": "0.0", "theta_torso_roll_r": "0.0", "theta_torso_tilt_r": "0.0", "theta_head_pitch_h": "0.0", "theta_head_yaw_h": "0.0", "theta_head_roll_h": "0.0", "theta_armright_upper_alpha": "0.1", "theta_armright_upper_beta": "0.0", "theta_armright_upper_gamma": "0.0", "theta_armright_lower_alpha": "0.0", "theta_armright_lower_beta": "0.0", "theta_armright_lower_gamma": "0.0", "theta_armright_elbow": "0.0", "theta_armleft_upper_alpha": "0.0", "theta_armleft_upper_beta": "0.0", "theta_armleft_upper_gamma": "0.0", "theta_armleft_lower_alpha": "0.0", "theta_armleft_lower_beta": "0.0", "theta_armleft_lower_gamma": "0.0", "theta_armleft_elbow": "0.0"}}';
                 
             if (typeof(json_data['animation']) != "undefined")
             {	
@@ -30,6 +37,7 @@ function Process_json(rotationValues,angles)
                     // scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
                     // Animations.animate(scene,scene.skeletons[1]);
                     // skeleton = scene.skeletons[1];
+                    reset(scene.getSkeletonById("Ghost"));
                     Animations.animate(scene,scene.getSkeletonById("Ghost"));
                     //scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
                     
@@ -83,7 +91,9 @@ function Process_json(rotationValues,angles)
                 if (animation_command == "play")
                 {
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
-                    scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
+                    scene.activeAnimation = scene.getAnimationGroupByName(animation_name)
+                    scene.activeAnimation.start()
+                    // scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
                 } else if (animation_command == "stop")
                 {
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
@@ -95,7 +105,7 @@ function Process_json(rotationValues,angles)
             }
         } catch (err)
         {
-            //console.log(err);
+            console.log(err);
         }
 
         

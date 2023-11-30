@@ -483,6 +483,27 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 			angles.theta_armright_lower_gamma = value;	
 		});
 		panel.addControl(sliderGL);
+
+		var headerROM = new BABYLON.GUI.TextBlock();
+		headerROM.text = "ROM: 0 %";
+		headerROM.height = "30px";
+		headerROM.color = "white";
+		panel.addControl(headerROM); 
+
+		var sliderROM = new BABYLON.GUI.Slider();
+		sliderROM.minimum = 0;
+		sliderROM.maximum = 100;
+		sliderROM.value = 0.0;
+		sliderROM.height = "20px";
+		sliderROM.width = "200px";
+		sliderROM.onValueChangedObservable.add(function(value) {
+			headerROM.text = "ROM: " + (value).toFixed(2) + " %";			
+			range = (scene.activeAnimation.from +  scene.activeAnimation.to) / 100.0;
+			frame = Math.round(range * value);
+			scene.activeAnimation.stop();
+			scene.activeAnimation.start(false,1.0,frame,frame,false);
+		});
+		panel.addControl(sliderROM);
 		// advancedTexture.addControl(slider);
 }
 
