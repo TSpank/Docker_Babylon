@@ -128,7 +128,7 @@
 		// var pointer = null;
 		var arm_offset = 0;
 		var arm_front = 0.0;
-		var debug = true;
+		var debug = false;
 		var gauges = true;
 		// var pointer = null;
         var canvas = document.getElementById("renderCanvas");
@@ -349,7 +349,9 @@
 				// 	);
 				// }
 				// utilLayer.utilityLayerScene.debugLayer.show()
-				scene.debugLayer.show()
+				if (debug){
+					scene.debugLayer.show()
+				}
 				Animations.loadAnimations(arm_quaternions);	
 				var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
 				console.log("Success 1");
