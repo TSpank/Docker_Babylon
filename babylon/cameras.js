@@ -5,10 +5,10 @@ function Init_cameras(scene)
 	// camera_dummy.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
 	// camera_dummy.minZ = -1;
 	
-	camera_dynamic = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.7, -2.0), scene, true);
+	camera_dynamic = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1.7, -1.0), scene, true);
 	camera_dynamic.setTarget(new BABYLON.Vector3(0,1.7,0));
 	camera_dynamic.minZ = -1;
-	camera_dynamic.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+	camera_dynamic.mode = BABYLON.Camera.PERSPECTIVE_CAMERA; //BABYLON.Camera.ORTHOGRAPHIC_CAMERA; //
 	camera_dynamic.orthoTop = 1;
 	camera_dynamic.orthoBottom = -1;
 	camera_dynamic.orthoRight = 1;

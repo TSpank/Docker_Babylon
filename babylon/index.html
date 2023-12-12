@@ -43,7 +43,7 @@
         <script src="controls.js"></script>
         <script src="parse_data.js"></script>
         <script src="cameras.js"></script>
-		<!-- <script src="animation_data.js"></script> -->
+		<script src="animation_data.js"></script>
 		<script src="animations.js"></script>
 		<script src="api.js"></script>
         <style>
@@ -153,6 +153,12 @@
 		var gizmo = null;
 		var arrow = null;
 		var utilLayer = null;
+		var ghostMaterial = null;
+		var ghost = null;
+		var balls = [];
+		var coin = null;
+		var coinAnimation = null;
+		var ballsTouch = 0;
         
 		function CameraY(y)
 		{
@@ -296,10 +302,52 @@
 			*/
 			BABYLON.SceneLoader.ShowLoadingScreen = false;
 			scene.createDefaultCamera(true, true, true);
-			var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(10,1.6,0), scene);
-			env =  scene.createDefaultEnvironment();
-			env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
-			var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+			// var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(2,1.6,-1), scene);
+			// light.intesity = 100;
+			// // env =  scene.createDefaultEnvironment();
+			// // env.setMainColor(new BABYLON.Color3(0.112,0.638,0.356)); 
+			// // env.setMainColor(new BABYLON.Color3(1,1,1)); 
+			// var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(-2,1.6,-1), scene);
+			// var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0,1.6,-2), scene);
+			// //var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1,-5), scene);
+			// var pointLight1 = new BABYLON.PointLight("pointLight1", new BABYLON.Vector3(0, 2, -1), scene);
+			// var pointLight2 = new BABYLON.PointLight("pointLight2", new BABYLON.Vector3(1, 1, 1), scene);
+			// var pointLight3 = new BABYLON.PointLight("pointLight3", new BABYLON.Vector3(-50, 1, 1), scene);
+
+			// // Set light intensity and color for each point light
+			// pointLight3.intensity = 1;
+			// pointLight1.diffuse = new BABYLON.Color3(1, 1, 1);
+			
+			// Set light intensity and color for each point light
+			//pointLight3.intensity = 1;
+			//pointLight1.diffuse = new BABYLON.Color3(1, 1, 1);
+			var hemiLight1 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1,0), scene);
+			hemiLight1.intensity = 0.25;
+			// var spotLight1 = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(1, 1.7, -0.5),new BABYLON.Vector3(0, 0,1), Math.PI *2, 2, scene);
+			// var spotLight2 = new BABYLON.SpotLight("spotLight2", new BABYLON.Vector3(1, 1.7, 0),new BABYLON.Vector3(-0.5,-0.5,-0.5), Math.PI , 2, scene);
+			// var spotLight3 = new BABYLON.SpotLight("spotLight3", new BABYLON.Vector3(-0,2,-0.5),new BABYLON.Vector3(0, 0, 1), Math.PI *2, 2, scene);
+			// spotLight1.intensity = 4;
+			// spotLight2.intensity = 4;
+			// spotLight3.intensity = 1;
+			// const light = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, -1, 0), scene);
+
+			// var spotLight1 = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(2, 4, 2),  new BABYLON.Vector3(0, -1,0), Math.PI *2/3, 2, scene);
+			// var spotLight2 = new BABYLON.SpotLight("spotLight2", new BABYLON.Vector3(-2, 4, 2), new BABYLON.Vector3(0, -1,0), Math.PI *2/3, 2, scene);
+			// var spotLight3 = new BABYLON.SpotLight("spotLight3", new BABYLON.Vector3(2, 4, -2), new BABYLON.Vector3(0, -1,0), Math.PI *2/3, 2, scene);
+			// var spotLight4 = new BABYLON.SpotLight("spotLight4", new BABYLON.Vector3(-2, 4, -2),new BABYLON.Vector3(0, -1,0), Math.PI *2/3, 2, scene);
+			var spotLight5 = new BABYLON.SpotLight("spotLight5", new BABYLON.Vector3(0, 3, 2), new BABYLON.Vector3(0, -1,0), Math.PI *4/5, scene);
+			var spotLight6 = new BABYLON.SpotLight("spotLight6", new BABYLON.Vector3(0, 3, -2), new BABYLON.Vector3(0, -1,0), Math.PI *4/5, 2, scene);
+			// var spotLight7 = new BABYLON.SpotLight("spotLight7", new BABYLON.Vector3(0, 1.8, 2), new BABYLON.Vector3(0, 1,0), Math.PI, scene);
+			// var spotLight8 = new BABYLON.SpotLight("spotLight8", new BABYLON.Vector3(0, 1.8, -2), new BABYLON.Vector3(0, 1,0), Math.PI, 2, scene);
+			// spotLight1.intensity = 10;
+			// spotLight2.intensity = 10;
+			// spotLight3.intensity = 10;
+			// spotLight4.intensity = 10;
+			spotLight5.intensity = 25;
+			spotLight6.intensity = 50;
+			// spotLight5.intensity = 10;
+			// spotLight6.intensity = 10;
+			// const light = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 1, 0), scene);
 			scene.requestRotations = requestRotations;
 			
 			/*
@@ -354,7 +402,7 @@
 			// // Keep the gizmo fixed to world rotation
 			// gizmo.updateGizmoRotationToMatchAttachedMesh = false;
 			// gizmo.updateGizmoPositionToMatchAttachedMesh = true;
-			new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), utilLayer.utilityLayerScene);
+			// new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), utilLayer.utilityLayerScene);
 
 			avatar = "Mojo Female 1c.glb";
 			avatar = "avatar.glb";
@@ -362,14 +410,44 @@
 			// 	// meshes[0].attachT				
 			// });
 			
-			BABYLON.SceneLoader.ImportMesh("","", "weight.glb", scene, function (meshes, particleSystems, skeletons) {
-				// console.log(meshes[0].name)
-			})
+			// BABYLON.SceneLoader.ImportMesh("","", "weight.glb", scene, function (meshes, particleSystems, skeletons) {
+			// 	// console.log(meshes[0].name)
+			// })
+			// BABYLON.SceneLoader.ImportMesh("","", "Studio6.glb", scene, function (meshes, particleSystems, skeletons) {
+			// 	// console.log(meshes[0].name)
+			// 	meshes[0].rotationQuaternion = null;
+			// })
+			
+			
+			// Assuming 'scene' is your Babylon.js scene
+
+			// // Create a sphere to represent the gas bubble
+			// var gasBubble = BABYLON.MeshBuilder.CreateSphere("gasBubble", { diameter: 0.1 }, scene);
+			// gasBubble.position = new BABYLON.Vector3(1,1.7,-0.5);
+
+			// // Create a standard material for the gas bubble
+			// var gasBubbleMaterial = new BABYLON.StandardMaterial("gasBubbleMaterial", scene);
+
+			// // Apply texture and material properties for the gas bubble effect
+			// // You can use an environment texture for iridescence or color textures for different effects
+			// // Example: Using a spherical environment texture
+			// // gasBubbleMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/environment.dds", scene);?
+			// // gasBubbleMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+			// gasBubbleMaterial.diffuseColor = new BABYLON.Color3(1,1,1); // Set bubble color
+			// // gasBubbleMaterial.alpha = 1; // Set transparency
+
+			// // Apply the material to the gas bubble mesh
+			// gasBubble.material = gasBubbleMaterial;
+
+			// BABYLON.SceneLoader.ImportMesh("","", "Skeleton.glb", scene, function (meshes, particleSystems, skeletons) {
+			// 	// console.log(meshes[0].name)
+			// 	meshes[0].rotationQuaternion = null;
+			// })
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				
 				skeletons[0].id = "Primary";
 				skeleton = skeletons[0];	
-				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y;
+				_y = meshes.find((m)=>{return m.name.includes("Top")}).getBoundingInfo().boundingBox.center.y+0.2;
 				meshes[0].rotationQuaternion = null;
 				// if (debug){
 				// 	let skelViewer = new BABYLON.Debug.SkeletonViewer(
@@ -417,6 +495,7 @@
 				meshes[0].rotationQuaternion = null;
 				// skeleton = skeletons[0];	
 				meshes[0].position.z = -0.0;
+				
 				// meshes[0].position.x = -0.4;
 				// meshes[0].position.y = 1.5;
 				
@@ -429,31 +508,79 @@
 				/*
 					Outline Material
 				*/
-				var greenMat = new BABYLON.StandardMaterial("greenMat", scene);
-				greenMat.alpha = 0.10;
-				greenMat.emissiveColor =  new BABYLON.Color3(1, 1, 1); 
-				greenMat.diffuseColor = new BABYLON.Color3(1, 1, 1); // Set a solid white color
-				greenMat.specularColor = new BABYLON.Color3(1, 1, 1); // Disable specular highlights
+				ghostMaterial = new BABYLON.PBRMaterial("GhostMaterial", scene);
+				// ghostMaterial.alpha = 0.10;
+				// ghostMaterial.emissiveColor =  new BABYLON.Color3(1, 1, 1); 
+				// ghostMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1); // Set a solid white color
+				// ghostMaterial.specularColor = new BABYLON.Color3(1, 1, 1); // Disable specular highlights
 				// greenMat.alpha = 0.9;
-				greenMat.alphaMode = 4;
-				greenMat.specularPower = 0;
+				// ghostMaterial.alphaMode = 4;
+				// ghostMaterial.specularPower = 0;
+				ghostMaterial.baseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+				ghostMaterial.metallic = 0.1;
+				ghostMaterial.roughness = 0.3;
+				ghostMaterial.transparencyMode = 2;
+				ghostMaterial.alpha = 0.3;
 
+				ghost = [];
 				meshes.forEach(m => {
-					m.material = greenMat;
+					ghost.push(m);
+					m.material = ghostMaterial;
 					// m.renderOutline = true;
-					m.outlineWidth = 0.005;
-					m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.1);									
+					// m.outlineWidth = 0.005;
+					// m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.1);									
 					m.isVisible = false;							
 				});
 				//reset(skeletons[0]);
 				// ScaleAvatar('Ghost',0.3)
 				
-				
-				
+				//ghostMaterial = scene.getMaterialByName("GlassBallBlue")
+				// Animations.loadAnimations(arm_quaternions);	
+				ghost.forEach(m=>{m.material = ghostMaterial;});
 				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
 				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
+			
+			BABYLON.SceneLoader.ImportMesh("","", "Studio6.glb", scene, function (meshes, particleSystems, skeletons) {
+			//BABYLON.SceneLoader.ImportMesh("","", "TranquilYoga.glb", scene, function (meshes, particleSystems, skeletons) {
+			// BABYLON.SceneLoader.ImportMesh("","", "interior.glb", scene, function (meshes, particleSystems, skeletons) {
+				meshes[0].rotationQuaternion = null;
+			})
 
+			BABYLON.SceneLoader.ImportMesh("","", "CoinNoPain.glb", scene, function (meshes, particleSystems, skeletons) {
+				meshes[0].scale = 10;
+				meshes[0].rotationQuaternion = null;
+				coin = meshes[0];
+				// Animations: Scale the balloon to simulate inflation
+				var animationKeys = [];
+				animationKeys.push({
+					frame: 0,
+					value: 0
+				});
+				animationKeys.push({
+					frame: 30, // Change the number of frames as needed for the desired duration
+					value: Math.PI * 2 // Full rotation (360 degrees) around the y-axis
+				});
+
+				// Create the animation
+				var rotateAnimation = new BABYLON.Animation(
+					"rotationAnimation", // Animation name
+					"rotation.y", // Property to animate (y-axis rotation)
+					30, // Frames per second
+					BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+					BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE // Loop the animation
+				);
+
+				// Assign the animation keys
+				rotateAnimation.setKeys(animationKeys);
+
+				coin.animations.push(rotateAnimation);
+				coinAnimation = rotateAnimation;
+				scene.beginAnimation(coin, 0, 30, true);
+							
+
+				//  = 10;
+			})
 			// var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
 			// pointer.attachToBone(scene.skeletons[0].bones[35]);
 			// pointer.position = new BABYLON.Vector3(0,0.25,-0.05);
@@ -491,6 +618,35 @@
 								angles = null;
 							}
 							Process_json(rotationValues,angles);	
+							try{
+								var minDist = 999;
+								// balls.forEach(b=>{
+								// 	if (b.touch == false){
+								// 		dist = distance(b.position,scene.skeletons[0].bones[45].getAbsolutePosition());
+								// 		if (dist < minDist){
+								// 			minDist = dist;
+								// 		}
+								// 	}
+								// 	// if( dist < 0.2 ){
+								// 	// 	b.material.albedoColor = new BABYLON.Color3( 0, 1, 0);
+								// 	// } else{
+								// 	// 	b.material.albedoColor = new BABYLON.Color3( 1, 0, 0);
+								// 	// }
+								// })
+								// if (minDist >= 0.45){
+								// 	newBall = balls[0].clone("Ball"+balls.length.toString());
+								// 	newBall.position = scene.skeletons[0].bones[45].getAbsolutePosition();
+								// 	// newBall.material = balls[0].material.clone("Ball"+balls.length.toString());
+								// 	newBall.animations.push(coinAnimation);
+								// 	scene.beginAnimation(newBall, 0, 100, true);
+								// 	balls.push(newBall);
+								// }
+								
+								// console.log(minDist);
+								
+							} catch {
+
+							}
 							
 					    }
 					}
