@@ -72,7 +72,7 @@ function Process_json(rotationValues,angles)
             {
                 values = json_data['pose'];
                 // console.log('Animation Received');
-                console.log(values);
+                // console.log(values);
                 parse_data(skeleton,values);
             }
             if (typeof(json_data['control']) != "undefined")
