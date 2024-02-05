@@ -15,7 +15,7 @@ function Init_cameras(scene)
 	camera_dynamic.orthoLeft = -1;
 	camera_dummy = camera_dynamic.clone();
 	CameraY(1.3);
-	UpdateCameraZoom(1);
+	UpdateCameraZoom(0.5);
 	return [camera_dummy,camera_dynamic];
 }
 

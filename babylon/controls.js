@@ -321,10 +321,11 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 			// sliderGU.value = 0.0;
 			// reset(scene.getSkeletonById("Ghost"));
 			// reset(scene.getSkeletonById("Primary"));
-			scene.getAnimationGroupByName('Fist').start(false, 1.0,0,1, false );
+
+			// scene.getAnimationGroupByName('Fist both').start(false, 1.0,0,1, false );
 			var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
 			pointer.parent = scene.getNodeByName("RightHand");
-			//pointer.attachToBone(scene.skeletons[0].bones[35]);
+				//pointer.attachToBone(scene.skeletons[0].bones[35]);
 			pointer.rotation = new BABYLON.Vector3(0,-Math.PI/2,0);
 			pointer.position = new BABYLON.Vector3(0,0.08,0.03);
 

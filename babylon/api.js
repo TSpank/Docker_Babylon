@@ -4,9 +4,13 @@ function Process_json(rotationValues,angles)
         values = {};
         if( skeleton == null )
         {
-            skeleton = scene.getSkeletonById("Primary");
+            // skeleton = scene.getSkeletonById("Primary");
+            skeleton = scene.getSkeletonById("Ghost");
+            
+            
         }
-        parse_data(skeleton, "undefined",angles);
+        // parse_data(skeleton, null,angles);
+        // parse_data(skeleton, "undefined",angles);
         try{
             if ( rotationValues.toString() =='[object Object]' )
             {
@@ -23,30 +27,55 @@ function Process_json(rotationValues,angles)
             {	
                 if (typeof(json_data['animation']['config']) != "undefined")
                 {
-                   // pose_data = JSON.parse("{ \"pose\": {  \"theta_torso_pitch_r\" : \"0.0\",  \"theta_torso_bend_r\" : \"0.0\",  \"theta_torso_yaw_r\" : \"0.0\", \"theta_torso_roll_r\" : \"0.0\",  \"theta_torso_tilt_r\" : \"0.0\",  \"theta_head_pitch_h\" : \"0.0\",  \"theta_head_yaw_h\" : \"0.0\",  \"theta_head_roll_h\" : \"0.0\",  \"theta_armright_upper_alpha\" : \"0.0\", \"theta_armright_upper_beta\" : \"0.0\",  \"theta_armright_upper_gamma\" : \"0.0\",  \"theta_armright_lower_alpha\" : \"0.0\",  \"theta_armright_lower_beta\" : \"0.0\",  \"theta_armright_lower_gamma\" : \"0.0\",  \"theta_armright_elbow\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_alpha\" : \"0.0\",  \"theta_armleft_upper_beta\" : \"0.0\",  \"theta_armleft_upper_gamma\" : \"0.0\",  \"theta_armleft_lower_alpha\" : \"0.0\",  \"theta_armleft_lower_beta\" : \"0.0\",  \"theta_armleft_lower_gamma\" : \"0.0\",  \"theta_armleft_elbow\" : \"0.0\"} }");
                     values = json_data['animation']['config'];//pose_data['pose'];
                     console.log('Animation Received');
                     console.log(values);
-                    // parse_data(skeleton,values);
-                    //console.log(json_data['animation']['config']);
-                    animations = json_data['animation']['config'];
-                    Animations.loadAnimations(animations);
-                    // Animations.animate(scene,scene.getSkeletonById("Primary"));
-                    // Animations.animate(scene,scene.skeletons[0]);
-                    // skeleton = scene.skeletons[0];
-                    // scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
-                    // Animations.animate(scene,scene.skeletons[1]);
-                    // skeleton = scene.skeletons[1];
-                    reset(scene.getSkeletonById("Ghost"));
-                    Animations.animate(scene,scene.getSkeletonById("Ghost"));
-                    //scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
-                    
+
+                    reset(scene.getSkeletonById("Primary"));
+                    if (json_data['animation']['equipment'] == 1)
+                    {
+
+
+                        BABYLON.SceneLoader.ImportMesh("","", "weight_left.glb", scene, function (meshes, particleSystems, skeletons) {
+                            meshes[0].scale = 1;
+                            meshes[0].position = new BABYLON.Vector3(0, 0.08, 0.03);
+                            meshes[0].visibility = 0.0;
+                            meshes[0].parent = scene.getNodeByName("LeftHand");
+                            meshes[0].rotation = new BABYLON.Vector3(0,Math.PI/2,0);
+                            });
+
+                        BABYLON.SceneLoader.ImportMesh("","", "weight_right.glb", scene, function (meshes, particleSystems, skeletons) {
+                            meshes[0].scale = 1;
+                            meshes[0].position = new BABYLON.Vector3(0, 0.08, 0.03);
+                            meshes[0].visibility = 1;
+                            meshes[0].parent = scene.getNodeByName("RightHand");
+                            meshes[0].rotation = new BABYLON.Vector3(0,Math.PI/2,0);
+                            });
+
+
+                        Animations.loadAnimations(pose_animations);	
+                        Animations.animate(scene,scene.getSkeletonById("Primary"));
+                        scene.getAnimationGroupByName('Fist both').start(false, 2.0,0,1, true );
+
+                        animations = json_data['animation']['config'];
+                        Animations.loadAnimations(animations);
+                        Animations.animate(scene,scene.getSkeletonById("Primary"));
+                        scene.getAnimationGroupByName(json_data['animation']['name']).start(false, 2.0,0,1, true );
+
+                    }
+                    else if (json_data['animation']['equipment'] == 0)
+                    {
+                        animations = json_data['animation']['config'];
+                        Animations.loadAnimations(animations);
+                        Animations.animate(scene,scene.getSkeletonById("Primary"));
+                        scene.getAnimationGroupByName(json_data['animation']['name']).start(false, 2.0, 0, 1, true );
+                    }
+                
                 }
 
                 if (typeof(json_data['animation']['list']) != "undefined")
                 {
                     const animation_list = scene.animationGroups.map(function(item){ return item.name;}); 
-
                     scene.requestRotations(JSON.stringify({'animation':{'list':animation_list}}));
                 }
             }
@@ -68,6 +97,7 @@ function Process_json(rotationValues,angles)
                 }
                 // camera_dynamic.setTarget(new BABYLON.Vector3(cam_target[0],cam_target[1],cam_target[2]));
             }
+            
             if (typeof(json_data['pose']) != "undefined")
             {
                 values = json_data['pose'];
@@ -75,6 +105,7 @@ function Process_json(rotationValues,angles)
                 // console.log(values);
                 parse_data(skeleton,values);
             }
+            
             if (typeof(json_data['control']) != "undefined")
             {
                 var cntrl = json_data['control'];
@@ -90,18 +121,69 @@ function Process_json(rotationValues,angles)
                 var animation_command = cntrl['command'];
                 if (animation_command == "play")
                 {
-                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+                    // scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+
+                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); 
+                    console.log(animation_name + " play single"); return item.name} else { return "";}});
                     scene.activeAnimation = scene.getAnimationGroupByName(animation_name)
-                    scene.activeAnimation.start()
+                    if (scene.activeAnimation != null)
+                    {
+                        var frame;
+                        if (typeof (cntrl['framePercent']) != "undefined") {
+                            value = cntrl['framePercent'];
+                            // range = (scene.activeAnimation.to - scene.activeAnimation.from) / 100.0;
+                            range = (scene.activeAnimation.from + scene.activeAnimation.to) / 100.0;
+                            if (value > 100.0)
+                            {
+                                value = 100.0;  
+                            }
+                            frame = Math.round(range * value);
+                        }
+                        else 
+                        {
+                            if (typeof (cntrl['frameNumber']) != "undefined") {
+                                frame = cntrl['frameNumber'];
+                            }
+                            else {
+                                frame = scene.activeAnimation.from;
+                            }
+                        }
+                        // scene.activeAnimation.start()
+                        scene.activeAnimation.start(false, 1.0, frame, frame, false);
+                    }
+                    
                     // scene.getAnimationGroupByName(animation_name).start(false, 1.0,0,1, false ); //scene.getAnimationGroupByName(animation_name).start(true, 1.0,0,1, true );
                 } else if (animation_command == "stop")
                 {
-                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
+                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(animation_name + " stopped"); return item.name} else { return "";}});
                 } else if (animation_command == "active")
                 {
                     var active_animation = false;
                     scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
+                } else if (animation_command == "reset")
+                {
+                    reset(scene.getSkeletonById("Primary"));
                 }
+                else if (animation_command == "play_full")
+                {
+                    scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); 
+                    console.log(animation_name + " play full"); return item.name} else { return "";}});
+                    scene.activeAnimation = scene.getAnimationGroupByName(animation_name)
+                    if (scene.activeAnimation != null)
+                    {
+                        scene.activeAnimation.start(false, 1.0, scene.activeAnimation.from + 1, scene.activeAnimation.to, false);
+                    }
+                }
+                // else if (animation_command == "play_modification")
+                // {
+
+
+                // }
+            
+
+
+
+
             }
         } catch (err)
         {

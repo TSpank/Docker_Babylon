@@ -72,37 +72,54 @@
 			Android.showToast(toast);
 		}
 	</script>
+
 	<script type="text/javascript">
 		var rotationValues;
-	    var loopcounter = 0;
+	    var loopcounter = 0
 	    // const ul = document.getElementById('value');
 		var iOS_request = false;
 		function getRotations() {
 			if (iOS_request == false){
 				try{
-					const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
-					if (loopcounter >= 0)
+					loopcounter += 1;
+					if (loopcounter++ > 0)
 					{
 						loopcounter = 0;
+						const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
+
 						fetch(URL)
 						.then(res => res.text())
-						.then(function(text) {
+						.then(text => {
 							// ul.innerHTML = text;
 							rotationValues = text;
 						})
-						.catch();
-						// .catch(err => console.log(err));	
-					} else
-					{
-						loopcounter +=1;
+						.catch(error => console.error("Fetch Failure: ", error));
 					}
+
+//					if (loopcounter >= 0)
+//					{
+//						loopcounter = 0;
+//						fetch(URL)
+//						.then(res => res.text())
+//						//.then(function(text) {
+//						.then(text => {
+//							// ul.innerHTML = text;
+//							rotationValues = text;
+//						})
+//						.catch(error => console.error("Fetch Failure: ", error));
+//						  //.catch(err => console.log(err));	
+//					} else
+//					{
+//						loopcounter +=1;
+//					}
+
 				} catch {
 
 				}
 			}
 		}
-
 	</script>
+
 	<script>
 		var ws_open = false;
 		var websocket = new WebSocket("ws://localhost:8000/");
@@ -123,12 +140,13 @@
 			} 
 		}
 	</script>
+
 	<script>
 		var _y = 1.7;
 		// var pointer = null;
 		var arm_offset = 0;
 		var arm_front = 0.0;
-		var debug = false;
+		var debug =  true;
 		var gauges = false;
 		// var pointer = null;
         var canvas = document.getElementById("renderCanvas");
@@ -293,22 +311,17 @@
             if (debug)
             {
                 setup_buttons(advancedTexture,camera_dummy,scene,angles);
-                
             }
 
 			/*
-
 				Default Scene Init
-
 			*/
 			BABYLON.SceneLoader.ShowLoadingScreen = false;
 			scene.createDefaultCamera(true, true, true);
 			setup_lights(scene);
 			
 			/*
-
 				Utility Layer
-
 			*/
 			utilLayer = new BABYLON.UtilityLayerRenderer(scene);
 			utilLayer.utilityLayerScene.autoClearDepthAndStencil = true;
@@ -352,7 +365,7 @@
 				if (debug){
 					scene.debugLayer.show()
 				}
-				Animations.loadAnimations(arm_quaternions);	
+				Animations.loadAnimations(pose_animations);	
 				var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
 				console.log("Success 1");
 				
@@ -360,7 +373,7 @@
 	
 			
 			// BABYLON.SceneLoader.ImportMesh("","", "arrow.glb", utilLayer.utilityLayerScene, function (meshes, particleSystems, skeletons) {
-			
+			/* Set up Ghost Avatar */
 			BABYLON.SceneLoader.ImportMesh("","", avatar, scene, function (meshes, particleSystems, skeletons) {
 				// var gl = new BABYLON.GlowLayer("glow", scene);
 				skeletons[0].id = "Ghost";
@@ -372,10 +385,15 @@
 				*/
 				ghostMaterial = new BABYLON.PBRMaterial("GhostMaterial", scene);
 				ghostMaterial.baseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
-				ghostMaterial.metallic = 0.1;
 				ghostMaterial.roughness = 0.3;
 				ghostMaterial.transparencyMode = 2;
-				ghostMaterial.alpha = 0.3;
+				
+				
+				/* MAKE THE GHOST INVISIBLE */
+				//ghostMaterial.metallic = 0.1;
+				//ghostMaterial.alpha = 0.3;
+				ghostMaterial.metallic = 0;
+				ghostMaterial.alpha = 0;
 
 				ghost = [];
 				meshes.forEach(m => {
@@ -384,60 +402,103 @@
 					// m.renderOutline = true;
 					// m.outlineWidth = 0.005;
 					// m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.1);									
-					m.isVisible = false;							
+					m.isVisible = true;							
 				});
 				//reset(skeletons[0]);
 				// ScaleAvatar('Ghost',0.3)
 				
 				//ghostMaterial = scene.getMaterialByName("GlassBallBlue")
-				Animations.loadAnimations(arm_quaternions);	
+				Animations.loadAnimations(pose_animations);	
 				ghost.forEach(m=>{m.material = ghostMaterial;});
 				//meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")||m.name.includes("Head")||m.name.includes("Bottom")||m.name.includes("Foot")){m.isVisible = true;}});					
 				meshes.forEach((m)=>{if(m.name.includes("Wolf3D_Body")||m.name.includes("Top")){m.isVisible = true;}});		
 			},function (event){console.log("Progress2:",event)},function (scene, message, exception){console.log("Error 2: ",message)},null);
 			
+
+
+			/*  Set up studio environment */
+			//BABYLON.SceneLoader.ImportMesh("","", "Studio4.glb", scene, function (meshes, particleSystems, skeletons) {
 			BABYLON.SceneLoader.ImportMesh("","", "Studio6.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "MiniGYM.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "TranquilYoga.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "interior.glb", scene, function (meshes, particleSystems, skeletons) {
 				meshes[0].rotationQuaternion = null;
-			})
+			});
 
-			BABYLON.SceneLoader.ImportMesh("","", "CoinNoPain.glb", scene, function (meshes, particleSystems, skeletons) {
-				meshes[0].scale = 10;
-				meshes[0].rotationQuaternion = null;
-				coin = meshes[0];
-				// Animations: Scale the balloon to simulate inflation
-				var animationKeys = [];
-				animationKeys.push({
-					frame: 0,
-					value: 0
-				});
-				animationKeys.push({
-					frame: 30, // Change the number of frames as needed for the desired duration
-					value: Math.PI * 2 // Full rotation (360 degrees) around the y-axis
-				});
 
-				// Create the animation
-				var rotateAnimation = new BABYLON.Animation(
-					"rotationAnimation", // Animation name
-					"rotation.y", // Property to animate (y-axis rotation)
-					30, // Frames per second
-					BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-					BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE // Loop the animation
-				);
 
-				// Assign the animation keys
-				rotateAnimation.setKeys(animationKeys);
 
-				coin.animations.push(rotateAnimation);
-				coinAnimation = rotateAnimation;
-				scene.beginAnimation(coin, 0, 30, true);
+//				coin = meshes[0];
+//				// Animations: Scale the balloon to simulate inflation
+//				var animationKeys = [];
+//				animationKeys.push({
+//					frame: 0,
+//					value: 0
+//				});
+//				animationKeys.push({
+//					frame: 30, // Change the number of frames as needed for the desired duration
+//					value: Math.PI * 2 // Full rotation (360 degrees) around the y-axis
+//				});
+//
+//				// Create the animation
+//				var rotateAnimation = new BABYLON.Animation(
+//					"rotationAnimation", // Animation name
+//					"rotation.y", // Property to animate (y-axis rotation)
+//					30, // Frames per second
+//					BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+//					BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE // Loop the animation
+//				);
+//
+//				// Assign the animation keys
+//				rotateAnimation.setKeys(animationKeys);
+//
+//				coin.animations.push(rotateAnimation);
+//				coinAnimation = rotateAnimation;
+//				scene.beginAnimation(coin, 0, 30, true);
 							
 
 				//  = 10;
-			})
-			
+//			})
+
+
+//			BABYLON.SceneLoader.ImportMesh("","", "CoinNoPain.glb", scene, function (meshes, particleSystems, skeletons) {
+//				meshes[0].scale = 10;
+//				meshes[0].rotationQuaternion = null;
+//				coin = meshes[0];
+//				// Animations: Scale the balloon to simulate inflation
+//				var animationKeys = [];
+//				animationKeys.push({
+//					frame: 0,
+//					value: 0
+//				});
+//				animationKeys.push({
+//					frame: 30, // Change the number of frames as needed for the desired duration
+//					value: Math.PI * 2 // Full rotation (360 degrees) around the y-axis
+//				});
+//
+//				// Create the animation
+//				var rotateAnimation = new BABYLON.Animation(
+//					"rotationAnimation", // Animation name
+//					"rotation.y", // Property to animate (y-axis rotation)
+//					30, // Frames per second
+//					BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+//					BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE // Loop the animation
+//				);
+//
+//				// Assign the animation keys
+//				rotateAnimation.setKeys(animationKeys);
+//
+//				coin.animations.push(rotateAnimation);
+//				coinAnimation = rotateAnimation;
+//				scene.beginAnimation(coin, 0, 30, true);
+//							
+//
+//				//  = 10;
+//			})
+//			
+
+
+
 			scene.registerBeforeRender(function() {
 				let mesh = scene.getMeshByName('__root__');
 				
@@ -456,7 +517,7 @@
 						// {
 						// 	skeleton.bones[34].getTransformNode().rotate(BABYLON.Axis.X,0.01); 
 						// }
-						Process_json(rotationValues);	
+						//Process_json(rotationValues);	
 						if (gauges)
 						{
 							iOS_request = true;
@@ -494,7 +555,6 @@
 						} catch {
 
 						}
-						
 					}
 				}
 			})
@@ -544,6 +604,8 @@
         });
     </script>
 	<babylon model="avatar.glb"></babylon>
+
+
 	<!--<input type="button" value="Say hello" onClick="showAndroidToast('Hello Android!')" />-->
 </body>
 </html>

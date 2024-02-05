@@ -16,7 +16,8 @@ from flask_cors import CORS
 mqtt_server = "207.154.244.181"
 mqtt_port = 1883
 # mqtt_topic = "mojo/pose"
-mqtt_uuid = "#" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
+ mqtt_uuid = "#" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
+# mqtt_uuid = "jec" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
 mqtt_topic = f"mojo/iOS/{mqtt_uuid}"
 mqtt_client = "mojo_py_demo_2"
 mqtt_user = "scope_mosquitto"

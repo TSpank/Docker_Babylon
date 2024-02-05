@@ -28,7 +28,7 @@ function reset(_skeleton)
 function parse_data(skeleton,values,angles)
 {
 	
-	// return skeleton;
+	//return skeleton;
 	/*
 
 	USED FOR TESTING
@@ -58,9 +58,9 @@ function parse_data(skeleton,values,angles)
 		// Upper Back
 		skeleton.bones[1].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 		skeleton.bones[2].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
+
 		// Lower Back
 		skeleton.bones[3].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
-
 		skeleton.bones[0].getTransformNode().rotation = new BABYLON.Vector3(0.0,0.0,0.0);
 
 		alpha_upper_r = angles.theta_armright_upper_alpha;
@@ -90,10 +90,10 @@ function parse_data(skeleton,values,angles)
 		// var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
 		// skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
 
-
 		var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
 		var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
 		var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
+
 		// Rotation by q34r_r
 		var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
 		skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
@@ -117,25 +117,25 @@ function parse_data(skeleton,values,angles)
 
 		//Neck
 		skeleton.bones[4].getTransformNode().rotation = BABYLON.Vector3.Zero();
+
 		//Head
 		skeleton.bones[5].getTransformNode().rotation = BABYLON.Vector3.Zero();
 
 		// Upper Back
 		skeleton.bones[1].getTransformNode().rotation = BABYLON.Vector3.Zero();
 		skeleton.bones[2].getTransformNode().rotation = BABYLON.Vector3.Zero();
+
 		// Lower Back
 		skeleton.bones[3].getTransformNode().rotation = BABYLON.Vector3.Zero();
-
 		skeleton.bones[0].getTransformNode().rotation = BABYLON.Vector3.Zero();
+
 		/*
-
 			AVATAR ANIMATION FROM SENSORS DATA
-
 		*/
-		if (typeof(values) != "undefined")
+		if (typeof(values['theta_torso_pitch_r']) != "undefined")
+		// if (typeof(values) != "undefined")
 		{
 			let animate_lower_back = true;
-			
 			
 			//Chest
 			let pitch = -values['theta_torso_pitch_r'];
@@ -164,6 +164,7 @@ function parse_data(skeleton,values,angles)
 			let alpha_lower_l = values['theta_armleft_lower_alpha'];
 			let beta_lower_l =  values['theta_armleft_lower_beta'];
 			let gamma_lower_l = values['theta_armleft_lower_gamma'];
+
 			// Chest
 			// Lower Back
 			if (animate_lower_back == true)
@@ -173,6 +174,7 @@ function parse_data(skeleton,values,angles)
 				skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.X, -pitch );
 				skeleton.bones[1].getTransformNode().rotate(BABYLON.Axis.Z, -bend );
 			}
+
 			// Upper Back
 			skeleton.bones[3].getTransformNode().rotate(BABYLON.Axis.Z, tilt );
 			
