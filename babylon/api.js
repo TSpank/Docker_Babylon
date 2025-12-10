@@ -9,8 +9,12 @@ function Process_json(rotationValues,angles)
             
             
         }
-        // parse_data(skeleton, null,angles);
-        // parse_data(skeleton, "undefined",angles);
+
+        if ( angles != null )
+        {
+            parse_data(skeleton, "undefined",angles);
+            // parse_data(skeleton, null,angles);
+        }
         try{
             if ( rotationValues.toString() =='[object Object]' )
             {

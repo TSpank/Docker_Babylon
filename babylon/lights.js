@@ -45,6 +45,6 @@ function setup_lights(scene){
     // spotLight5.intensity = 10;
     // spotLight6.intensity = 10;
     // const light = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0, 1, 0), scene);
-    scene.requestRotations = requestRotations;
+    // scene.requestRotations = requestRotations;
 
 }

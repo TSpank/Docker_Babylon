@@ -90,21 +90,35 @@ function parse_data(skeleton,values,angles)
 		// var q35r_l = BABYLON.Quaternion.Inverse(q34c_l).multiply(rotation_lower_left).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
 		// skeleton.bones[11].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_l);
 
-		var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
-		var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
-		var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
+		intrinsic = false;
 
-		// Rotation by q34r_r
-		var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
-		skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
+		if ( intrinsic == true )
+		{
+			var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
+			var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
+			skeleton.bones[34].getTransformNode().rotationQuaternion = rotation_upper_right;
+			skeleton.bones[35].getTransformNode().rotationQuaternion = rotation_lower_right;
+		}
+		else
+		{
 
-		var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
-		var q34c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
-		var q35r_r = BABYLON.Quaternion.Inverse(q34c_r).multiply(rotation_lower_right).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
-		skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_r);
+			var rotation_upper_right = BABYLON.Quaternion.FromEulerAngles(alpha_upper_r,beta_upper_r,gamma_upper_r);
+			var q33c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+			var q34r_r = BABYLON.Quaternion.Inverse(q33c_r).multiply(rotation_upper_right);
 
+			// Rotation by q34r_r
+			var q34_r = q34r_r.multiply(rotation_upper_right).multiply(BABYLON.Quaternion.Inverse(q34r_r));
+			skeleton.bones[34].getTransformNode().rotationQuaternion.multiplyInPlace(q34_r);
+
+			var rotation_lower_right = BABYLON.Quaternion.FromEulerAngles(alpha_lower_r,beta_lower_r,gamma_lower_r);
+			var q34c_r = skeleton.bones[34].getTransformNode().rotationQuaternion;
+			var q35r_r = BABYLON.Quaternion.Inverse(q34c_r).multiply(rotation_lower_right).multiply(new BABYLON.Quaternion(0.707,0.0,0.0,0.707));
+			skeleton.bones[35].getTransformNode().rotationQuaternion.multiplyInPlace(q35r_r);
+		}
 		
-	} else {
+	} 
+	else 
+	{
 		// LEFT Shoulder		   
 		skeleton.bones[9].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.5,0.5,-0.5,0.5);    
 		skeleton.bones[10].getTransformNode().rotationQuaternion = new BABYLON.Quaternion(0.707,0.0,0.0,0.707);

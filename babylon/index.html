@@ -85,7 +85,8 @@
 					if (loopcounter++ > 0)
 					{
 						loopcounter = 0;
-						const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
+						//const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
+						const URL = 'https://127.0.0.1:5005';
 
 						fetch(URL)
 						.then(res => res.text())
@@ -121,24 +122,24 @@
 	</script>
 
 	<script>
-		var ws_open = false;
-		var websocket = new WebSocket("ws://localhost:8000/");
-		websocket.onopen = function() {
-			console.log("WebSocket Connected");
-			ws_open = true;
-		}
-		websocket.onmessage = function(event) {
-			// ul.innerHTML = event.data;
-			rotationValues = event.data;
-			console.log();
-		}
-		function requestRotations(request)
-		{
-			if( ws_open == true )
-			{
-				websocket.send(request);
-			} 
-		}
+//		var ws_open = false;
+//		var websocket = new WebSocket("ws://localhost:8000/");
+//		websocket.onopen = function() {
+//			console.log("WebSocket Connected");
+//			ws_open = true;
+//		}
+//		websocket.onmessage = function(event) {
+//			// ul.innerHTML = event.data;
+//			rotationValues = event.data;
+//			console.log();
+//		}
+//		function requestRotations(request)
+//		{
+//			if( ws_open == true )
+//			{
+//				websocket.send(request);
+//			} 
+//		}
 	</script>
 
 	<script>
@@ -146,8 +147,8 @@
 		// var pointer = null;
 		var arm_offset = 0;
 		var arm_front = 0.0;
-		var debug =  true;
-		var gauges = false;
+		var debug =  false;
+		var gauges = true;
 		// var pointer = null;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
@@ -308,7 +309,7 @@
 			camera_dummy.position.y = _y;
 			camera_dummy.target.y = _y;
 			camera_dynamic = camera_dummy.clone();
-            if (debug)
+            if (debug || gauges)
             {
                 setup_buttons(advancedTexture,camera_dummy,scene,angles);
             }
@@ -402,7 +403,6 @@
 					// m.renderOutline = true;
 					// m.outlineWidth = 0.005;
 					// m.outlineColor = new BABYLON.Color4(0.,0.,0.,0.1);									
-					m.isVisible = true;							
 				});
 				//reset(skeletons[0]);
 				// ScaleAvatar('Ghost',0.3)
@@ -522,6 +522,8 @@
 						{
 							iOS_request = true;
 							rotationValues = {};
+							Process_json(rotationValues,angles);	
+
 						} else {
 							angles = null;
 						}

@@ -2,9 +2,9 @@
     "configurations": [
         {
             "type": "msedge",
-            "name": "http://127.0.0.1:5500/babylon/index.html",
+            "name": "http://127.0.0.1:5000/babylon/index.html",
             "request": "launch",
-            "url": "http://127.0.0.1:5500/babylon/index.html"
+            "url": "http://127.0.0.1:5000/babylon/index.html"
         }
     ]
 }
