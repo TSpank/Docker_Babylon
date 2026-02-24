@@ -1,11 +1,30 @@
 
+
+function stopAllAnimationsByTarget (scene, target)
+{
+    var animatables = scene.getAllAnimatablesByTarget(target);
+    for (let i = 0; i < animatables.length; i++)
+    {
+        animatables[i].stop();
+    }
+}
+
+function stopAllAnimationsByGroupName (groupName)
+{
+    var group = scene.getAnimationGroupByName(groupName);
+    group.stop();
+}
+
+
+
+
 var Animations = (function() {
     var _animations;
     var animation_idx;
     var privateVariable = 'This variable is private and cannot be accessed from outside the module.';
   
     function privateFunction() {
-      console.log(privateVariable);
+              console.log(privateVariable);
     }
 
     function getAnimationName(item)
@@ -16,7 +35,7 @@ var Animations = (function() {
     return {
       publicVariable: 'This variable is public and can be accessed from outside the module.',
       printText: function() {
-        console.log(printText);
+                  console.log(printText);
       },
       Text: function() {
         return privateVariable;
@@ -67,19 +86,23 @@ var Animations = (function() {
         for (let k in _animations)
         {
             console.log(k);
-            for (let l in _animations[k])
+for (let l in _animations[k])
             {
-                // console.log(k + " - " + l);
-                for (let b in _animations[k][l])
+            // console.log(k + " - " + l);
+for (let b in _animations[k][l])
                 {
-                    console.log(k + " - " + l + " : " + b);
-                }
-            }
+                console.log(k + " - " + l + " : " + b);
+                          }
+          }
         }
       },
-      animate: function (scene,_skeleton){
-        var skeleton = _skeleton;
-        _skeleton.returnToRest();
+      animate: function (scene){
+        var skeleton = scene.getSkeletonByName("Armature");
+        // skeleton.returnToRest(true);
+        // scene.render();
+        
+        //var root =  scene.getMeshByName('__root__');
+        //console.log(skeleton);
         for (let key in _animations)
         {
             var oldAnimation = scene.getAnimationGroupByName(key);
@@ -90,15 +113,7 @@ var Animations = (function() {
             var animationGroup = new BABYLON.AnimationGroup(key);
             // animationGroup.
             for (let bone in _animations[key])
-            {         
-              //console.log(bone)      ;
-              if ( true
-                //bone == "RightArm" 
-              //|| bone == "RightForeArm" 
-              // || bone == "LeftArm" 
-              // || bone == "LeftForeArm" 
-              )
-              {
+            {                
                 try{
                     var index;
                     if (bone == "Bone"){
@@ -130,7 +145,6 @@ var Animations = (function() {
                 {
                     console.log(key,bone,index);
                 }
-              }
             }
         }
       }

@@ -35,6 +35,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 ip_uuid = {}
 messages = {}
+last_msg = None
 message_keys = ['theta_armright_lower_beta', 'theta_armright_lower_gamma', 'theta_armleft_upper_beta', 'theta_torso_yaw_r', 'theta_head_yaw_h', 'theta_armleft_lower_gamma', 'theta_torso_tilt_r', 'theta_armright_upper_alpha', 'theta_head_roll_h', 'theta_armleft_upper_alpha', 'theta_torso_bend_r', 'theta_head_pitch_h', 'theta_armright_upper_gamma', 'theta_torso_pitch_r', 'theta_armleft_lower_alpha', 'theta_armright_upper_beta', 'theta_armleft_lower_beta', 'theta_armleft_upper_gamma', 'theta_armright_lower_alpha', 'theta_torso_roll_r']
 message_template = {}
 for key in message_keys:
@@ -53,14 +54,14 @@ def handle_mqtt_message(client, userdata, message):
     global payload
     global messages
     payload=message.payload
-    if type(payload)==str:
-        data = dict(
-            topic=message.topic,
-            payload=message.payload.decode()        
-        )
-        _uuid = message.topic.split('/')[-1]
-        messages[_uuid] = message.payload
-        print(messages)
+   #  if type(payload)==str:
+    data = dict(
+        topic=message.topic,
+        payload=message.payload.decode()        
+    )
+    _uuid = message.topic.split('/')[-1]
+    messages[_uuid] = message.payload
+    print(messages)
  
 @app.route("/cookie")
 def cookie():
@@ -77,6 +78,7 @@ def home():
     global message_template
     global payload
     global ip_uuid
+    global last_msg
     msg = {}
     msg['pose'] = message_template.copy()
     _ip = request.remote_addr
@@ -96,6 +98,9 @@ def home():
             else: #if 'pose' in _payload.keys():
                 msg = _payload.copy()
             payload = None
+            last_msg = msg
+        elif last_msg is not None:
+            msg = last_msg
         
     except Exception as e:
         # msg['type'] = _

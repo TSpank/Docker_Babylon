@@ -1,8 +1,18 @@
 {
     "configurations": [
         {
+            "name": "Run babylon.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/babylon.py",
+            "console": "integratedTerminal",
+            "env": {
+                "FLASK_ENV": "development"
+            }
+        },
+        {
             "type": "msedge",
-            "name": "http://127.0.0.1:5000/babylon/index.html",
+            "name": "Open index.html",
             "request": "launch",
             "url": "http://127.0.0.1:5000/babylon/index.html"
         }

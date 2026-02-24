@@ -61,10 +61,101 @@
                 height: 100%;
                 touch-action: none;
             }
+
+            #cameraPanel {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: rgba(0,0,0,0.75);
+                color: #e0e0e0;
+                padding: 10px 12px;
+                border-radius: 8px;
+                font-family: monospace;
+                font-size: 12px;
+                z-index: 1000;
+                min-width: 240px;
+                user-select: none;
+                border: 1px solid rgba(255,255,255,0.15);
+            }
+            #cameraPanel .cp-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            #cameraPanel .cp-header b { font-size: 13px; }
+            #cameraPanel .cp-toggle {
+                background: none;
+                border: 1px solid #888;
+                color: #ccc;
+                cursor: pointer;
+                padding: 1px 7px;
+                border-radius: 4px;
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            #cameraPanel .cp-section {
+                color: #adf;
+                margin: 6px 0 3px 0;
+                font-weight: bold;
+            }
+            #cameraPanel .cp-row {
+                display: flex;
+                align-items: center;
+                margin: 3px 0;
+                gap: 4px;
+            }
+            #cameraPanel .cp-row label {
+                width: 14px;
+                text-align: right;
+                color: #bbb;
+            }
+            #cameraPanel .cp-row input[type=range] {
+                width: 110px;
+                accent-color: #4af;
+                cursor: pointer;
+            }
+            #cameraPanel .cp-val {
+                width: 44px;
+                text-align: right;
+                color: #fff;
+            }
+            #cameraPanel .cp-copy {
+                margin-top: 8px;
+                width: 100%;
+                background: rgba(60,120,200,0.4);
+                border: 1px solid #4af;
+                color: #cef;
+                cursor: pointer;
+                padding: 3px 0;
+                border-radius: 4px;
+                font-family: monospace;
+                font-size: 11px;
+            }
+            #cameraPanel .cp-copy:hover { background: rgba(60,120,200,0.7); }
         </style>
     </head>
 <body>
 	<input type="hidden" id="value">
+
+	<!-- Camera Control Panel -->
+	<div id="cameraPanel">
+		<div class="cp-header">
+			<b>&#127916; Camera</b>
+			<button class="cp-toggle" onclick="toggleCameraPanel()" id="cpToggleBtn">&minus;</button>
+		</div>
+		<div id="cpBody">
+			<div class="cp-section">Position</div>
+			<div class="cp-row"><label>X</label><input type="range" id="camPosX" min="-5" max="5" step="0.01" value="0"><span class="cp-val" id="camPosXVal">0.00</span></div>
+			<div class="cp-row"><label>Y</label><input type="range" id="camPosY" min="-1" max="5" step="0.01" value="1.50"><span class="cp-val" id="camPosYVal">1.50</span></div>
+			<div class="cp-row"><label>Z</label><input type="range" id="camPosZ" min="-5" max="5" step="0.01" value="-2.00"><span class="cp-val" id="camPosZVal">-2.00</span></div>
+			<div class="cp-section">Target</div>
+			<div class="cp-row"><label>X</label><input type="range" id="camTgtX" min="-5" max="5" step="0.01" value="0"><span class="cp-val" id="camTgtXVal">0.00</span></div>
+			<div class="cp-row"><label>Y</label><input type="range" id="camTgtY" min="-1" max="5" step="0.01" value="1.50"><span class="cp-val" id="camTgtYVal">1.50</span></div>
+			<div class="cp-row"><label>Z</label><input type="range" id="camTgtZ" min="-5" max="5" step="0.01" value="0"><span class="cp-val" id="camTgtZVal">0.00</span></div>
+			<button class="cp-copy" onclick="copyCameraValues()" title="Copy current values to clipboard">&#128203; Copy position &amp; target</button>
+		</div>
+	</div>
 	<!-- <input type="label" id="frame"> -->
     <canvas id="renderCanvas"></canvas>
 	<script type="text/javascript">
@@ -86,7 +177,7 @@
 					{
 						loopcounter = 0;
 						//const URL = 'https://mojo.r7d.xyz:5005';//'http://127.0.0.1:5000';
-						const URL = 'https://127.0.0.1:5005';
+						const URL = 'http://127.0.0.1:5000';
 
 						fetch(URL)
 						.then(res => res.text())
@@ -148,7 +239,7 @@
 		var arm_offset = 0;
 		var arm_front = 0.0;
 		var debug =  false;
-		var gauges = true;
+		var gauges = false;
 		// var pointer = null;
         var canvas = document.getElementById("renderCanvas");
         var engine = null;
@@ -418,11 +509,12 @@
 
 			/*  Set up studio environment */
 			//BABYLON.SceneLoader.ImportMesh("","", "Studio4.glb", scene, function (meshes, particleSystems, skeletons) {
-			BABYLON.SceneLoader.ImportMesh("","", "Studio6.glb", scene, function (meshes, particleSystems, skeletons) {
+			//BABYLON.SceneLoader.ImportMesh("","", "Studio6.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "MiniGYM.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "TranquilYoga.glb", scene, function (meshes, particleSystems, skeletons) {
 			//BABYLON.SceneLoader.ImportMesh("","", "interior.glb", scene, function (meshes, particleSystems, skeletons) {
-				meshes[0].rotationQuaternion = null;
+			BABYLON.SceneLoader.ImportMesh("","", "", scene, function (meshes, particleSystems, skeletons) {
+         meshes[0].rotationQuaternion = null;
 			});
 
 
@@ -567,6 +659,117 @@
             rotationValues = jsonData
         }
 
+		// ---- Camera Panel ----
+		var _cpCollapsed = false;
+		var _cpDragging = false;
+		var _cpSliderOverride = false;  // when true, suppresses CameraY(_y) in api.js
+
+		function toggleCameraPanel() {
+			_cpCollapsed = !_cpCollapsed;
+			document.getElementById('cpBody').style.display = _cpCollapsed ? 'none' : 'block';
+			document.getElementById('cpToggleBtn').textContent = _cpCollapsed ? '+' : '\u2212';
+		}
+
+		// Return the best available camera reference (prefer camera_dummy global used by api.js)
+		function _cpGetCam() {
+			if (typeof camera_dummy !== 'undefined' && camera_dummy && !camera_dummy.isDisposed()) return camera_dummy;
+			if (window.scene && window.scene.activeCamera) return window.scene.activeCamera;
+			return null;
+		}
+
+		// Apply position + target to all known camera references so the view updates immediately.
+		// ArcRotateCamera stores position as alpha/beta/radius internally, so we must use
+		// setPosition() to convert Cartesian coords — direct .position assignment is ignored.
+		function _cpSetCamPos(cam, pos, tgt) {
+			if (!cam || (typeof cam.isDisposed === 'function' && cam.isDisposed())) return;
+			// Set target first so setPosition() computes alpha/beta/radius relative to the right centre
+			if (typeof cam.setTarget === 'function') cam.setTarget(tgt);
+			else cam.target = tgt;
+			if (typeof cam.setPosition === 'function') cam.setPosition(pos);
+			else cam.position = pos;
+		}
+
+		function _cpApplyToCamera(px, py, pz, tx, ty, tz) {
+			var pos = new BABYLON.Vector3(px, py, pz);
+			var tgt = new BABYLON.Vector3(tx, ty, tz);
+			// Update camera_dummy and camera_dynamic (the globals used by api.js / cameras.js)
+			if (typeof camera_dummy !== 'undefined')  _cpSetCamPos(camera_dummy,  pos, tgt);
+			if (typeof camera_dynamic !== 'undefined') _cpSetCamPos(camera_dynamic, pos, tgt);
+			// Also update the scene active camera (may differ from the globals)
+			if (window.scene && window.scene.activeCamera) _cpSetCamPos(window.scene.activeCamera, pos, tgt);
+		}
+
+		// Track which axes the user has manually set via slider (those won't be overwritten by camera readback)
+		var _cpManualAxes = {};
+
+		function updateCameraPanel() {
+			if (_cpCollapsed) return;
+			var cam = _cpGetCam();
+			if (!cam) return;
+			var pos = cam.position;
+			var tgt = cam.target;
+			if (!tgt) return;
+			// Always update the text readouts from the live camera position
+			document.getElementById('camPosXVal').textContent = pos.x.toFixed(2);
+			document.getElementById('camPosYVal').textContent = pos.y.toFixed(2);
+			document.getElementById('camPosZVal').textContent = pos.z.toFixed(2);
+			document.getElementById('camTgtXVal').textContent = tgt.x.toFixed(2);
+			document.getElementById('camTgtYVal').textContent = tgt.y.toFixed(2);
+			document.getElementById('camTgtZVal').textContent = tgt.z.toFixed(2);
+			// Sync slider thumbs from live camera when not actively dragging a slider
+			if (!_cpDragging) {
+				document.getElementById('camPosX').value = pos.x;
+				document.getElementById('camPosY').value = pos.y;
+				document.getElementById('camPosZ').value = pos.z;
+				document.getElementById('camTgtX').value = tgt.x;
+				document.getElementById('camTgtY').value = tgt.y;
+				document.getElementById('camTgtZ').value = tgt.z;
+			}
+		}
+
+		function setupCameraSliders() {
+			var ids = ['camPosX','camPosY','camPosZ','camTgtX','camTgtY','camTgtZ'];
+			ids.forEach(function(id) {
+				var el = document.getElementById(id);
+				el.addEventListener('pointerdown', function() { _cpDragging = true; });
+				el.addEventListener('pointerup',   function() { _cpDragging = false; });
+				el.addEventListener('input', function() {
+					var px = parseFloat(document.getElementById('camPosX').value);
+					var py = parseFloat(document.getElementById('camPosY').value);
+					var pz = parseFloat(document.getElementById('camPosZ').value);
+					var tx = parseFloat(document.getElementById('camTgtX').value);
+					var ty = parseFloat(document.getElementById('camTgtY').value);
+					var tz = parseFloat(document.getElementById('camTgtZ').value);
+					// Keep global _y in sync so CameraY() won't fight the slider
+					_y = py;
+					_cpSliderOverride = true;
+					_cpApplyToCamera(px, py, pz, tx, ty, tz);
+					document.getElementById('camPosXVal').textContent = px.toFixed(2);
+					document.getElementById('camPosYVal').textContent = py.toFixed(2);
+					document.getElementById('camPosZVal').textContent = pz.toFixed(2);
+					document.getElementById('camTgtXVal').textContent = tx.toFixed(2);
+					document.getElementById('camTgtYVal').textContent = ty.toFixed(2);
+					document.getElementById('camTgtZVal').textContent = tz.toFixed(2);
+				});
+			});
+		}
+
+
+
+		function copyCameraValues() {
+			var cam = _cpGetCam();
+			if (!cam) return;
+			var pos = cam.position;
+			var tgt = cam.target;
+			var txt = 'position: [' + pos.x.toFixed(3) + ', ' + pos.y.toFixed(3) + ', ' + pos.z.toFixed(3) + ']\ntarget:   [' + tgt.x.toFixed(3) + ', ' + tgt.y.toFixed(3) + ', ' + tgt.z.toFixed(3) + ']';
+			navigator.clipboard.writeText(txt).then(function(){
+				var btn = document.querySelector('.cp-copy');
+				var orig = btn.textContent;
+				btn.textContent = '\u2713 Copied!';
+				setTimeout(function(){ btn.textContent = orig; }, 1500);
+			});
+		}
+
 		window.initFunction = async function() {                    
 				var asyncEngineCreation = async function() {
 					try {
@@ -583,12 +786,12 @@
 		};
 		
         initFunction().then(() => {
-			sceneToRender = scene        
-			
+			sceneToRender = scene;
+			setupCameraSliders();
             engine.runRenderLoop(function () {
                 if (sceneToRender && sceneToRender.activeCamera) {
                     sceneToRender.render();
-                    
+					updateCameraPanel();
                 }				
             });
         });

@@ -6,8 +6,6 @@ function Process_json(rotationValues,angles)
         {
             // skeleton = scene.getSkeletonById("Primary");
             skeleton = scene.getSkeletonById("Ghost");
-            
-            
         }
 
         if ( angles != null )
@@ -266,7 +264,9 @@ function Process_json(rotationValues,angles)
             steps_perc = 0.0; // keep variable zero for next slerp									
         }
         camera_dynamic.setTarget(camera_dummy.target);
-        CameraY(_y);
+        if (typeof _cpSliderOverride === 'undefined' || !_cpSliderOverride) {
+            CameraY(_y);
+        }
         scene.activeCamera = camera_dynamic;		
     } catch(err) {
         console.log(err.message);

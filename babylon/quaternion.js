@@ -52,7 +52,7 @@
   function parse(dest, w, x, y, z) {
 
     // Most common internal use case with 4 params
-    if (z !== undefined) {
+    if (z !== "undefined") {
       dest['w'] = w;
       dest['x'] = x;
       dest['y'] = y;
@@ -60,7 +60,7 @@
       return;
     }
 
-    if (typeof w === 'object' && y === undefined) {
+    if (typeof w === 'object' && y === "undefined") {
 
       // Check for quats, for example when an object gets cloned
       if ('w' in w || 'x' in w || 'y' in w || 'z' in w) {
@@ -102,7 +102,7 @@
     }
 
     // Parse string values
-    if (typeof w === 'string' && y === undefined) {
+    if (typeof w === 'string' && y === "undefined") {
 
       var tokens = w.match(/\d+\.?\d*e[+-]?\d+|\d+\.?\d*|\.\d+|./g);
       var plus = 1;
@@ -139,7 +139,7 @@
           var g = iMap[c];
 
           // Is the current token an imaginary sign?
-          if (g !== undefined) {
+          if (g !== "undefined") {
 
             // Is the following token a number?
             if (d !== ' ' && !isNaN(d)) {
@@ -157,7 +157,7 @@
 
             g = iMap[d];
 
-            if (g !== undefined) {
+            if (g !== "undefined") {
               i++;
             }
           }
@@ -175,7 +175,7 @@
     }
 
     // If no single variable was given AND it was the constructor, set it to the identity
-    if (w === undefined && dest !== P) {
+    if (w === "undefined" && dest !== P) {
       dest['w'] = 1;
       dest['x'] =
       dest['y'] =
@@ -1044,7 +1044,7 @@
     var sY = Math.sin(_y);
     var sZ = Math.sin(_z);
 
-    if (order === undefined || order === 'ZXY') {
+    if (order === "undefined" || order === 'ZXY') {
       // axisAngle([0, 0, 1], x) * axisAngle([1, 0, 0], y) * axisAngle([0, 1, 0], z)
       return new Quaternion(
         cX * cY * cZ - sX * sY * sZ,

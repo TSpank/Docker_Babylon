@@ -11,8 +11,10 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Left.top = "-25%";
 		Left.cornerRadius = 5;
 		Left.onPointerDownObservable.add(()=> {
-            camera_dummy.position = new BABYLON.Vector3(2, 1.7, 0.0);
-			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));            
+                camera_dummy.position = new BABYLON.Vector3(2, 1.7, 0.0);
+				camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0)); 
+				CameraY(1.3);
+
 		})
 		advancedTexture.addControl(Left);
 
@@ -177,7 +179,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Back.top = "-20%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
-			camera_dummy.position = new BABYLON.Vector3(0, 1.7, 2.0);
+			camera_dummy.position = new BABYLON.Vector3(0, 1.7, 1.0);
 			camera_dummy.setTarget(new BABYLON.Vector3(0,1.7,0));
 			CameraY(1.3);
 		})
@@ -250,6 +252,9 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		Back.top = "-4%";
 		Back.cornerRadius = 5;
 		Back.onPointerDownObservable.add(()=> {
+			// max_length = scene.animationGroups.length;
+			// idx = Math.round(Math.random()*max_length);
+			// scene.animationGroups[idx].start(false, 1.0,0,1, false );
 			scene.requestRotations(JSON.stringify({'request':'control'}));
 			// var newBall = coin.clone("Ball"+balls.length.toString());
 			// newBall.position = scene.skeletons[0].bones[45].getAbsolutePosition();	
@@ -272,7 +277,7 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 			// scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) { active_animation = true;}});
 			// console.log('Active Animation: ' + active_animation);
 			// scene.animationGroups.map(function(item){ if (item.animatables.length > 0 ) {item.stop(); console.log(item.name + " stopped"); return item.name} else { return "";}});
-			scene.requestRotations(JSON.stringify({'request':'stop'}));
+			// scene.requestRotations(JSON.stringify({'request':'stop'}));
 		})
 		advancedTexture.addControl(Back);
 
@@ -296,149 +301,6 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 			sliderGU.value = 0.0;
 			reset(scene.getSkeletonById("Ghost"));
 			reset(scene.getSkeletonById("Primary"));
-			balls = [];
-
-		})
-		advancedTexture.addControl(Back);
-
-		var Back = BABYLON.GUI.Button.CreateSimpleButton("Weight", "Weight");
-		Back.width = "120px";
-		Back.height = height;
-		Back.color = "black";
-		Back.background = "transparent";
-		Back.left = "-40%";
-		Back.top = "2%";
-		Back.cornerRadius = 5;
-		Back.onPointerDownObservable.add(()=> {
-			// scene.getAnimationGroupByName("All Reset both").start(false, 1.0,0,1, false );
-			// reset(scene.skeletons[1]);
-			// scene.skeletons[1].returnToRest();
-			// sliderAL.value = 0.0;
-			// sliderAU.value = 0.0;
-			// sliderBL.value = 0.0;
-			// sliderBU.value = 0.0;
-			// sliderGL.value = 0.0;
-			// sliderGU.value = 0.0;
-			// reset(scene.getSkeletonById("Ghost"));
-			// reset(scene.getSkeletonById("Primary"));
-
-			// scene.getAnimationGroupByName('Fist both').start(false, 1.0,0,1, false );
-			var pointer = scene.meshes.find(m=>m.name.includes("Weight"));
-			pointer.parent = scene.getNodeByName("RightHand");
-				//pointer.attachToBone(scene.skeletons[0].bones[35]);
-			pointer.rotation = new BABYLON.Vector3(0,-Math.PI/2,0);
-			pointer.position = new BABYLON.Vector3(0,0.08,0.03);
-
-		})
-		advancedTexture.addControl(Back);
-
-		var Back = BABYLON.GUI.Button.CreateSimpleButton("Touch", "Touch");
-		Back.width = "120px";
-		Back.height = height;
-		Back.color = "black";
-		Back.background = "transparent";
-		Back.left = "-40%";
-		Back.top = "4%";
-		Back.cornerRadius = 5;
-		Back.onPointerDownObservable.add(()=> {
-			// Touch last coin in the list
-			if(balls.length){
-				
-				var ball = balls[balls.length-1];
-				balls.pop();
-				// balls[balls.length-1].touch = true;
-				scene.stopAnimation(balls[balls.length-1]);
-				ball.animations = [];
-				var frm =30;
-				// Assuming 'scene' is your Babylon.js scene
-				// Assuming 'object' is the mesh you want to animate
-
-				// Define animation keys for movement along X, Y, and Z axes
-				var moveAnimation = new BABYLON.Animation(
-					"moveAnimation",
-					"position",
-					30,
-					BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-					BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-				);
-
-				var moveKeys = [];
-				var camPos = scene.activeCamera.position.clone();
-				camPos.z = -1;
-				camPos.y = 1.49;
-				moveKeys.push({
-					frame: 0,
-					value: ball.position // Start position (current position)
-				});
-				// moveKeys.push({
-				// 	frame: frm/2.,
-				// 	value: camPos//new BABYLON.Vector3(5, 2, -3) // End position (change as needed)
-				// });
-				// moveKeys.push({
-				// 	frame: frm,
-				// 	value: camPos//new BABYLON.Vector3(5, 2, -3) // End position (change as needed)
-				// });
-				moveKeys.push({
-					frame: frm,
-					value: new BABYLON.Vector3(-.5+(0.04*ballsTouch), 1.8, 0) // End position (change as needed)
-				});
-				moveAnimation.setKeys(moveKeys);
-
-				// Define animation keys for rotation around X, Y, and Z axes
-				var rotateAnimation = new BABYLON.Animation(
-					"rotateAnimation",
-					"rotation",
-					30,
-					BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-					BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-				);
-
-				var rotateKeys = [];
-				rotateKeys.push({
-					frame: 0,
-					value: ball.rotation // Start rotation (current rotation)
-				});
-				rotateKeys.push({
-					frame: frm,
-					value: new BABYLON.Vector3(0, Math.PI, 0) // End rotation (change as needed)
-				});
-				rotateAnimation.setKeys(rotateKeys);
-
-				// Define animation keys for scaling along X, Y, and Z axes
-				var scaleAnimation = new BABYLON.Animation(
-					"scaleAnimation",
-					"scaling",
-					30,
-					BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-					BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-				);
-
-				var scaleKeys = [];
-				scaleKeys.push({
-					frame: 0,
-					value: ball.scaling // Start scaling (current scaling)
-				});
-				scaleKeys.push({
-					frame: frm,
-					value: new BABYLON.Vector3(1,1,1) // End scaling (change as needed)
-				});
-				scaleKeys.push({
-					frame: frm*2,
-					value: new BABYLON.Vector3(0.3,0.3,0.3) // End scaling (change as needed)
-				});
-				scaleAnimation.setKeys(scaleKeys);
-
-				// Apply animations to the object
-				ball.animations.push(moveAnimation);
-				ball.animations.push(rotateAnimation);
-				ball.animations.push(scaleAnimation);
-
-				// Start the animations
-				scene.beginAnimation(ball, 0, frm*2, false ); // Start from frame 0 to frame 100 (change as needed)
-			    ballsTouch +=1;
-
-			}
-
 
 		})
 		advancedTexture.addControl(Back);
@@ -460,9 +322,24 @@ function setup_buttons(advancedTexture,camera_dummy,scene,angles){
 		// slider.onValueChangedObservable.add(function(value) {
 		// 	angles.theta_armright_upper_alpha = value;			
 		// });
+
+		var panelRight = new BABYLON.GUI.StackPanel();
+		panelRight.width = "1000px";
+		panelRight.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+		panelRight.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+		advancedTexture.addControl(panelRight);
+
+		var incoming = new BABYLON.GUI.TextBlock();
+		incoming.text = "TEST TEXT";
+		incoming.height = "400px";
+		incoming.color = "white";
+		incoming.textWrapping = true;
+		panelRight.addControl(incoming); 
+		scene.incoming = incoming;
+
 		var panel = new BABYLON.GUI.StackPanel();
-		panel.width = "220px";
-		panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFTT;
+		panel.width = "200px";
+		panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
 		panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 		advancedTexture.addControl(panel);
 
