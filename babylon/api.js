@@ -6,12 +6,18 @@ function Process_json(rotationValues,angles)
         {
             // skeleton = scene.getSkeletonById("Primary");
             skeleton = scene.getSkeletonById("Ghost");
+            if (!skeleton && scene && scene.skeletons && scene.skeletons.length > 0) {
+                skeleton = scene.skeletons[0];
+            }
+        }
+
+        if (!skeleton) {
+            return;
         }
 
         if ( angles != null )
         {
-            parse_data(skeleton, "undefined",angles);
-            // parse_data(skeleton, null,angles);
+            parse_data(skeleton, "undefined", angles);
         }
         try{
             if ( rotationValues.toString() =='[object Object]' )
@@ -21,17 +27,13 @@ function Process_json(rotationValues,angles)
             {
                 json_data = JSON.parse(rotationValues);
             }
-            // console.log(rotationValues);
-            // rotationValues = "{}";
-            //rotationValues = '{"prose": {"theta_torso_pitch_r": "0.0", "theta_torso_bend_r": "0.0", "theta_torso_yaw_r": "0.0", "theta_torso_roll_r": "0.0", "theta_torso_tilt_r": "0.0", "theta_head_pitch_h": "0.0", "theta_head_yaw_h": "0.0", "theta_head_roll_h": "0.0", "theta_armright_upper_alpha": "0.1", "theta_armright_upper_beta": "0.0", "theta_armright_upper_gamma": "0.0", "theta_armright_lower_alpha": "0.0", "theta_armright_lower_beta": "0.0", "theta_armright_lower_gamma": "0.0", "theta_armright_elbow": "0.0", "theta_armleft_upper_alpha": "0.0", "theta_armleft_upper_beta": "0.0", "theta_armleft_upper_gamma": "0.0", "theta_armleft_lower_alpha": "0.0", "theta_armleft_lower_beta": "0.0", "theta_armleft_lower_gamma": "0.0", "theta_armleft_elbow": "0.0"}}';
-                
+      
             if (typeof(json_data['animation']) != "undefined")
             {	
                 if (typeof(json_data['animation']['config']) != "undefined")
                 {
                     values = json_data['animation']['config'];//pose_data['pose'];
-                    console.log('Animation Received');
-                    console.log(values);
+
 
                     reset(scene.getSkeletonById("Primary"));
                     if (json_data['animation']['equipment'] == 1)
@@ -103,9 +105,10 @@ function Process_json(rotationValues,angles)
             if (typeof(json_data['pose']) != "undefined")
             {
                 values = json_data['pose'];
-                // console.log('Animation Received');
-                // console.log(values);
-                parse_data(skeleton,values);
+                quaternions = json_data['pose_quaternions'];
+                //parse_data(skeleton, values);
+                //parseQuaternionData(skeleton, quaternions);
+                parse_data_quats_and_angles(skeleton, values, quaternions);
             }
             
             if (typeof(json_data['control']) != "undefined")

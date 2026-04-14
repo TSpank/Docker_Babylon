@@ -273,9 +273,7 @@ async def start_server():
         await asyncio.Future()  # Keep the server running indefinitely
 
 # Run the server
-# asyncio.run(start_server())
-# %%
-await start_server()
+asyncio.run(start_server())
 
 # %%
 

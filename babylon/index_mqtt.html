@@ -97,7 +97,7 @@
 
         function onConnect(){
             console.log("Connected");
-            mqtt.subscribe("mojo/pose");
+            mqtt.subscribe("mojo/pose/thomas");
         }
 
         function onFailure(message)
@@ -253,7 +253,7 @@
             var skybox = BABYLON.MeshBuilder.CreateBox("SkyBox", {size:100.0}, scene);
             var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
             skyboxMaterial.backFaceCulling = false;
-            skyboxMaterial.reflectionTexture = new BABYLON.HDRCubeTexture("gym_01_4k.hdr", scene, 512);
+            skyboxMaterial.reflectionTexture = new BABYLON.HDRCubeTexture("gym_01_1k_blur.hdr", scene, 512);
             skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
             skybox.material = skyboxMaterial;
             

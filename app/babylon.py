@@ -17,9 +17,9 @@ mqtt_server = "mhubweb.scopemp.net"
 mqtt_port = 1883
 # mqtt_topic = "mojo/pose"
 #  mqtt_uuid = "#" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
-mqtt_uuid = "jec" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
+mqtt_uuid = "thomas" #"86C48451-22D2-423A-BEFF-347C5AAC35F8"
 mqtt_topic = f"mojo/iOS/{mqtt_uuid}"
-mqtt_client = "mojo_py_demo_24"
+mqtt_client = "thomas"
 mqtt_user = "scope_mosquitto"
 mqtt_pass = "dektzOWb3pmI"
 app = Flask(__name__)
@@ -61,7 +61,7 @@ def handle_mqtt_message(client, userdata, message):
     )
     _uuid = message.topic.split('/')[-1]
     messages[_uuid] = message.payload
-    print(messages)
+    #print(messages)
  
 @app.route("/cookie")
 def cookie():
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     log = logging.getLogger('werkzeug')
     log.disabled = True
     #//app.run(host='0.0.0.0', port=5000)
-    app.run(host='0.0.0.0', port=5000,debug=True) #,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False) #,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
 
 
 # %%
@@ -195,6 +195,9 @@ if __name__ == '__main__':
 # Camera API
 
 ## Overview
+
+
+
 
 This API allows you to control the position and target of a camera in a 3D environment.
 
