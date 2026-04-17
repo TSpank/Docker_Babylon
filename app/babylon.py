@@ -10,6 +10,7 @@ import time
 import paho.mqtt.client as paho
 import json
 import threading
+import socket
 from flask_cors import CORS
 
 # %%
@@ -61,7 +62,7 @@ def handle_mqtt_message(client, userdata, message):
     )
     _uuid = message.topic.split('/')[-1]
     messages[_uuid] = message.payload
-    #print(messages)
+    # print(messages)
  
 @app.route("/cookie")
 def cookie():
@@ -185,8 +186,24 @@ def uuid():
 if __name__ == '__main__':
     log = logging.getLogger('werkzeug')
     log.disabled = True
+    host = '0.0.0.0'
+    requested_port = int(os.getenv('PORT', '5050'))
+
+    # Bind-test requested port first, then let OS select a free one if needed.
+    selected_port = requested_port
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            probe.bind((host, requested_port))
+        except OSError:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as fallback_probe:
+                fallback_probe.bind((host, 0))
+                selected_port = fallback_probe.getsockname()[1]
+            print(f"Port {requested_port} is in use. Falling back to {selected_port}.")
+
     #//app.run(host='0.0.0.0', port=5000)
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False) #,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
+    print(f"Starting Flask pose server on http://{host}:{selected_port}")
+    app.run(host=host, port=selected_port, debug=False, use_reloader=False) #,ssl_context=('/etc/nginx/mojo.r7d.xyz.crt', '/etc/nginx/mojo.r7d.xyz.key'),debug=False)
 
 
 # %%
