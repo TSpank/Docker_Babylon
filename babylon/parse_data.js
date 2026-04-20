@@ -49,7 +49,7 @@ function smoothJoint(name, currentConstrained, alpha = jointSmoothing.alpha) {
     return smoothed;
 }
 
-function parse_data_quats_and_angles(skeleton,values,quaternionData)
+function parse_data_quats_and_angles(skeleton, quaternionData)
 {
     console.log("datastreaming with quaternions and angles...");
 
@@ -73,21 +73,7 @@ function parse_data_quats_and_angles(skeleton,values,quaternionData)
         );
         return babylonQuat;
     }
-
-    function eulerToQuat_XYZ(alpha, beta, gamma, isRight = false) {
-        // Match your sign conventions
-        const bx = alpha;
-        const by = isRight ? -gamma : gamma;
-        const bz = isRight ? -beta  : beta;
-
-        const qx = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.X, bx);
-        const qy = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, by);
-        const qz = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z, bz);
-
-        // IMPORTANT: order = X * Y * Z (matches your rotate sequence)
-        return qx.multiply(qy).multiply(qz);
-    }
-        
+   
     const OFFSETS = {
         l_upper: new BABYLON.Quaternion(0.707,0.0,0.0,0.707),
         l_lower: new BABYLON.Quaternion(0.0,0.0,0.0,1.0),
@@ -116,9 +102,8 @@ function parse_data_quats_and_angles(skeleton,values,quaternionData)
         const swing = q.multiply(BABYLON.Quaternion.Inverse(twist));
         //const swing = BABYLON.Quaternion.Inverse(twist).multiply(q);
         swing.normalize();
-        
-
         return { swing, twist };
+
     }
 
     function clampQuatAngle(q, maxAngleRad) {
@@ -307,96 +292,96 @@ function parse_data_quats_and_angles(skeleton,values,quaternionData)
     // legs
     //-----------------------------------------------------------------------------------------------
     // Upper legs
-    let l_leg_upper_l_temp = computeLocalQuat(hip_q, l_leg_upper_q);
-    //debugQuat_xy("l_leg_upper", l_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    l_leg_upper_l_constrained= limitSwingTwist(l_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 90*DEG, 45*DEG, 25*DEG, 0*DEG);
-    l_leg_upper_l_constrained = smoothJoint("l_leg_upper", l_leg_upper_l_constrained);
-    l_leg_upper_q_constrained = computeGlobalQuat(hip_q, l_leg_upper_l_constrained);
-    let l_leg_upper_l = computeLocalQuat(hip_q, l_leg_upper_q_constrained.multiply(legs));
+    // let l_leg_upper_l_temp = computeLocalQuat(hip_q, l_leg_upper_q);
+    // //debugQuat_xy("l_leg_upper", l_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // l_leg_upper_l_constrained= limitSwingTwist(l_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 90*DEG, 45*DEG, 25*DEG);
+    // l_leg_upper_l_constrained = smoothJoint("l_leg_upper", l_leg_upper_l_constrained);
+    // l_leg_upper_q_constrained = computeGlobalQuat(hip_q, l_leg_upper_l_constrained);
+    let l_leg_upper_l = computeLocalQuat(hip_q, l_leg_upper_q.multiply(legs));
 
-    let r_leg_upper_l_temp = computeLocalQuat(hip_q, r_leg_upper_q);
-    //debugQuat_xy("r_leg_upper", r_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    r_leg_upper_l_constrained = limitSwingTwist(r_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 90*DEG, 45*DEG, 25*DEG, 0*DEG);
-    r_leg_upper_l_constrained = smoothJoint("r_leg_upper", r_leg_upper_l_constrained);
-    r_leg_upper_q_constrained = computeGlobalQuat(hip_q, r_leg_upper_l_constrained);
-    let r_leg_upper_l = computeLocalQuat(hip_q, r_leg_upper_q_constrained.multiply(legs));
+    // let r_leg_upper_l_temp = computeLocalQuat(hip_q, r_leg_upper_q);
+    // //debugQuat_xy("r_leg_upper", r_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 5*DEG, 5*DEG, 90*DEG, 90*DEG, 45*DEG, 25*DEG);
+    // r_leg_upper_l_constrained = limitSwingTwist(r_leg_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 5*DEG, 5*DEG, 90*DEG, 45*DEG, 25*DEG);
+    // r_leg_upper_l_constrained = smoothJoint("r_leg_upper", r_leg_upper_l_constrained);
+    // r_leg_upper_q_constrained = computeGlobalQuat(hip_q, r_leg_upper_l_constrained);
+    let r_leg_upper_l = computeLocalQuat(hip_q, r_leg_upper_q.multiply(legs));
 
     // Lower legs 
-    let l_leg_lower_l_temp = computeLocalQuat(l_leg_upper_q, l_leg_lower_q);
-    //debugQuat_xy("l_leg_lower", l_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    l_leg_lower_l_constrained = limitSwingTwist(l_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 15*DEG, 15*DEG, 5*DEG, 140*DEG, 25*DEG, 0*DEG);
-    l_leg_lower_l_constrained = smoothJoint("l_leg_lower", l_leg_lower_l_constrained);
-    l_leg_lower_q_constrained = computeGlobalQuat(l_leg_upper_q, l_leg_lower_l_constrained);
-    let l_leg_lower_l = computeLocalQuat(l_leg_upper_q.multiply(legs), l_leg_lower_q_constrained.multiply(legs));
+    // let l_leg_lower_l_temp = computeLocalQuat(l_leg_upper_q, l_leg_lower_q);
+    // //debugQuat_xy("l_leg_lower", l_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // l_leg_lower_l_constrained = limitSwingTwist(l_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 15*DEG, 15*DEG, 5*DEG, 140*DEG, 25*DEG);
+    // l_leg_lower_l_constrained = smoothJoint("l_leg_lower", l_leg_lower_l_constrained);
+    // l_leg_lower_q_constrained = computeGlobalQuat(l_leg_upper_q, l_leg_lower_l_constrained);
+    let l_leg_lower_l = computeLocalQuat(l_leg_upper_q.multiply(legs), l_leg_lower_q.multiply(legs));
 
-    let r_leg_lower_l_temp = computeLocalQuat(r_leg_upper_q, r_leg_lower_q);
-    //debugQuat_xy("r_leg_lower", r_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    r_leg_lower_l_constrained = limitSwingTwist(r_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 15*DEG, 15*DEG, 5*DEG, 140*DEG, 25*DEG, 0*DEG);
-    r_leg_lower_l_constrained = smoothJoint("r_leg_lower", r_leg_lower_l_constrained);
-    r_leg_lower_q_constrained = computeGlobalQuat(r_leg_upper_q, r_leg_lower_l_constrained);
-    let r_leg_lower_l = computeLocalQuat(r_leg_upper_q.multiply(legs), r_leg_lower_q_constrained.multiply(legs));
+    // let r_leg_lower_l_temp = computeLocalQuat(r_leg_upper_q, r_leg_lower_q);
+    // //debugQuat_xy("r_leg_lower", r_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // r_leg_lower_l_constrained = limitSwingTwist(r_leg_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 15*DEG, 15*DEG, 5*DEG, 140*DEG, 25*DEG);
+    // r_leg_lower_l_constrained = smoothJoint("r_leg_lower", r_leg_lower_l_constrained);
+    // r_leg_lower_q_constrained = computeGlobalQuat(r_leg_upper_q, r_leg_lower_l_constrained);
+    let r_leg_lower_l = computeLocalQuat(r_leg_upper_q.multiply(legs), r_leg_lower_q.multiply(legs));
 
     // feet
-    let l_foot_l_temp = computeLocalQuat(l_leg_lower_q, l_foot_q);
-    //debugQuat_xy("l_foot", l_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    l_foot_l_constrained = limitSwingTwist(l_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 3*DEG, 3*DEG, 45*DEG, 45*DEG, 10*DEG, 0*DEG);
-    l_foot_l_constrained = smoothJoint("l_foot", l_foot_l_constrained);
-    l_foot_q_constrained = computeGlobalQuat(l_leg_lower_q, l_foot_l_constrained);
-    let l_foot_l = computeLocalQuat(l_leg_lower_q, l_foot_q_constrained.multiply(feet));
+    // let l_foot_l_temp = computeLocalQuat(l_leg_lower_q, l_foot_q);
+    // //debugQuat_xy("l_foot", l_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // l_foot_l_constrained = limitSwingTwist(l_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 3*DEG, 3*DEG, 45*DEG, 45*DEG, 10*DEG);
+    // l_foot_l_constrained = smoothJoint("l_foot", l_foot_l_constrained);
+    // l_foot_q_constrained = computeGlobalQuat(l_leg_lower_q, l_foot_l_constrained);
+    let l_foot_l = computeLocalQuat(l_leg_lower_q, l_foot_q.multiply(feet));
 
-    let r_foot_l_temp = computeLocalQuat(r_leg_lower_q, r_foot_q);
-    //debugQuat_xy("r_foot", r_foot_l_temp, rotatedAxis, 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    r_foot_l_constrained = limitSwingTwist(r_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 3*DEG, 3*DEG, 45*DEG, 45*DEG, 10*DEG, 0*DEG);
-    r_foot_l_constrained = smoothJoint("r_foot", r_foot_l_constrained);
-    r_foot_q_constrained = computeGlobalQuat(r_leg_lower_q, r_foot_l_constrained);
-    let r_foot_l = computeLocalQuat(r_leg_lower_q, r_foot_q_constrained.multiply(feet)); 
+    // let r_foot_l_temp = computeLocalQuat(r_leg_lower_q, r_foot_q);
+    // //debugQuat_xy("r_foot", r_foot_l_temp, rotatedAxis, 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // r_foot_l_constrained = limitSwingTwist(r_foot_l_temp, new BABYLON.Vector3(0, 1, 0), 3*DEG, 3*DEG, 45*DEG, 45*DEG, 10*DEG, 0*DEG);
+    // r_foot_l_constrained = smoothJoint("r_foot", r_foot_l_constrained);
+    // r_foot_q_constrained = computeGlobalQuat(r_leg_lower_q, r_foot_l_constrained);
+    let r_foot_l = computeLocalQuat(r_leg_lower_q, r_foot_q.multiply(feet)); 
 
     // arms //-----------------------------------------------------------------------------------------------
     //
     //uppper arms
-    let l_arm_upper_l_temp = computeLocalQuat(torso_q, l_arm_upper_q);
-    //debugQuat_xy("l_arm_upper", l_arm_upper_l_temp, rotatedAxis__upper_arms, 360*DEG, 360*DEG, 1*DEG, 1*DEG, 360*DEG);
-    l_arm_upper_l_constrained = limitSwingTwist(l_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    l_arm_upper_l_constrained = smoothJoint("l_arm_upper", l_arm_upper_l_constrained);
-    l_arm_upper_q_constrained = computeGlobalQuat(torso_q, l_arm_upper_l_constrained);
-    let l_arm_upper_l = computeLocalQuat(l_shoulder_g, l_arm_upper_q_constrained.multiply(arms_l));
+    // let l_arm_upper_l_temp = computeLocalQuat(torso_q, l_arm_upper_q);
+    // debugQuat_xy("l_arm_upper", l_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 1*DEG, 1*DEG, 360*DEG);
+    // l_arm_upper_l_constrained = limitSwingTwist(l_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 1*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG);
+    // l_arm_upper_l_constrained = smoothJoint("l_arm_upper", l_arm_upper_l_constrained);
+    // l_arm_upper_q_constrained = computeGlobalQuat(torso_q, l_arm_upper_l_constrained);
+    let l_arm_upper_l = computeLocalQuat(l_shoulder_g, l_arm_upper_q.multiply(arms_l));
 
-    let r_arm_upper_l_temp = computeLocalQuat(torso_q, r_arm_upper_q);
-    //debugQuat_xy("r_arm_upper", r_arm_upper_l_temp, rotatedAxis, 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
-    let r_arm_upper_l_constrained = limitSwingTwist(r_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    r_arm_upper_l_constrained = smoothJoint("r_arm_upper", r_arm_upper_l_constrained);
-    let r_arm_upper_q_constrained = computeGlobalQuat(torso_q, r_arm_upper_l_constrained);
-    let r_arm_upper_l = computeLocalQuat(r_shoulder_g, r_arm_upper_q_constrained.multiply(arms_r));
+    // let r_arm_upper_l_temp = computeLocalQuat(torso_q, r_arm_upper_q);
+    // debugQuat_xy("r_arm_upper", r_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 1*DEG, 1*DEG, 1*DEG, 360*DEG, 0*DEG);
+    // let r_arm_upper_l_constrained = limitSwingTwist(r_arm_upper_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
+    // r_arm_upper_l_constrained = smoothJoint("r_arm_upper", r_arm_upper_l_constrained);
+    // let r_arm_upper_q_constrained = computeGlobalQuat(torso_q, r_arm_upper_l_constrained);
+    let r_arm_upper_l = computeLocalQuat(r_shoulder_g, r_arm_upper_q.multiply(arms_r));
 
     //lower arms 
-    let l_arm_lower_l_temp = computeLocalQuat(l_arm_upper_q, l_arm_lower_q);
-    //debugQuat_xy("l_arm_lower", l_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    let l_arm_lower_l_constrained = limitSwingTwist(l_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 40*DEG, 40*DEG, 160*DEG, 1*DEG, 80*DEG);
-    l_arm_lower_l_constrained = smoothJoint("l_arm_lower", l_arm_lower_l_constrained);
-    let l_arm_lower_q_constrained = computeGlobalQuat(l_arm_upper_q, l_arm_lower_l_constrained);
-    let l_arm_lower_l = computeLocalQuat(l_arm_upper_q.multiply(arms_l), l_arm_lower_q_constrained.multiply(arms_l));
+    // let l_arm_lower_l_temp = computeLocalQuat(l_arm_upper_q, l_arm_lower_q);
+    // //debugQuat_xy("l_arm_lower", l_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
+    // let l_arm_lower_l_constrained = limitSwingTwist(l_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 40*DEG, 40*DEG, 160*DEG, 1*DEG, 80*DEG);
+    // l_arm_lower_l_constrained = smoothJoint("l_arm_lower", l_arm_lower_l_constrained);
+    // let l_arm_lower_q_constrained = computeGlobalQuat(l_arm_upper_q, l_arm_lower_l_constrained);
+    let l_arm_lower_l = computeLocalQuat(l_arm_upper_q.multiply(arms_l), l_arm_lower_q.multiply(arms_l));
 
-    let r_arm_lower_l_temp = computeLocalQuat(r_arm_upper_q, r_arm_lower_q);
-    //debugQuat_xy("r_arm_lower", r_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    let r_arm_lower_l_constrained = limitSwingTwist(r_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 40*DEG, 40*DEG, 160*DEG, 1*DEG, 80*DEG);
-    r_arm_lower_l_constrained = smoothJoint("r_arm_lower", r_arm_lower_l_constrained);
-    let r_arm_lower_q_constrained = computeGlobalQuat(r_arm_upper_q, r_arm_lower_l_constrained);
-    let r_arm_lower_l = computeLocalQuat(r_arm_upper_q.multiply(arms_r), r_arm_lower_q_constrained.multiply(arms_r));
+    // let r_arm_lower_l_temp = computeLocalQuat(r_arm_upper_q, r_arm_lower_q);
+    // //debugQuat_xy("r_arm_lower", r_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
+    // let r_arm_lower_l_constrained = limitSwingTwist(r_arm_lower_l_temp, new BABYLON.Vector3(0, 1, 0), 40*DEG, 40*DEG, 160*DEG, 1*DEG, 80*DEG);
+    // r_arm_lower_l_constrained = smoothJoint("r_arm_lower", r_arm_lower_l_constrained);
+    // let r_arm_lower_q_constrained = computeGlobalQuat(r_arm_upper_q, r_arm_lower_l_constrained);√
+    let r_arm_lower_l = computeLocalQuat(r_arm_upper_q.multiply(arms_r), r_arm_lower_q.multiply(arms_r));
 
     //hands
-    let l_hand_l_temp = computeLocalQuat(l_arm_lower_q, l_hand_q);
-    //debugQuat_xy("l_hand", l_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    let l_hand_l_constrained = limitSwingTwist(l_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 60*DEG, 60*DEG, 5*DEG);
-    l_hand_l_constrained = smoothJoint("l_hand", l_hand_l_constrained);
-    let l_hand_q_constrained = computeGlobalQuat(l_arm_lower_q, l_hand_l_constrained);
-    let l_hand_l = computeLocalQuat(l_arm_lower_q.multiply(arms_l), l_hand_q_constrained.multiply(arms_l));
+    // let l_hand_l_temp = computeLocalQuat(l_arm_lower_q, l_hand_q);
+    // //debugQuat_xy("l_hand", l_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
+    // let l_hand_l_constrained = limitSwingTwist(l_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 60*DEG, 60*DEG, 5*DEG);
+    // l_hand_l_constrained = smoothJoint("l_hand", l_hand_l_constrained);
+    // let l_hand_q_constrained = computeGlobalQuat(l_arm_lower_q, l_hand_l_constrained);
+    let l_hand_l = computeLocalQuat(l_arm_lower_q.multiply(arms_l), l_hand_q.multiply(arms_l));
 
-    let r_hand_l_temp = computeLocalQuat(r_arm_lower_q, r_hand_q);
-    //debugQuat_xy("r_hand", r_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
-    let r_hand_l_constrained = limitSwingTwist(r_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 60*DEG, 60*DEG, 5*DEG);
-    r_hand_l_constrained = smoothJoint("r_hand", r_hand_l_constrained);
-    let r_hand_q_constrained = computeGlobalQuat(r_arm_lower_q, r_hand_l_constrained);
-    let r_hand_l = computeLocalQuat(r_arm_lower_q.multiply(arms_r), r_hand_q_constrained.multiply(arms_r));
+    // let r_hand_l_temp = computeLocalQuat(r_arm_lower_q, r_hand_q);
+    // //debugQuat_xy("r_hand", r_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 360*DEG, 360*DEG, 360*DEG, 360*DEG, 360*DEG);
+    // let r_hand_l_constrained = limitSwingTwist(r_hand_l_temp, new BABYLON.Vector3(0, 1, 0), 60*DEG, 60*DEG, 60*DEG, 60*DEG, 5*DEG);
+    // r_hand_l_constrained = smoothJoint("r_hand", r_hand_l_constrained);
+    // let r_hand_q_constrained = computeGlobalQuat(r_arm_lower_q, r_hand_l_constrained);
+    let r_hand_l = computeLocalQuat(r_arm_lower_q.multiply(arms_r), r_hand_q.multiply(arms_r));
 
     
     //apply quaternions to skeleton bones

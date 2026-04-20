@@ -108,7 +108,7 @@ function Process_json(rotationValues,angles)
                 quaternions = json_data['pose_quaternions'];
                 //parse_data(skeleton, values);
                 //parseQuaternionData(skeleton, quaternions);
-                parse_data_quats_and_angles(skeleton, values, quaternions);
+                parse_data_quats_and_angles(skeleton, quaternions);
             }
             
             if (typeof(json_data['control']) != "undefined")
